@@ -1,0 +1,55 @@
+type Auth {
+	id: String!,
+	firstName: String!,
+	lastName: String!,
+	email: String!,
+	phone: String!,
+	groups: [String]! 
+}
+
+type User {
+	id: String!,
+	firstName: String!,
+	lastName: String!,
+	email: String!,
+	phone: String!
+}
+
+type Users {
+	count: Int!,
+	users: [User!]!
+}
+
+input RegisterArgs {
+	firstName: String!,
+	lastName: String!,
+	email: String!,
+	phone: String!
+	password: String!,
+	passwordConf: String!	
+}
+
+input UpdateUserArgs {
+	id: String!,
+	firstName: String,
+	lastName: String,
+	email: String,
+	phone: String	
+}
+
+type Mutation {
+	register(RegisterInput!): Auth!
+	login(username: String!, password: String!): Auth!
+	updateUser(UpdateUserArgs!): User!
+	deleteUser(id: String!): Message!
+	initiateforgotPassword(email: String!): Message!
+	resetPassword(password: String!, passwordConf: String!, key: String!): Message!
+	initiateVerifyEmail(): Message!
+	initiateVerifyPhone(): Message!
+	verifyCode(code: String!): Message!
+}
+
+type Query {
+	getUser(id: String!): User!
+	getUsers(count: Int, page: Int): Users!
+}

@@ -1,0 +1,32 @@
+version: "3.6"
+
+services:
+  auth:
+    build: 
+      context: "."
+      dockerfile: "./auth/Dockerfile"
+    depends_on:
+      - "psql"
+    environment:
+      DATABASE_URL: "postgres://root:toor@psql/psql?sslmode=disable"
+
+  graphql:
+    build:
+      context: "."
+      dockerfile: "./graphql/Dockerfile"
+    ports:
+      - "8000:8080"
+    depends_on:
+      - "auth"
+    environment:
+      AUTH_SERVICE_URL: "auth:8080"
+
+  psql:
+    build:
+      context: "./psql"
+      dockerfile: "./Dockerfile"
+    environment:
+      POSTGRES_DB: "psql"
+      POSTGRES_USER: "root"
+      POSTGRES_PASSWORD: "toor"
+    restart: "unless-stopped"
