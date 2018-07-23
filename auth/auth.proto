@@ -1,0 +1,30 @@
+syntax = "proto3";
+package pb;
+
+message RegisterRequest {
+  string firstName = 1;
+  string lastName = 2;
+}
+
+message RegisterResponse {
+  string id = 1;
+  string firstName = 2;
+  string lastName = 3;
+}
+
+message EmptyRequest {}
+
+message User {
+  string id = 1;
+  string firstName = 2;
+  string lastName = 3;
+}
+
+message GetUsersResponse {
+  repeated User users = 1;
+}
+
+service AuthService {
+  rpc Register (RegisterRequest) returns (RegisterResponse) {}
+  rpc GetUsers (EmptyRequest) returns (GetUsersResponse) {}
+}
