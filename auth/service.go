@@ -37,6 +37,6 @@ func (s *authService) Register(ctx context.Context, firstName string, lastName s
 	return a, nil
 }
 
-func (s *authService) GetUsers(ctx context.Context) ([]Account, error) {
+func (s *authService) GetUsers(ctx context.Context) ([]User, error) {
 	return s.repository.ReadUsers(ctx)
 }
