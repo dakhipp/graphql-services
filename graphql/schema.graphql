@@ -10,9 +10,9 @@ input RegisterArgs {
 }
 
 type Mutation {
-	register(user: RegisterArgs!): User!
+	register(user: RegisterArgs!): User
 }
 
 type Query {
-	getUsers() : [User]!
+	getUsers() : [User!]!
 }

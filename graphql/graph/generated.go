@@ -24,7 +24,7 @@ func NewExecutableSchema(resolvers ResolverRoot) graphql.ExecutableSchema {
 }
 
 type Resolvers interface {
-	Mutation_register(ctx context.Context, user RegisterArgs) (User, error)
+	Mutation_register(ctx context.Context, user RegisterArgs) (*User, error)
 	Query_getUsers(ctx context.Context) ([]User, error)
 }
 
@@ -33,7 +33,7 @@ type ResolverRoot interface {
 	Query() QueryResolver
 }
 type MutationResolver interface {
-	Register(ctx context.Context, user RegisterArgs) (User, error)
+	Register(ctx context.Context, user RegisterArgs) (*User, error)
 }
 type QueryResolver interface {
 	GetUsers(ctx context.Context) ([]User, error)
@@ -43,7 +43,7 @@ type shortMapper struct {
 	r ResolverRoot
 }
 
-func (s shortMapper) Mutation_register(ctx context.Context, user RegisterArgs) (User, error) {
+func (s shortMapper) Mutation_register(ctx context.Context, user RegisterArgs) (*User, error) {
 	return s.r.Mutation().Register(ctx, user)
 }
 
@@ -157,8 +157,11 @@ func (ec *executionContext) _Mutation_register(ctx context.Context, field graphq
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(User)
-	return ec._User(ctx, field.Selections, &res)
+	res := resTmp.(*User)
+	if res == nil {
+		return graphql.Null
+	}
+	return ec._User(ctx, field.Selections, res)
 }
 
 var queryImplementors = []string{"Query"}
@@ -1104,10 +1107,10 @@ input RegisterArgs {
 }
 
 type Mutation {
-	register(user: RegisterArgs!): User!
+	register(user: RegisterArgs!): User
 }
 
 type Query {
-	getUsers() : [User]!
+	getUsers() : [User!]!
 }
 `)
