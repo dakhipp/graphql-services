@@ -8,7 +8,7 @@ import (
 
 type Service interface {
 	Register(ctx context.Context, firstName string, lastName string) (*User, error)
-	GetUsers(ctx context.Context) (*User, error)
+	GetUsers(ctx context.Context) ([]User, error)
 }
 
 type User struct {

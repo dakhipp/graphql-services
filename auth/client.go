@@ -44,10 +44,7 @@ func (c *Client) Register(ctx context.Context, firstName string, lastName string
 }
 
 func (c *Client) GetUsers(ctx context.Context) ([]User, error) {
-	r, err := c.service.GetUsers(
-		ctx,
-		&pb.EmptyRequest{},
-	)
+	r, err := c.service.GetUsers(ctx, &pb.EmptyRequest{})
 	if err != nil {
 		return nil, err
 	}

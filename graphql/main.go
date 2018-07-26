@@ -4,12 +4,13 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/dakhipp/graphql-services/graphql/graph"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/vektah/gqlgen/handler"
 )
 
 type Config struct {
-	AuthURL string `envconfig:"AUTH_SERVICE_URL"`
+	AuthUrl string `envconfig:"AUTH_SERVICE_URL"`
 }
 
 func main() {
@@ -19,7 +20,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	s, err := graph.NewGraphQLServer(cfg.AuthURL)
+	s, err := graph.NewGraphQLServer(cfg.AuthUrl)
 	if err != nil {
 		log.Fatal(err)
 	}

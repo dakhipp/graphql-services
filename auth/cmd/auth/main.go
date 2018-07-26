@@ -31,6 +31,6 @@ func main() {
 	defer r.Close()
 
 	log.Println("Listening on port 8080...")
-	s := user.NewService(r)
+	s := auth.NewService(r)
 	log.Fatal(auth.ListenGRPC(s, 8080))
 }

@@ -9,7 +9,7 @@ type GraphQLServer struct {
 	authClient *auth.Client
 }
 
-func NewGraphQLServer(authURL string) (*GraphQLServer, error) {
+func NewGraphQLServer(authUrl string) (*GraphQLServer, error) {
 	// Connect to auth service
 	authClient, err := auth.NewClient(authUrl)
 	if err != nil {
