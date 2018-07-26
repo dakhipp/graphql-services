@@ -43,7 +43,7 @@ func (c *Client) Register(ctx context.Context, firstName string, lastName string
 	}, nil
 }
 
-func (c *Client) GetUsers(ctx context.Context) (*User, error) {
+func (c *Client) GetUsers(ctx context.Context) ([]User, error) {
 	r, err := c.service.GetUsers(
 		ctx,
 		&pb.EmptyRequest{},

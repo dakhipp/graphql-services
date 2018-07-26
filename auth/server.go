@@ -38,7 +38,7 @@ func (s *grpcServer) Register(ctx context.Context, r *pb.RegisterRequest) (*pb.R
 	}}, nil
 }
 
-func (s *grpcServer) GetUsers(ctx context.Context, r *pb.GetUsersRequest) (*pb.GetUsersResponse, error) {
+func (s *grpcServer) GetUsers(ctx context.Context) (*pb.GetUsersResponse, error) {
 	res, err := s.service.GetUsers(ctx)
 	if err != nil {
 		return nil, err
