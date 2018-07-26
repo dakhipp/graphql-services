@@ -1,14 +1,16 @@
-Todo:
-
-- Create single up file for 1 database container to consume
-- Update dockercompose file to have only 1 database
-
----
 
 Commands:
-Generate protocol file from server file with comment at top: `go generate auth/server.go` (comment: //go:generate protoc ./auth.proto --go_out=plugins=grpc:./pb)
-Generate GraphQL files from file with comment at top: `go generate ./graphql/graph/graph.go` (comment: //go:generate gqlgen -schema ../schema.graphql -typemap ../types.json)
-Update dependency: `go get -u github.com/dakhipp...` 
+
+Generate protocol file from server file with comment at top:
+- `go generate auth/server.go` (comment: //go:generate protoc ./auth.proto --go_out=plugins=grpc:./pb) 
+
+Generate GraphQL files from file with comment at top: 
+- `go generate ./graphql/graph/graph.go` (comment: //go:generate gqlgen -schema ../schema.graphql -typemap ../types.json) 
+
+
+Update dependency: 
+- `go get -u github.com/dakhipp...` 
+
 
 ---
 
@@ -27,6 +29,7 @@ Also The Following:
 
 Skeleton Service:
 
+```
 <SERVICE>
 ├── cmd
 │   └── <SERVICE>
@@ -38,12 +41,14 @@ Skeleton Service:
 ├── Dockerfile
 ├── repository.go
 ├── server.go
-├── service.go
+├── service.go`
+```
 
 ---
 
 Example:
 
+```
 account
 ├── cmd
 │   └── account
@@ -56,6 +61,7 @@ account
 ├── repository.go
 ├── server.go
 ├── service.go
+```
 
 ---
 
