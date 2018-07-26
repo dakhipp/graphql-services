@@ -4,20 +4,24 @@ services:
   auth:
     build: 
       context: "."
-      dockerfile: "./auth/Dockerfile"
+      dockerfile: "./auth/dev.Dockerfile"
     depends_on:
       - "psql"
+    volumes:
+      - ./auth:/go/src/github.com/dakhipp/graphql-services/auth
     environment:
       DATABASE_URL: "postgres://root:toor@psql/psql?sslmode=disable"
 
   graphql:
     build:
       context: "."
-      dockerfile: "./graphql/Dockerfile"
+      dockerfile: "./graphql/dev.Dockerfile"
     ports:
       - "8000:8080"
     depends_on:
       - "auth"
+    volumes:
+      - ./graphql:/go/src/github.com/dakhipp/graphql-services/graphql
     environment:
       AUTH_SERVICE_URL: "auth:8080"
 
