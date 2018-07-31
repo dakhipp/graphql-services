@@ -8,7 +8,9 @@ services:
     depends_on:
       - "psql"
     environment:
-      DATABASE_URL: "postgres://root:toor@psql/psql?sslmode=disable"
+      - PORT=8080
+      - ENV=development
+      - DATABASE_URL=postgres://root:toor@psql/psql?sslmode=disable
 
   graphql:
     build:
@@ -19,7 +21,9 @@ services:
     depends_on:
       - "auth"
     environment:
-      AUTH_SERVICE_URL: "auth:8080"
+      - PORT=8080
+      - ENV=development
+      - AUTH_SERVICE_URL=auth:8080
 
   psql:
     build:

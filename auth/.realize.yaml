@@ -1,0 +1,20 @@
+# used in dev to enable live reloading
+settings:
+  legacy:
+    force: false
+    interval: 100ms
+schema:
+- name: auth
+  path: ./cmd/auth
+  commands:
+    run: 
+      status: true
+  watcher:
+    extensions:
+    - go
+    paths:
+    - ../../
+    ignored_paths:
+    - .git
+    - .realize
+    - vendor

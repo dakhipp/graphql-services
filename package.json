@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "docker-compose -f docker-compose.dev.yml up --build",
-    "start:prod": "docker-compose -f docker-compose.prod.yml up --build"
+    "start:prod": "docker-compose -f docker-compose.prod.yml up --build",
+    "build:auth": "go generate auth/server.go",
+    "build:graphql": "go generate graphql/graph/graph.go"
   },
   "repository": {
     "type": "git",

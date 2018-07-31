@@ -10,7 +10,10 @@ services:
     volumes:
       - ./auth:/go/src/github.com/dakhipp/graphql-services/auth
     environment:
-      DATABASE_URL: "postgres://root:toor@psql/psql?sslmode=disable"
+      - PORT=8080
+      - PLAYGROUND=true
+      - ENV=development
+      - DATABASE_URL=postgres://root:toor@psql/psql?sslmode=disable
 
   graphql:
     build:
@@ -23,7 +26,10 @@ services:
     volumes:
       - ./graphql:/go/src/github.com/dakhipp/graphql-services/graphql
     environment:
-      AUTH_SERVICE_URL: "auth:8080"
+      - PORT=8080
+      - PLAYGROUND=true
+      - ENV=development
+      - AUTH_SERVICE_URL=auth:8080
 
   psql:
     build:
