@@ -10,22 +10,36 @@ import (
 )
 
 type Config struct {
-	AuthUrl string `envconfig:"AUTH_SERVICE_URL"`
+	AuthUrl    string `envconfig:"AUTH_SERVICE_URL"`
+	Port       string `envconfig:"PORT"`
+	Playground bool   `envconfig:"PLAYGROUND"`
 }
 
 func main() {
+	// Declare and attempt to cast config struct
 	var cfg Config
 	err := envconfig.Process("", &cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	s, err := graph.NewGraphQLServer(cfg.AuthUrl)
+	// Can take multiple comma separated config urls
+	server, err := graph.NewGraphQLServer(cfg.AuthUrl)
 	if err != nil {
 		log.Fatal(err)
 	}
-	http.Handle("/graphql", handler.GraphQL(graph.MakeExecutableSchema(s)))
-	http.Handle("/playground", handler.Playground("Auth", "/graphql"))
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	// Register graphql route
+	http.Handle("/graphql", handler.GraphQL(graph.MakeExecutableSchema(server)))
+
+	// Register playgorund route if environment variable is set to true
+	if cfg.Playground == true {
+		http.Handle("/playground", handler.Playground("Graphql Playground", "/graphql"))
+	}
+
+	// Log when the server starts
+	log.Println("Listening on port " + cfg.Port + "...")
+
+	// Start or throw fatal error
+	log.Fatal(http.ListenAndServe(":"+cfg.Port, nil))
 }

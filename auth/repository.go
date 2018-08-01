@@ -9,7 +9,7 @@ import (
 
 type Repository interface {
 	Close()
-	CreateUser(ctx context.Context, a User) error
+	CreateUser(ctx context.Context, args User) error
 	ReadUsers(ctx context.Context) ([]User, error)
 }
 
@@ -29,21 +29,21 @@ func NewPostgresRepository(url string) (Repository, error) {
 	return &postgresRepository{db}, nil
 }
 
-func (r *postgresRepository) Close() {
-	r.db.Close()
+func (repository *postgresRepository) Close() {
+	repository.db.Close()
 }
 
-func (r *postgresRepository) Ping() error {
-	return r.db.Ping()
+func (repository *postgresRepository) Ping() error {
+	return repository.db.Ping()
 }
 
-func (r *postgresRepository) CreateUser(ctx context.Context, a User) error {
-	_, err := r.db.ExecContext(ctx, "INSERT INTO users(id, firstName, lastName) VALUES($1, $2, $3)", a.ID, a.FirstName, a.LastName)
+func (repository *postgresRepository) CreateUser(ctx context.Context, args User) error {
+	_, err := repository.db.ExecContext(ctx, "INSERT INTO users(id, firstName, lastName) VALUES($1, $2, $3)", args.ID, args.FirstName, args.LastName)
 	return err
 }
 
-func (r *postgresRepository) ReadUsers(ctx context.Context) ([]User, error) {
-	rows, err := r.db.QueryContext(
+func (repository *postgresRepository) ReadUsers(ctx context.Context) ([]User, error) {
+	rows, err := repository.db.QueryContext(
 		ctx,
 		"SELECT * FROM users ORDER BY id DESC",
 	)
@@ -54,9 +54,9 @@ func (r *postgresRepository) ReadUsers(ctx context.Context) ([]User, error) {
 
 	users := []User{}
 	for rows.Next() {
-		a := &User{}
-		if err = rows.Scan(&a.ID, &a.FirstName, &a.LastName); err == nil {
-			users = append(users, *a)
+		u := &User{}
+		if err = rows.Scan(&u.ID, &u.FirstName, &u.LastName); err == nil {
+			users = append(users, *u)
 		}
 	}
 	if err = rows.Err(); err != nil {

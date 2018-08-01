@@ -17,16 +17,16 @@ func NewClient(url string) (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	c := pb.NewAuthServiceClient(conn)
-	return &Client{conn, c}, nil
+	client := pb.NewAuthServiceClient(conn)
+	return &Client{conn, client}, nil
 }
 
-func (c *Client) Close() {
-	c.conn.Close()
+func (client *Client) Close() {
+	client.conn.Close()
 }
 
-func (c *Client) Register(ctx context.Context, firstName string, lastName string) (*User, error) {
-	r, err := c.service.Register(
+func (client *Client) Register(ctx context.Context, firstName string, lastName string) (*User, error) {
+	resp, err := client.service.Register(
 		ctx,
 		&pb.RegisterRequest{
 			FirstName: firstName,
@@ -37,23 +37,23 @@ func (c *Client) Register(ctx context.Context, firstName string, lastName string
 		return nil, err
 	}
 	return &User{
-		ID:        r.User.Id,
-		FirstName: r.User.FirstName,
-		LastName:  r.User.LastName,
+		ID:        resp.User.Id,
+		FirstName: resp.User.FirstName,
+		LastName:  resp.User.LastName,
 	}, nil
 }
 
-func (c *Client) GetUsers(ctx context.Context) ([]User, error) {
-	r, err := c.service.GetUsers(ctx, &pb.EmptyRequest{})
+func (client *Client) GetUsers(ctx context.Context) ([]User, error) {
+	resp, err := client.service.GetUsers(ctx, &pb.EmptyRequest{})
 	if err != nil {
 		return nil, err
 	}
 	users := []User{}
-	for _, p := range r.Users {
+	for _, u := range resp.Users {
 		users = append(users, User{
-			ID:        p.Id,
-			FirstName: p.FirstName,
-			LastName:  p.LastName,
+			ID:        u.Id,
+			FirstName: u.FirstName,
+			LastName:  u.LastName,
 		})
 	}
 	return users, nil

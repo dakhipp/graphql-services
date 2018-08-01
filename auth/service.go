@@ -21,22 +21,22 @@ type authService struct {
 	repository Repository
 }
 
-func NewService(r Repository) Service {
-	return &authService{r}
+func NewService(repository Repository) Service {
+	return &authService{repository}
 }
 
-func (s *authService) Register(ctx context.Context, firstName string, lastName string) (*User, error) {
-	a := &User{
+func (service *authService) Register(ctx context.Context, firstName string, lastName string) (*User, error) {
+	user := &User{
 		FirstName: firstName,
 		LastName:  lastName,
 		ID:        ksuid.New().String(),
 	}
-	if err := s.repository.CreateUser(ctx, *a); err != nil {
+	if err := service.repository.CreateUser(ctx, *user); err != nil {
 		return nil, err
 	}
-	return a, nil
+	return user, nil
 }
 
-func (s *authService) GetUsers(ctx context.Context) ([]User, error) {
-	return s.repository.ReadUsers(ctx)
+func (service *authService) GetUsers(ctx context.Context) ([]User, error) {
+	return service.repository.ReadUsers(ctx)
 }

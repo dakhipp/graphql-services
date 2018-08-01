@@ -11,26 +11,34 @@ import (
 
 type Config struct {
 	DatabaseURL string `envconfig:"DATABASE_URL"`
+	Port        string `envconfig:"PORT"`
 }
 
 func main() {
+	// Declare and attempt to cast config struct
 	var cfg Config
 	err := envconfig.Process("", &cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	var r auth.Repository
+	// Attempt to create auth repository
+	var repository auth.Repository
 	retry.ForeverSleep(2*time.Second, func(_ int) (err error) {
-		r, err = auth.NewPostgresRepository(cfg.DatabaseURL)
+		repository, err = auth.NewPostgresRepository(cfg.DatabaseURL)
 		if err != nil {
 			log.Println(err)
 		}
 		return
 	})
-	defer r.Close()
+	defer repository.Close()
 
-	log.Println("Listening on port 8080...")
-	s := auth.NewService(r)
-	log.Fatal(auth.ListenGRPC(s, 8080))
+	// Log when the server starts
+	log.Println("Listening on port " + cfg.Port + "...")
+
+	// Create service from repository
+	service := auth.NewService(repository)
+
+	// Start or throw fatal error
+	log.Fatal(auth.ListenGRPC(service, ":"+cfg.Port))
 }

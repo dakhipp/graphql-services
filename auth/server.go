@@ -3,7 +3,6 @@ package auth
 
 import (
 	"context"
-	"fmt"
 	"net"
 
 	"github.com/dakhipp/graphql-services/auth/pb"
@@ -15,42 +14,43 @@ type grpcServer struct {
 	service Service
 }
 
-func ListenGRPC(s Service, port int) error {
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
+// Takes a service and a formatted port string (":8000") and starts up the server
+func ListenGRPC(service Service, port string) error {
+	listen, err := net.Listen("tcp", port)
 	if err != nil {
 		return err
 	}
-	serv := grpc.NewServer()
-	pb.RegisterAuthServiceServer(serv, &grpcServer{s})
-	reflection.Register(serv)
-	return serv.Serve(lis)
+	server := grpc.NewServer()
+	pb.RegisterAuthServiceServer(server, &grpcServer{service})
+	reflection.Register(server)
+	return server.Serve(listen)
 }
 
-func (s *grpcServer) Register(ctx context.Context, r *pb.RegisterRequest) (*pb.RegisterResponse, error) {
-	a, err := s.service.Register(ctx, r.FirstName, r.LastName)
+func (server *grpcServer) Register(ctx context.Context, args *pb.RegisterRequest) (*pb.RegisterResponse, error) {
+	resp, err := server.service.Register(ctx, args.FirstName, args.LastName)
 	if err != nil {
 		return nil, err
 	}
 	return &pb.RegisterResponse{User: &pb.User{
-		Id:        a.ID,
-		FirstName: a.FirstName,
-		LastName:  a.LastName,
+		Id:        resp.ID,
+		FirstName: resp.FirstName,
+		LastName:  resp.LastName,
 	}}, nil
 }
 
-func (s *grpcServer) GetUsers(ctx context.Context, r *pb.EmptyRequest) (*pb.GetUsersResponse, error) {
-	res, err := s.service.GetUsers(ctx)
+func (server *grpcServer) GetUsers(ctx context.Context, args *pb.EmptyRequest) (*pb.GetUsersResponse, error) {
+	resp, err := server.service.GetUsers(ctx)
 	if err != nil {
 		return nil, err
 	}
 	users := []*pb.User{}
-	for _, p := range res {
+	for _, u := range resp {
 		users = append(
 			users,
 			&pb.User{
-				Id:        p.ID,
-				FirstName: p.FirstName,
-				LastName:  p.LastName,
+				Id:        u.ID,
+				FirstName: u.FirstName,
+				LastName:  u.LastName,
 			},
 		)
 	}

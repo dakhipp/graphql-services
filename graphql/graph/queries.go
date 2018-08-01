@@ -6,23 +6,23 @@ import (
 	"time"
 )
 
-func (s *GraphQLServer) Query_getUsers(ctx context.Context) ([]User, error) {
+func (server *GraphQLServer) Query_getUsers(ctx context.Context) ([]User, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 
-	r, err := s.authClient.GetUsers(ctx)
+	resp, err := server.authClient.GetUsers(ctx)
 	if err != nil {
 		log.Println(err)
 		return nil, err
 	}
 
 	users := []User{}
-	for _, a := range r {
+	for _, u := range resp {
 		users = append(users,
 			User{
-				ID:        a.ID,
-				FirstName: a.FirstName,
-				LastName:  a.LastName,
+				ID:        u.ID,
+				FirstName: u.FirstName,
+				LastName:  u.LastName,
 			},
 		)
 	}
