@@ -9,8 +9,9 @@ import (
 	"github.com/vektah/gqlgen/handler"
 )
 
+// Exported config object
 type Config struct {
-	AuthUrl    string `envconfig:"AUTH_SERVICE_URL"`
+	AuthURL    string `envconfig:"AUTH_SERVICE_URL"`
 	Port       string `envconfig:"PORT"`
 	Playground bool   `envconfig:"PLAYGROUND"`
 }
@@ -24,7 +25,7 @@ func main() {
 	}
 
 	// Can take multiple comma separated config urls
-	server, err := graph.NewGraphQLServer(cfg.AuthUrl)
+	server, err := graph.NewGraphQLServer(cfg.AuthURL)
 	if err != nil {
 		log.Fatal(err)
 	}
