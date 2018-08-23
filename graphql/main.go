@@ -9,7 +9,7 @@ import (
 	"github.com/vektah/gqlgen/handler"
 )
 
-// Config, exported config object
+// Config is an exported struct containing environment variables.
 type Config struct {
 	AuthURL    string `envconfig:"AUTH_SERVICE_URL"`
 	Port       string `envconfig:"PORT"`
