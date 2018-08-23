@@ -2,9 +2,9 @@ version: "3.6"
 
 services:
   auth:
-    build: 
-      context: "."
-      dockerfile: "./auth/prod.Dockerfile"
+    build:
+      context: "../../"
+      dockerfile: "deployments/docker/auth/prod.Dockerfile"
     depends_on:
       - "psql"
     environment:
@@ -14,8 +14,8 @@ services:
 
   graphql:
     build:
-      context: "."
-      dockerfile: "./graphql/prod.Dockerfile"
+      context: "../../"
+      dockerfile: "deployments/docker/graphql/prod.Dockerfile"
     ports:
       - "8000:8080"
     depends_on:
@@ -27,8 +27,8 @@ services:
 
   psql:
     build:
-      context: "./psql"
-      dockerfile: "./Dockerfile"
+      context: "../../"
+      dockerfile: "deployments/psql/Dockerfile"
     environment:
       POSTGRES_DB: "psql"
       POSTGRES_USER: "root"
