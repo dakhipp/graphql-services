@@ -9,7 +9,7 @@ import (
 	"github.com/vektah/gqlgen/handler"
 )
 
-// Exported config object
+// Config, exported config object
 type Config struct {
 	AuthURL    string `envconfig:"AUTH_SERVICE_URL"`
 	Port       string `envconfig:"PORT"`
