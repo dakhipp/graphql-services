@@ -10,10 +10,14 @@ services:
     volumes:
       - ../../auth:/go/src/github.com/dakhipp/graphql-services/auth
     environment:
+      - ENV=development
       - PORT=8080
       - PLAYGROUND=true
-      - ENV=development
-      - DATABASE_URL=postgres://root:toor@psql/psql?sslmode=disable
+      - PSQL_ADDR=psql:5432
+      - PSQL_USER=root
+      - PSQL_PASS=toor
+      - PSQL_DB=psql
+      - PSQL_SSL=disable
 
   graphql:
     build:
@@ -32,9 +36,11 @@ services:
       - AUTH_SERVICE_URL=auth:8080
 
   psql:
-    build:
-      context: "../../"
-      dockerfile: "deployments/psql/Dockerfile"
+    image: postgres:10.3
+    expose:
+      - "5432"
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_DB: "psql"
       POSTGRES_USER: "root"

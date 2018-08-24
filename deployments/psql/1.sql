@@ -1,5 +1,0 @@
-CREATE TABLE IF NOT EXISTS users (
-  id 					CHAR(27) 			PRIMARY KEY,
-  firstName 	VARCHAR(24) 	NOT NULL,
-  lastName 		VARCHAR(24) 	NOT NULL
-);

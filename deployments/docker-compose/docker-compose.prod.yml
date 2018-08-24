@@ -8,9 +8,14 @@ services:
     depends_on:
       - "psql"
     environment:
-      - PORT=8080
       - ENV=development
-      - DATABASE_URL=postgres://root:toor@psql/psql?sslmode=disable
+      - PORT=8080
+      - PLAYGROUND=true
+      - PSQL_ADDR=psql:5432
+      - PSQL_USER=root
+      - PSQL_PASS=toor
+      - PSQL_DB=psql
+      - PSQL_SSL=disable
 
   graphql:
     build:
@@ -26,9 +31,7 @@ services:
       - AUTH_SERVICE_URL=auth:8080
 
   psql:
-    build:
-      context: "../../"
-      dockerfile: "deployments/psql/Dockerfile"
+    image: postgres:10.3
     environment:
       POSTGRES_DB: "psql"
       POSTGRES_USER: "root"

@@ -1,5 +1,5 @@
 
-Commands:
+## Commands:
 
 Generate protocol file from server file with comment at top:
 - `go generate auth/server.go` (comment: //go:generate protoc ./auth.proto --go_out=plugins=grpc:./pb) 
@@ -14,7 +14,7 @@ Update dependency:
 
 ---
 
-Each service has 3 layers:
+## Each service has 3 layers:
 - server 					(responsible for communication)
 - service					(contains business logic)
 - repository			(writing and reading data from a database)
@@ -27,7 +27,7 @@ Also The Following:
 
 ---
 
-Skeleton Service:
+## Skeleton Service:
 
 ```
 <SERVICE>
@@ -46,7 +46,7 @@ Skeleton Service:
 
 ---
 
-Example:
+## Example:
 
 ```
 account
@@ -65,7 +65,7 @@ account
 
 ---
 
-File Breakdown:
+## File Breakdown:
 - ./account/cmd/account/main.go 	= grpc server
 - ./account/pb/account.pb.go 			= generated proto file
 - ./account.proto									= protocol definition file used to generate file above
@@ -76,3 +76,7 @@ File Breakdown:
 
 ---
 
+## vgo info:
+
+`vgo get <URL>` - Must be ran from inside a directory with go files, this will write to the vendor file
+`vgo mod -vendor` - Fetches all packages, must be ran before building
