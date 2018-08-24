@@ -9,6 +9,7 @@ import (
 	"github.com/tinrab/retry"
 )
 
+// Config : Configuration values created from environment variables
 type Config struct {
 	Port     string `envconfig:"PORT"`
 	PSQLUser string `envconfig:"PSQL_USER"`

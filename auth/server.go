@@ -14,7 +14,7 @@ type grpcServer struct {
 	service Service
 }
 
-// Takes a service and a formatted port string (":8000") and starts up the server
+// ListenGRPC : Takes a service and a formatted port string (":8000") and starts up a GRPC server
 func ListenGRPC(service Service, port string) error {
 	listen, err := net.Listen("tcp", port)
 	if err != nil {
@@ -26,6 +26,7 @@ func ListenGRPC(service Service, port string) error {
 	return server.Serve(listen)
 }
 
+// Register : GRPC function which registers a user
 func (server *grpcServer) Register(ctx context.Context, args *pb.RegisterRequest) (*pb.RegisterResponse, error) {
 	resp, err := server.service.Register(ctx, args.FirstName, args.LastName)
 	if err != nil {
@@ -38,6 +39,7 @@ func (server *grpcServer) Register(ctx context.Context, args *pb.RegisterRequest
 	}}, nil
 }
 
+// Register : GRPC function which fetches users
 func (server *grpcServer) GetUsers(ctx context.Context, args *pb.EmptyRequest) (*pb.GetUsersResponse, error) {
 	resp, err := server.service.GetUsers(ctx)
 	if err != nil {

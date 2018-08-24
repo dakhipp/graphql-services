@@ -8,10 +8,12 @@ import (
 
 type queryResolver struct{ *GraphQLServer }
 
+// Query : Query root resolver, required to satisfy interface
 func (server *GraphQLServer) Query() QueryResolver {
 	return &queryResolver{server}
 }
 
+// GetUsers : GetUsers query exposed via GraphQL
 func (server *GraphQLServer) GetUsers(ctx context.Context) ([]User, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()

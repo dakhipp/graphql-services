@@ -7,11 +7,13 @@ import (
 	"google.golang.org/grpc"
 )
 
+// Client : grpc client used to make authentication service calls
 type Client struct {
 	conn    *grpc.ClientConn
 	service pb.AuthServiceClient
 }
 
+// NewClient : creates a new grpc client
 func NewClient(url string) (*Client, error) {
 	conn, err := grpc.Dial(url, grpc.WithInsecure())
 	if err != nil {
@@ -21,10 +23,12 @@ func NewClient(url string) (*Client, error) {
 	return &Client{conn, client}, nil
 }
 
+// Close : closes a grpc client connection
 func (client *Client) Close() {
 	client.conn.Close()
 }
 
+// Register : Register function avilable on the grpc client, registers a user in the database
 func (client *Client) Register(ctx context.Context, firstName string, lastName string) (*User, error) {
 	resp, err := client.service.Register(
 		ctx,
@@ -43,6 +47,7 @@ func (client *Client) Register(ctx context.Context, firstName string, lastName s
 	}, nil
 }
 
+// GetUsers : GetUsers function avilable on the grpc client, fetches all users from the database
 func (client *Client) GetUsers(ctx context.Context) ([]User, error) {
 	resp, err := client.service.GetUsers(ctx, &pb.EmptyRequest{})
 	if err != nil {

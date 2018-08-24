@@ -2,21 +2,18 @@ package graph
 
 import (
 	context "context"
-	"errors"
 	"log"
 	"time"
 )
 
-var (
-	ErrInvalidParameter = errors.New("Invalid parameter")
-)
-
 type mutationResolver struct{ *GraphQLServer }
 
+// Mutation : Mutation root resolver, required to satisfy interface
 func (server *GraphQLServer) Mutation() MutationResolver {
 	return &mutationResolver{server}
 }
 
+// Register : Register mutation exposed via GraphQL
 func (server *GraphQLServer) Register(ctx context.Context, args RegisterArgs) (*User, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()

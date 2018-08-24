@@ -9,6 +9,7 @@ import (
 	migrations "github.com/robinjoseph08/go-pg-migrations"
 )
 
+// Config : Configuration values created from environment variables
 type Config struct {
 	PSQLUser string `envconfig:"PSQL_USER"`
 	PSQLPass string `envconfig:"PSQL_PASS"`

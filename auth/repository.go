@@ -4,9 +4,10 @@ import (
 	"context"
 	"database/sql"
 
-	_ "github.com/lib/pq"
+	_ "github.com/lib/pq" // import postgres driver
 )
 
+// Repository : A repository object which allows interactions with the database
 type Repository interface {
 	Close()
 	CreateUser(ctx context.Context, args User) error
@@ -17,6 +18,7 @@ type postgresRepository struct {
 	db *sql.DB
 }
 
+// NewPostgresRepository : Initiates a new database connection for the repository
 func NewPostgresRepository(url string) (Repository, error) {
 	db, err := sql.Open("postgres", url)
 	if err != nil {
@@ -29,19 +31,23 @@ func NewPostgresRepository(url string) (Repository, error) {
 	return &postgresRepository{db}, nil
 }
 
+// Close : Closes the connection for the repository database
 func (repository *postgresRepository) Close() {
 	repository.db.Close()
 }
 
+// Ping : Checks for an error when pinging the database
 func (repository *postgresRepository) Ping() error {
 	return repository.db.Ping()
 }
 
+// CreateUser : Creates a user in the database
 func (repository *postgresRepository) CreateUser(ctx context.Context, args User) error {
 	_, err := repository.db.ExecContext(ctx, "INSERT INTO users(id, firstName, lastName) VALUES($1, $2, $3)", args.ID, args.FirstName, args.LastName)
 	return err
 }
 
+// ReadUsers : Reads users from the database
 func (repository *postgresRepository) ReadUsers(ctx context.Context) ([]User, error) {
 	rows, err := repository.db.QueryContext(
 		ctx,
