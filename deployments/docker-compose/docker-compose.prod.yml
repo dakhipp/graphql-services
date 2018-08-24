@@ -32,6 +32,10 @@ services:
 
   psql:
     image: postgres:10.3
+    expose:
+      - "5432"
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_DB: "psql"
       POSTGRES_USER: "root"

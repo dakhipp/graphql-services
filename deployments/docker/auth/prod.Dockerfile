@@ -4,7 +4,7 @@ WORKDIR /go/src/github.com/dakhipp/graphql-services/auth
 COPY vendor ../vendor
 COPY auth ./
 RUN go build -o /go/bin/app ./cmd/auth/main.go
-RUN go build -o /go/bin/migrates ./migrations/main.go
+RUN go build -o /go/bin/migrates ./migrations
 
 FROM alpine:3.7
 WORKDIR /usr/bin
