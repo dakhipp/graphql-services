@@ -1,3 +1,5 @@
 vendor/
 **/gin-bin
 todo.txt
+.terraform
+*.tfstate.backup
