@@ -31,7 +31,7 @@ services:
       - AUTH_SERVICE_URL=auth:8080
 
   psql:
-    image: postgres:10.3
+    image: postgres:10.4
     expose:
       - "5432"
     ports:
