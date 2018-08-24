@@ -5,6 +5,9 @@ provider "aws" {
   region = "${var.region}"
 }
 
+/*====
+Remote State Config
+======*/
 terraform {
   backend "s3" {
     bucket = "terraform-remote-state-123"
