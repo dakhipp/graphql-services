@@ -5,6 +5,14 @@ provider "aws" {
   region = "${var.region}"
 }
 
+terraform {
+  backend "s3" {
+    bucket = "terraform-remote-state-123"
+    region = "us-west-2"
+    key    = "staging/vpc"
+  }
+}
+
 /*====
 The VPC
 ======*/
