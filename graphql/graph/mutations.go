@@ -11,7 +11,13 @@ var (
 	ErrInvalidParameter = errors.New("Invalid parameter")
 )
 
-func (server *GraphQLServer) Mutation_register(ctx context.Context, args RegisterArgs) (*User, error) {
+type mutationResolver struct{ *GraphQLServer }
+
+func (server *GraphQLServer) Mutation() MutationResolver {
+	return &mutationResolver{server}
+}
+
+func (server *GraphQLServer) Register(ctx context.Context, args RegisterArgs) (*User, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 

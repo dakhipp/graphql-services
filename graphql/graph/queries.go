@@ -6,7 +6,13 @@ import (
 	"time"
 )
 
-func (server *GraphQLServer) Query_getUsers(ctx context.Context) ([]User, error) {
+type queryResolver struct{ *GraphQLServer }
+
+func (server *GraphQLServer) Query() QueryResolver {
+	return &queryResolver{server}
+}
+
+func (server *GraphQLServer) GetUsers(ctx context.Context) ([]User, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 

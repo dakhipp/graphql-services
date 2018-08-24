@@ -31,7 +31,7 @@ func main() {
 	}
 
 	// Register graphql route
-	http.Handle("/graphql", handler.GraphQL(graph.MakeExecutableSchema(server)))
+	http.Handle("/graphql", handler.GraphQL(graph.NewExecutableSchema(graph.Config{Resolvers: server})))
 
 	// Register playgorund route if environment variable is set to true
 	if cfg.Playground == true {

@@ -1,4 +1,4 @@
-//go:generate gqlgen --schema ../schema.graphql
+//go:generate gorunpkg github.com/99designs/gqlgen --schema ../schema.graphql
 package graph
 
 import (
