@@ -25,14 +25,6 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:95a86af873384b3f2c520e01372f50a41fd9439a6b87f31c2d06cbb273982380"
-  name = "github.com/dakhipp/go-pg-migrations"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "49161f282c663e1e4cacc09db9c091c68429fdaa"
-  version = "v0.1.0"
-
-[[projects]]
   digest = "1:0afa63759ae8c5aa13d813346e414e7ed3bde76a98f48b9ebe3272f5a5e2f7ec"
   name = "github.com/franela/goblin"
   packages = ["."]
@@ -128,6 +120,14 @@
   pruneopts = "UT"
   revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
   version = "v0.8.0"
+
+[[projects]]
+  digest = "1:ae042b0dd6841b6df0b9ab2006a5ca7af46f0dc3d6d6a8e4649bd00ab15eaa3c"
+  name = "github.com/robinjoseph08/go-pg-migrations"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "389858665432c5014fdb2bb89b2c174c2a80156b"
+  version = "v0.1.1"
 
 [[projects]]
   digest = "1:8a3e7525dc0cf0236b163166800ecbc78d6c8c5d7ac956996e7b3bef8cfadc41"
@@ -310,13 +310,13 @@
     "github.com/99designs/gqlgen",
     "github.com/99designs/gqlgen/graphql",
     "github.com/99designs/gqlgen/graphql/introspection",
-    "github.com/dakhipp/go-pg-migrations",
     "github.com/franela/goblin",
     "github.com/go-pg/pg",
     "github.com/go-pg/pg/orm",
     "github.com/golang/protobuf/proto",
     "github.com/kelseyhightower/envconfig",
     "github.com/lib/pq",
+    "github.com/robinjoseph08/go-pg-migrations",
     "github.com/segmentio/ksuid",
     "github.com/tinrab/retry",
     "github.com/vektah/gqlgen/client",

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/dakhipp/go-pg-migrations"
 	"github.com/go-pg/pg/orm"
+	"github.com/robinjoseph08/go-pg-migrations"
 )
 
 func init() {

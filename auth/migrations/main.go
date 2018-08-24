@@ -4,9 +4,9 @@ import (
 	"log"
 	"os"
 
-	migrations "github.com/dakhipp/go-pg-migrations"
 	"github.com/go-pg/pg"
 	"github.com/kelseyhightower/envconfig"
+	migrations "github.com/robinjoseph08/go-pg-migrations"
 )
 
 type Config struct {
