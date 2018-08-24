@@ -1,22 +1,4 @@
 /*====
-Provider
-======*/
-provider "aws" {
-  region = "${var.region}"
-}
-
-/*====
-Remote State Config
-======*/
-terraform {
-  backend "s3" {
-    bucket = "terraform-remote-state-123"
-    region = "us-west-2"
-    key    = "staging/vpc"
-  }
-}
-
-/*====
 The VPC
 ======*/
 resource "aws_vpc" "vpc" {
