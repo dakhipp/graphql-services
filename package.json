@@ -7,7 +7,8 @@
     "start": "docker-compose -f deployments/docker-compose/docker-compose.dev.yml up --build",
     "start:prod": "docker-compose -f deployments/docker-compose/docker-compose.prod.yml up --build",
     "build:auth": "go generate auth/server.go",
-    "build:graphql": "go generate graphql/graph/graph.go"
+    "build:graphql": "go generate graphql/graph/graph.go",
+    "migrate:create": "PSQL_USER=root PSQL_PASS=toor PSQL_ADDR=localhost:5432 PSQL_DB=psql go run auth/migrations/*.go create"
   },
   "repository": {
     "type": "git",

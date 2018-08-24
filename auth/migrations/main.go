@@ -33,13 +33,6 @@ func main() {
 		Database: cfg.PSQLDB,
 	})
 
-	// db := pg.Connect(&pg.Options{
-	// 	User:     "root",
-	// 	Password: "toor",
-	// 	Addr:     "localhost:5432",
-	// 	Database: "psql",
-	// })
-
 	err = migrations.Run(db, directory, os.Args)
 	if err != nil {
 		log.Fatalln(err)
