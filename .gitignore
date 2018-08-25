@@ -1,5 +1,9 @@
+# go vender libs
 vendor/
-**/gin-bin
-todo.txt
+
+# terraform
 .terraform
 *.tfstate.backup
+terraform.tfvars
+
+todo.txt

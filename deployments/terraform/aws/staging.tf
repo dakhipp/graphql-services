@@ -1,18 +1,14 @@
 locals {
   region             = "us-west-2"
   availability_zones = ["us-west-2a", "us-west-2b", "us-west-2c"]
-
-  // TODO: don't do this.
-  db_name = "psql"
-  db_user = "root"
-  db_pass = "toor1234"
 }
 
 /*====
 Provider
 ======*/
 provider "aws" {
-  region = "${local.region}"
+  region  = "${local.region}"
+  version = "1.33"
 }
 
 /*====
@@ -48,9 +44,19 @@ module "rds" {
   backup_window           = "02:00-03:00"
   multi_az                = false
   apply_immediately       = true
-  database_name           = "${local.db_name}"
-  database_username       = "${local.db_user}"
-  database_password       = "${local.db_pass}"
+  database_name           = "${var.db_name}"
+  database_username       = "${var.db_user}"
+  database_password       = "${var.db_pass}"
   subnet_ids              = ["${module.vpc.private_subnets_id}"]
   vpc_id                  = "${module.vpc.vpc_id}"
+}
+
+module "bastion" {
+  source             = "./modules/bastion"
+  environment        = "staging"
+  bastion_key_name   = "bastion-key"
+  bastion_public_key = "${var.bastion_public_key}"
+  rds_sg             = "${module.rds.db_access_sg_id}"
+  subnet_id          = "${module.vpc.public_subnets_id[0]}"
+  vpc_id             = "${module.vpc.vpc_id}"
 }
