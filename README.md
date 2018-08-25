@@ -9,7 +9,7 @@ Generate GraphQL files from file with comment at top:
 
 
 Update dependency: 
-- `go get -u github.com/dakhipp...` 
+- `dep ensure` 
 
 
 ---
@@ -20,10 +20,10 @@ Update dependency:
 - repository			(writing and reading data from a database)
 
 Also The Following:
-- proto definiton		(.proto definition file)
-- client						(grpc client)
-- cmd/service 			(grpc server)
-- pb/service 				(generated pb file from definition)
+- proto definition		(.proto definition file)
+- client						  (GRPC client)
+- cmd/service 			  (GRPC server)
+- pb/service 				  (generated pb file from definition)
 
 ---
 
@@ -66,7 +66,7 @@ account
 ---
 
 ## File Breakdown:
-- ./account/cmd/account/main.go 	= grpc server
+- ./account/cmd/account/main.go 	= GRPC server
 - ./account/pb/account.pb.go 			= generated proto file
 - ./account.proto									= protocol definition file used to generate file above
 - ./client.go											= grpc client
@@ -76,7 +76,10 @@ account
 
 ---
 
-## vgo info:
+## Terraform Info:
 
-`vgo get <URL>` - Must be ran from inside a directory with go files, this will write to the vendor file
-`vgo mod -vendor` - Fetches all packages, must be ran before building
+### Secrets:
+Each stage will have its own `terraform.tfvars` file to hold credentials. You can use `terraform.example.tfvars` to see what fields are needed. In order to create a bastion server public key you will need to do the following:
+1. `ssh-keygen -t rsa -b 4096 -C "<your_email@example.com>" -f $HOME/.ssh/<bastion-key-name>`
+2. `cat $HOME/.ssh/<bastion-key-name>.pub | pbcopy`
+3. Paste the value in your clipboard into the `bastion_public_key` field of the `terraform.tfvars` file.
