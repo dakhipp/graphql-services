@@ -9,6 +9,14 @@ resource "aws_instance" "bastion_instance" {
   key_name               = "${aws_key_pair.bastion_key.key_name}"
   subnet_id              = "${var.subnet_id}"
 
+  // User Data is a command that is ran at boot up time, updates, install psql, and stops instance
+  user_data = <<-EOF
+              #!/bin/bash
+              sudo yum upgrade -y ;
+              sudo yum install postgresql96-server.x86_64 -y ;
+              sudo poweroff
+              EOF
+
   tags {
     Name        = "bastion-${var.environment}"
     Environment = "${var.environment}"
