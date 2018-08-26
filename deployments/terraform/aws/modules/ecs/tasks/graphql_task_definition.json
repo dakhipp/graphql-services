@@ -1,0 +1,90 @@
+[
+  {
+    "name": "graphql",
+    "image": "${graphql_image}",
+    "essential": true,
+    "portMappings": [
+      {
+        "containerPort": 8080
+      }
+    ],
+    "memory": 300,
+    "networkMode": "awsvpc",
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "${log_group}",
+        "awslogs-region": "us-west-2",
+        "awslogs-stream-prefix": "graphql"
+      }
+    },
+    "environment": [
+      {
+        "name": "ENV",
+        "value": "production"
+      },
+      {
+        "name": "PLAYGROUND",
+        "value": "${playground_enabled}"
+      },
+      {
+        "name": "PORT",
+        "value": "${graphql_port}"
+      },
+      {
+        "name": "AUTH_SERVICE_URL",
+        "value": "localhost:${auth_port}"
+      }
+    ]
+  },
+  {
+    "name": "auth",
+    "image": "${auth_image}",
+    "essential": true,
+    "portMappings": [
+      {
+        "containerPort": 8081
+      }
+    ],
+    "memory": 300,
+    "networkMode": "awsvpc",
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "${log_group}",
+        "awslogs-region": "us-west-2",
+        "awslogs-stream-prefix": "auth"
+      }
+    },
+    "environment": [
+      {
+        "name": "ENV",
+        "value": "production"
+      },
+      {
+        "name": "PORT",
+        "value": "${auth_port}"
+      },
+      {
+        "name": "PSQL_ADDR",
+        "value": "${psql_addr}"
+      },
+      {
+        "name": "PSQL_USER",
+        "value": "${psql_user}"
+      },
+      {
+        "name": "PSQL_PASS",
+        "value": "${psql_pass}"
+      },
+      {
+        "name": "PSQL_DB",
+        "value": "${psql_db}"
+      },
+      {
+        "name": "PSQL_SSL",
+        "value": "${psql_ssl}"
+      }
+    ]
+  }
+]

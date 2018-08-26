@@ -43,15 +43,15 @@ variable "apply_immediately" {
   default     = false
 }
 
-variable "database_name" {
+variable "psql_db" {
   description = "The database name"
 }
 
-variable "database_username" {
+variable "psql_user" {
   description = "The username of the database"
 }
 
-variable "database_password" {
+variable "psql_pass" {
   description = "The password of the database"
 }
 

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -30,10 +31,15 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Register graphql route
+	// Register GraphQL route
 	http.Handle("/graphql", handler.GraphQL(graph.NewExecutableSchema(graph.Config{Resolvers: server})))
 
-	// Register playgorund route if environment variable is set to true
+	// Register healthcheck route
+	http.HandleFunc("/h", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "healthy")
+	})
+
+	// Register playground route if environment variable is set to true
 	if cfg.Playground == true {
 		http.Handle("/playground", handler.Playground("Graphql Playground", "/graphql"))
 	}

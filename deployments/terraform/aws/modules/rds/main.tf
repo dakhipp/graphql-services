@@ -70,9 +70,9 @@ resource "aws_db_instance" "rds" {
   apply_immediately       = "${var.apply_immediately}"
   backup_retention_period = "${var.backup_retention_period}"
   backup_window           = "${var.backup_window}"
-  name                    = "${var.database_name}"
-  username                = "${var.database_username}"
-  password                = "${var.database_password}"
+  name                    = "${var.psql_db}"
+  username                = "${var.psql_user}"
+  password                = "${var.psql_pass}"
   db_subnet_group_name    = "${aws_db_subnet_group.rds_subnet_group.id}"
   vpc_security_group_ids  = ["${aws_security_group.rds_sg.id}"]
   skip_final_snapshot     = true
