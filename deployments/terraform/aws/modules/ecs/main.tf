@@ -59,13 +59,16 @@ data "template_file" "graphql_task" {
 resource "aws_ecs_task_definition" "graphql_web" {
   depends_on               = ["aws_ecs_task_definition.graphql_web"]
   family                   = "${var.environment}_graphql"
-  container_definitions    = "${data.template_file.graphql_task.rendered}"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   cpu                      = "256"
   memory                   = "512"
   execution_role_arn       = "${aws_iam_role.ecs_execution_role.arn}"
   task_role_arn            = "${aws_iam_role.ecs_execution_role.arn}"
+
+  // FIXME: The use of 'replace' here is because of a bug in 'jsonencode'. turns ints to integers unless prepended with 'string:':
+  //        https://github.com/hashicorp/terraform/issues/17033
+  container_definitions = "${replace(replace(data.template_file.graphql_task.rendered, "/\"([0-9]+\\.?[0-9]*)\"/", "$1"), "string:", "")}"
 }
 
 /*====
@@ -253,7 +256,7 @@ resource "aws_ecs_service" "graphql_web" {
   load_balancer {
     target_group_arn = "${aws_alb_target_group.alb_target_group.arn}"
     container_name   = "graphql"
-    container_port   = "8080"
+    container_port   = "${var.graphql_port}"
   }
 
   depends_on = ["aws_alb_target_group.alb_target_group"]

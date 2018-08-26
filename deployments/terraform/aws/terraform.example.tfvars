@@ -10,8 +10,8 @@ psql_ssl = "disabled"
 
 psql_port = "5432"
 
-graphql_port = "8000"
+graphql_port = 8000
 
-auth_port = "8001"
+auth_port = 8001
 
 playground_enabled = true

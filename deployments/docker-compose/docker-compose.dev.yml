@@ -1,6 +1,21 @@
 version: "3.6"
 
 services:
+  graphql:
+    build:
+      context: "../../"
+      dockerfile: "deployments/docker/graphql/dev.Dockerfile"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - "auth"
+    volumes:
+      - ../../graphql:/go/src/github.com/dakhipp/graphql-services/graphql
+    environment:
+      - PORT=8000
+      - PLAYGROUND=true
+      - AUTH_SERVICE_URL=auth:8001
+
   auth:
     build:
       context: "../../"
@@ -10,30 +25,12 @@ services:
     volumes:
       - ../../auth:/go/src/github.com/dakhipp/graphql-services/auth
     environment:
-      - ENV=development
-      - PORT=8080
-      - PLAYGROUND=true
+      - PORT=8001
       - PSQL_ADDR=psql:5432
       - PSQL_USER=root
       - PSQL_PASS=toor
       - PSQL_DB=psql
       - PSQL_SSL=disable
-
-  graphql:
-    build:
-      context: "../../"
-      dockerfile: "deployments/docker/graphql/dev.Dockerfile"
-    ports:
-      - "8000:8080"
-    depends_on:
-      - "auth"
-    volumes:
-      - ../../graphql:/go/src/github.com/dakhipp/graphql-services/graphql
-    environment:
-      - PORT=8080
-      - PLAYGROUND=true
-      - ENV=development
-      - AUTH_SERVICE_URL=auth:8080
 
   psql:
     image: postgres:10.4

@@ -5,7 +5,7 @@
     "essential": true,
     "portMappings": [
       {
-        "containerPort": 8080
+        "containerPort": "${graphql_port}"
       }
     ],
     "memory": 300,
@@ -20,16 +20,12 @@
     },
     "environment": [
       {
-        "name": "ENV",
-        "value": "production"
+        "name": "PORT",
+        "value": "string:${graphql_port}"
       },
       {
         "name": "PLAYGROUND",
-        "value": "${playground_enabled}"
-      },
-      {
-        "name": "PORT",
-        "value": "${graphql_port}"
+        "value": "string:${playground_enabled}"
       },
       {
         "name": "AUTH_SERVICE_URL",
@@ -43,7 +39,7 @@
     "essential": true,
     "portMappings": [
       {
-        "containerPort": 8081
+        "containerPort": "${auth_port}"
       }
     ],
     "memory": 300,
@@ -58,12 +54,8 @@
     },
     "environment": [
       {
-        "name": "ENV",
-        "value": "production"
-      },
-      {
         "name": "PORT",
-        "value": "${auth_port}"
+        "value": "string:${auth_port}"
       },
       {
         "name": "PSQL_ADDR",

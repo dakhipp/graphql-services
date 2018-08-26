@@ -1,6 +1,19 @@
 version: "3.6"
 
 services:
+  graphql:
+    build:
+      context: "../../"
+      dockerfile: "deployments/docker/graphql/prod.Dockerfile"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - "auth"
+    environment:
+      - PORT=8000
+      - PLAYGROUND=true
+      - AUTH_SERVICE_URL=auth:8001
+
   auth:
     build:
       context: "../../"
@@ -8,27 +21,13 @@ services:
     depends_on:
       - "psql"
     environment:
-      - ENV=development
-      - PORT=8080
+      - PORT=8001
       - PLAYGROUND=true
       - PSQL_ADDR=psql:5432
       - PSQL_USER=root
       - PSQL_PASS=toor
       - PSQL_DB=psql
       - PSQL_SSL=disable
-
-  graphql:
-    build:
-      context: "../../"
-      dockerfile: "deployments/docker/graphql/prod.Dockerfile"
-    ports:
-      - "8000:8080"
-    depends_on:
-      - "auth"
-    environment:
-      - PORT=8080
-      - ENV=development
-      - AUTH_SERVICE_URL=auth:8080
 
   psql:
     image: postgres:10.4
