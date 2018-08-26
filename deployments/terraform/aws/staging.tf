@@ -13,7 +13,7 @@ provider "aws" {
 }
 
 /*====
-Remote State Config
+Remote State Config, S3 bucket must exist before running
 ======*/
 terraform {
   backend "s3" {
@@ -58,18 +58,18 @@ module "bastion" {
   environment        = "${local.environment}"
   bastion_key_name   = "bastion-key-${local.environment}"
   bastion_public_key = "${var.bastion_public_key}"
-  rds_sg             = "${module.rds.db_access_sg_id}"
   subnet_id          = "${module.vpc.public_subnets_id[0]}"
   vpc_id             = "${module.vpc.vpc_id}"
+  rds_sg             = "${module.rds.db_access_sg_id}"
 }
 
 module "ecs" {
   source                  = "./modules/ecs"
   environment             = "${local.environment}"
-  vpc_id                  = "${module.vpc.vpc_id}"
   availability_zones      = "${local.production_availability_zones}"
   graphql_repository_name = "${local.environment}/graphql"
   auth_repository_name    = "${local.environment}/auth"
+  vpc_id                  = "${module.vpc.vpc_id}"
   subnets_ids             = ["${module.vpc.private_subnets_id}"]
   public_subnet_ids       = ["${module.vpc.public_subnets_id}"]
 

@@ -44,26 +44,26 @@ variable "apply_immediately" {
 }
 
 variable "psql_db" {
-  description = "The database name"
+  description = "The database name, originates from terraform.tfvars file"
 }
 
 variable "psql_user" {
-  description = "The username of the database"
+  description = "The username of the database, originates from terraform.tfvars file"
 }
 
 variable "psql_pass" {
-  description = "The password of the database"
+  description = "The password of the database, originates from terraform.tfvars file"
 }
 
 variable "psql_port" {
-  description = "The port for the database"
+  description = "The port for the database, originates from terraform.tfvars file"
 }
 
 variable "subnet_ids" {
   type        = "list"
-  description = "Subnet ids"
+  description = "Subnet ids, originates from VPC module"
 }
 
 variable "vpc_id" {
-  description = "The VPC id"
+  description = "The VPC ID, originates from VPC module"
 }

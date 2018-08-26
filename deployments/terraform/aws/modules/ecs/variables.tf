@@ -3,70 +3,70 @@ variable "environment" {
   default     = "staging"
 }
 
-variable "vpc_id" {
-  description = "The VPC id"
-}
-
 variable "availability_zones" {
   type        = "list"
   description = "The azs to use"
 }
 
-variable "security_groups_ids" {
-  type        = "list"
-  description = "The SGs to use"
+variable "graphql_repository_name" {
+  description = "The name of the GraphQL ECR repository"
+}
+
+variable "auth_repository_name" {
+  description = "The name of the auth ECR repository"
+}
+
+variable "vpc_id" {
+  description = "The VPC id, originates from the VPC service"
 }
 
 variable "subnets_ids" {
   type        = "list"
-  description = "The private subnets to use"
+  description = "The private subnets to place our cluster resources in, originates from VPC service"
 }
 
 variable "public_subnet_ids" {
   type        = "list"
-  description = "The private subnets to use"
+  description = "The public subnets to place our ALB in, originates from VPC service"
+}
+
+variable "security_groups_ids" {
+  type        = "list"
+  description = "The SGs to use, originates from VPC service and RDS service"
 }
 
 variable "graphql_port" {
-  description = "The port the graphql container will start on"
-}
-
-variable "auth_port" {
-  description = "The port the auth container will start on"
+  description = "The port the GraphQL container will start on, originates from terraform.tfvars file"
 }
 
 variable "playground_enabled" {
-  description = "Enable GraphQL playground"
+  description = "Enable GraphQL playground, originates from terraform.tfvars file"
+}
+
+variable "auth_port" {
+  description = "The port the auth container will start on, originates from terraform.tfvars file"
 }
 
 variable "psql_addr" {
-  description = "The database endpoint"
+  description = "The database endpoint, originates from RDS service"
 }
 
 variable "psql_user" {
-  description = "The database username"
+  description = "The database username, originates from terraform.tfvars file"
 }
 
 variable "psql_pass" {
-  description = "The database password"
+  description = "The database password, originates from terraform.tfvars file"
 }
 
 variable "psql_db" {
-  description = "The database that the app will use"
+  description = "The database that the app will use, originates from terraform.tfvars file"
 }
 
 variable "psql_ssl" {
-  description = "Database ssl enabled or disabled"
+  description = "Database ssl enabled or disabled, originates from terraform.tfvars file"
 }
 
 variable "psql_port" {
-  description = "The database port"
-}
-
-variable "graphql_repository_name" {
-  description = "The name of the graphql ECR repisitory"
-}
-
-variable "auth_repository_name" {
-  description = "The name of the graphql ECR repisitory"
+  description = "The database port, originates from terraform.tfvars file"
 }
