@@ -46,8 +46,8 @@ resource "aws_security_group" "rds_sg" {
 
   // Allow traffic for TCP 5432
   ingress {
-    from_port       = 5432
-    to_port         = 5432
+    from_port       = "${var.psql_port}"
+    to_port         = "${var.psql_port}"
     protocol        = "tcp"
     security_groups = ["${aws_security_group.db_access_sg.id}"]
   }

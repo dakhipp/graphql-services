@@ -55,6 +55,10 @@ variable "psql_pass" {
   description = "The password of the database"
 }
 
+variable "psql_port" {
+  description = "The port for the database"
+}
+
 variable "subnet_ids" {
   type        = "list"
   description = "Subnet ids"

@@ -48,6 +48,7 @@ module "rds" {
   psql_db                 = "${var.psql_db}"
   psql_user               = "${var.psql_user}"
   psql_pass               = "${var.psql_pass}"
+  psql_port               = "${var.psql_port}"
   subnet_ids              = ["${module.vpc.private_subnets_id}"]
   vpc_id                  = "${module.vpc.vpc_id}"
 }
@@ -88,4 +89,5 @@ module "ecs" {
   psql_pass = "${var.psql_pass}"
   psql_db   = "${var.psql_db}"
   psql_ssl  = "${var.psql_ssl}"
+  psql_port = "${var.psql_port}"
 }

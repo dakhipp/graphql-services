@@ -2,16 +2,16 @@ variable "bastion_public_key" {
   description = "Public SSH key supplied by terraform.tfvars file"
 }
 
-variable "psql_db" {
-  description = "Database name supplied by terraform.tfvars file"
-}
-
 variable "psql_user" {
   description = "Database user supplied by terraform.tfvars file"
 }
 
 variable "psql_pass" {
   description = "Database password supplied by terraform.tfvars file"
+}
+
+variable "psql_db" {
+  description = "Database name supplied by terraform.tfvars file"
 }
 
 variable "psql_ssl" {

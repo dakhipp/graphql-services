@@ -50,7 +50,7 @@ data "template_file" "graphql_task" {
 
     // Auth env vars
     auth_port = "${var.auth_port}"
-    psql_addr = "${var.psql_addr}:5432"
+    psql_addr = "${var.psql_addr}:${var.psql_port}"
     psql_user = "${var.psql_user}"
     psql_pass = "${var.psql_pass}"
     psql_db   = "${var.psql_db}"

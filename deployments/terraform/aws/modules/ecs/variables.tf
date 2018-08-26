@@ -59,6 +59,10 @@ variable "psql_ssl" {
   description = "Database ssl enabled or disabled"
 }
 
+variable "psql_port" {
+  description = "The database port"
+}
+
 variable "graphql_repository_name" {
   description = "The name of the graphql ECR repisitory"
 }
