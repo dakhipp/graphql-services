@@ -13,10 +13,12 @@ resource "aws_cloudwatch_log_group" "graphql-services" {
 /*====
 ECR repository to store our Docker images
 ======*/
+// GraphQL docker image
 resource "aws_ecr_repository" "graphql_repo" {
   name = "${var.graphql_repository_name}"
 }
 
+// Auth docker image
 resource "aws_ecr_repository" "auth_repo" {
   name = "${var.auth_repository_name}"
 }
@@ -32,21 +34,21 @@ resource "aws_ecs_cluster" "cluster" {
 ECS task definition
 ======*/
 
-/* the task definition for the graphql & auth service */
+// The task definition template for the GraphQL service
 data "template_file" "graphql_task" {
   template = "${file("${path.module}/tasks/graphql_task_definition.json")}"
 
-  // variables passed into the task definition template file
+  // Variables passed into the task definition template file
   vars {
     graphql_image = "${aws_ecr_repository.graphql_repo.repository_url}"
     auth_image    = "${aws_ecr_repository.auth_repo.repository_url}"
     log_group     = "${aws_cloudwatch_log_group.graphql-services.name}"
 
-    // graphql env vars
+    // GraphQL env vars
     graphql_port       = "${var.graphql_port}"
     playground_enabled = "${var.playground_enabled}"
 
-    // auth env vars
+    // Auth env vars
     auth_port = "${var.auth_port}"
     psql_addr = "${var.psql_addr}:5432"
     psql_user = "${var.psql_user}"
@@ -56,6 +58,7 @@ data "template_file" "graphql_task" {
   }
 }
 
+// Rendered and fully configured task definition for the GraphQL service
 resource "aws_ecs_task_definition" "graphql_web" {
   depends_on               = ["aws_ecs_task_definition.graphql_web"]
   family                   = "${var.environment}_graphql"
@@ -78,6 +81,7 @@ resource "random_id" "target_group_sufix" {
   byte_length = 2
 }
 
+// Load balancer target group forwarding traffic on port 80 to
 resource "aws_alb_target_group" "alb_target_group" {
   name        = "${var.environment}-alb-target-group-${random_id.target_group_sufix.hex}"
   port        = 80
@@ -235,7 +239,7 @@ resource "aws_security_group" "ecs_service" {
   }
 }
 
-/* Simply specify the family to find the latest ACTIVE revision in that family */
+// Simply specify the family to find the latest ACTIVE revision in that family
 data "aws_ecs_task_definition" "graphql_web" {
   task_definition = "${aws_ecs_task_definition.graphql_web.family}"
 }
@@ -253,6 +257,7 @@ resource "aws_ecs_service" "graphql_web" {
     subnets         = ["${var.subnets_ids}"]
   }
 
+  // Forward traffic from load balancer to the exposed GraphQL container's port
   load_balancer {
     target_group_arn = "${aws_alb_target_group.alb_target_group.arn}"
     container_name   = "graphql"

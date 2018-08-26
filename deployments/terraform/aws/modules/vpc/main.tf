@@ -15,7 +15,7 @@ resource "aws_vpc" "vpc" {
 /*====
 Subnets
 ======*/
-/* Internet gateway for the public subnet */
+// Internet gateway for the public subnet
 resource "aws_internet_gateway" "ig" {
   vpc_id = "${aws_vpc.vpc.id}"
 
@@ -25,13 +25,13 @@ resource "aws_internet_gateway" "ig" {
   }
 }
 
-/* Elastic IP for NAT */
+// Elastic IP for NAT
 resource "aws_eip" "nat_eip" {
   vpc        = true
   depends_on = ["aws_internet_gateway.ig"]
 }
 
-/* NAT */
+// NAT Gateway
 resource "aws_nat_gateway" "nat" {
   allocation_id = "${aws_eip.nat_eip.id}"
   subnet_id     = "${element(aws_subnet.public_subnet.*.id, 0)}"
@@ -43,7 +43,7 @@ resource "aws_nat_gateway" "nat" {
   }
 }
 
-/* Public subnet */
+// Public subnet
 resource "aws_subnet" "public_subnet" {
   vpc_id                  = "${aws_vpc.vpc.id}"
   count                   = "${length(var.public_subnets_cidr)}"
@@ -57,7 +57,7 @@ resource "aws_subnet" "public_subnet" {
   }
 }
 
-/* Private subnet */
+// Private subnet
 resource "aws_subnet" "private_subnet" {
   vpc_id                  = "${aws_vpc.vpc.id}"
   count                   = "${length(var.private_subnets_cidr)}"
@@ -71,7 +71,7 @@ resource "aws_subnet" "private_subnet" {
   }
 }
 
-/* Routing table for private subnet */
+// Routing table for private subnet
 resource "aws_route_table" "private" {
   vpc_id = "${aws_vpc.vpc.id}"
 
@@ -81,7 +81,7 @@ resource "aws_route_table" "private" {
   }
 }
 
-/* Routing table for public subnet */
+// Routing table for public subnet
 resource "aws_route_table" "public" {
   vpc_id = "${aws_vpc.vpc.id}"
 
@@ -103,7 +103,7 @@ resource "aws_route" "private_nat_gateway" {
   nat_gateway_id         = "${aws_nat_gateway.nat.id}"
 }
 
-/* Route table associations */
+// Route table associations
 resource "aws_route_table_association" "public" {
   count          = "${length(var.public_subnets_cidr)}"
   subnet_id      = "${element(aws_subnet.public_subnet.*.id, count.index)}"

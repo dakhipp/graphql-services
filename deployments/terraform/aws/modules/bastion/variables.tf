@@ -3,17 +3,17 @@ variable "environment" {
   default     = "staging"
 }
 
+variable "bastion_key_name" {
+  description = "A name for the SSH key"
+  default     = "bastion-key"
+}
+
 variable "subnet_id" {
   description = "The ID of the subnet the server should be placed in"
 }
 
 variable "rds_sg" {
   description = "Security group that allows access to RDS"
-}
-
-variable "bastion_key_name" {
-  description = "A name for the SSH key"
-  default     = "bastion-key"
 }
 
 variable "vpc_id" {

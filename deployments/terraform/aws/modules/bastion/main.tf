@@ -23,6 +23,7 @@ resource "aws_instance" "bastion_instance" {
   }
 }
 
+// Gets the most recent version of Amazon linux
 data "aws_ami" "ec2-linux" {
   most_recent = true
 
@@ -42,6 +43,7 @@ data "aws_ami" "ec2-linux" {
   }
 }
 
+// Allows inbound connections on port 22 and all outbound connections
 resource "aws_security_group" "bastion-sg" {
   name   = "bastion-security-group"
   vpc_id = "${var.vpc_id}"
@@ -61,6 +63,7 @@ resource "aws_security_group" "bastion-sg" {
   }
 }
 
+// Creates key pair based on var originating from terraform.tfvars
 resource "aws_key_pair" "bastion_key" {
   key_name   = "${var.bastion_key_name}"
   public_key = "${var.bastion_public_key}"
