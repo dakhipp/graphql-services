@@ -64,14 +64,15 @@ module "bastion" {
 }
 
 module "ecs" {
-  source                  = "./modules/ecs"
-  environment             = "${local.environment}"
-  availability_zones      = "${local.production_availability_zones}"
-  graphql_repository_name = "${local.environment}/graphql"
-  auth_repository_name    = "${local.environment}/auth"
-  vpc_id                  = "${module.vpc.vpc_id}"
-  subnets_ids             = ["${module.vpc.private_subnets_id}"]
-  public_subnet_ids       = ["${module.vpc.public_subnets_id}"]
+  source                    = "./modules/ecs"
+  environment               = "${local.environment}"
+  availability_zones        = "${local.production_availability_zones}"
+  graphql_repository_name   = "${local.environment}/graphql"
+  auth_repository_name      = "${local.environment}/auth"
+  migration_repository_name = "${local.environment}/migrations"
+  vpc_id                    = "${module.vpc.vpc_id}"
+  subnets_ids               = ["${module.vpc.private_subnets_id}"]
+  public_subnet_ids         = ["${module.vpc.public_subnets_id}"]
 
   security_groups_ids = [
     "${module.vpc.security_groups_ids}",

@@ -13,6 +13,11 @@ docker build -f deployments/docker/auth/prod.Dockerfile -t staging/auth .
 docker tag staging/auth:latest 690303654955.dkr.ecr.us-west-2.amazonaws.com/staging/auth:latest
 docker push 690303654955.dkr.ecr.us-west-2.amazonaws.com/staging/auth:latest
 
+# build and push migrations image based on dockerfile
+docker build -f deployments/docker/migrations/prod.Dockerfile -t staging/migrations .
+docker tag staging/migrations:latest 690303654955.dkr.ecr.us-west-2.amazonaws.com/staging/migrations:latest
+docker push 690303654955.dkr.ecr.us-west-2.amazonaws.com/staging/migrations:latest
+
 # use aws cli to update service
 # 1. cluster will stay static
 # 2. service will stay static

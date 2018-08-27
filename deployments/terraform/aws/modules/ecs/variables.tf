@@ -16,6 +16,10 @@ variable "auth_repository_name" {
   description = "The name of the auth ECR repository"
 }
 
+variable "migration_repository_name" {
+  description = "The name of the migrations ECR repository"
+}
+
 variable "vpc_id" {
   description = "The VPC id, originates from the VPC service"
 }

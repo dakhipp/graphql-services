@@ -1,0 +1,37 @@
+[
+  {
+    "name": "db-migrate",
+    "image": "${image}",
+    "memory": 300,
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "${log_group}",
+        "awslogs-region": "us-west-2",
+        "awslogs-stream-prefix": "db_migrate"
+      }
+    },
+    "environment": [
+      {
+        "name": "PSQL_ADDR",
+        "value": "${psql_addr}"
+      },
+      {
+        "name": "PSQL_USER",
+        "value": "${psql_user}"
+      },
+      {
+        "name": "PSQL_PASS",
+        "value": "${psql_pass}"
+      },
+      {
+        "name": "PSQL_DB",
+        "value": "${psql_db}"
+      },
+      {
+        "name": "PSQL_SSL",
+        "value": "${psql_ssl}"
+      }
+    ]
+  }
+]
