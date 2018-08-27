@@ -1,5 +1,7 @@
 bastion_public_key = "### Too long no example ###"
 
+github_oauth = "### oatuh token ###"
+
 psql_db = "example_db"
 
 psql_user = "example_user"

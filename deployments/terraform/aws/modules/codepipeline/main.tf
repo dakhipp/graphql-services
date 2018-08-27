@@ -111,7 +111,7 @@ resource "aws_codepipeline" "pipeline" {
         Owner      = "dakhipp"
         Repo       = "graphql-services"
         Branch     = "master"
-        OAuthToken = "b764258c6914f7692b08be432f12516ac062a6a1"
+        OAuthToken = "${var.github_oauth}"
       }
     }
   }

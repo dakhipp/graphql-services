@@ -3,6 +3,10 @@ variable "environment" {
   default     = "staging"
 }
 
+variable "github_oauth" {
+  description = "Github OAuth token"
+}
+
 variable "region" {
   description = "The region to use"
 }

@@ -95,6 +95,7 @@ module "ecs" {
 
 module "codepipeline" {
   source                      = "./modules/codepipeline"
+  github_oauth                = "${var.github_oauth}"
   environment                 = "${local.environment}"
   region                      = "${local.region}"
   graphql_repository_url      = "${module.ecs.graphql_repository_url}"
