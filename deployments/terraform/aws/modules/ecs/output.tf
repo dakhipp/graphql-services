@@ -6,6 +6,10 @@ output "auth_repository_url" {
   value = "${aws_ecr_repository.auth_repo.repository_url}"
 }
 
+output "migration_repository_url" {
+  value = "${aws_ecr_repository.migration_repo.repository_url}"
+}
+
 output "cluster_name" {
   value = "${aws_ecs_cluster.cluster.name}"
 }

@@ -92,3 +92,16 @@ module "ecs" {
   psql_ssl  = "${var.psql_ssl}"
   psql_port = "${var.psql_port}"
 }
+
+module "codepipeline" {
+  source                      = "./modules/codepipeline"
+  environment                 = "${local.environment}"
+  region                      = "${local.region}"
+  graphql_repository_url      = "${module.ecs.graphql_repository_url}"
+  auth_repository_url         = "${module.ecs.auth_repository_url}"
+  migration_repository_url    = "${module.ecs.migration_repository_url}"
+  ecs_service_name            = "${module.ecs.service_name}"
+  ecs_cluster_name            = "${module.ecs.cluster_name}"
+  run_task_subnet_id          = "${module.vpc.private_subnets_id[0]}"
+  run_task_security_group_ids = ["${module.rds.db_access_sg_id}", "${module.vpc.security_groups_ids}", "${module.ecs.security_group_id}"]
+}

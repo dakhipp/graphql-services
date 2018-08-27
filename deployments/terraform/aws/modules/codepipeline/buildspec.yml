@@ -1,0 +1,51 @@
+version: 0.2
+
+env:
+  variables:
+    COMMIT_HASH: $(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+    IMAGE_TAG: latest
+    GQL_REPO: "${graphql_repository_url}"
+    AUTH_REPO: "${auth_repository_url}"
+    MIG_REPO: "${migration_repository_url}"
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - $(aws ecr get-login --region ${region} --no-include-email)
+      - go get -u github.com/golang/dep/cmd/dep
+      - mkdir -p ../github.com/dakhipp/graphql-services
+      - mv * ../github.com/dakhipp/graphql-services
+      - mv ../github.com .
+      - cd github.com/dakhipp/graphql-services && dep ensure
+      - echo Entering the build phase...
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Starting Docker Compose...
+      - docker-compose -f deployments/docker-compose/docker-compose.prod.yml up -d --build
+      - echo Running Tests...
+      - cd tests/integration/ ; go test ; cd ../..
+      - echo Building GraphQL Image...
+      - docker build -f deployments/docker/graphql/prod.Dockerfile -t ${graphql_repository_url}:latest .
+      - docker tag ${graphql_repository_url}:latest ${graphql_repository_url}:$IMAGE_TAG
+      - echo Building Auth Image...
+      - docker build -f deployments/docker/auth/prod.Dockerfile -t ${auth_repository_url}:latest .
+      - docker tag ${auth_repository_url}:latest ${auth_repository_url}:$IMAGE_TAG
+      - echo Building Migrations Image...
+      - docker build -f deployments/docker/migrations/prod.Dockerfile -t ${migration_repository_url}:latest .
+      - docker tag ${migration_repository_url}:latest ${migration_repository_url}:$IMAGE_TAG
+      - echo Entering the post_build phase...
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker images...
+      - echo Writing image definitions file...
+      - printf '[{"name":"graphql","imageUri":"%s"},{"name":"auth","imageUri":"%s"},{"name":"migrations","imageUri":"%s"}]' $GQL_REPO:$IMAGE_TAG $AUTH_REPO:$IMAGE_TAG $MIG_REPO:$IMAGE_TAG  > $CODEBUILD_SRC_DIR/imagedefinitions.json
+      - cat $CODEBUILD_SRC_DIR/imagedefinitions.json
+      - aws ecs run-task --launch-type FARGATE --cluster ${cluster_name} --task-definition ${environment}_db_migrate --network-configuration "awsvpcConfiguration={subnets=[${subnet_id}],securityGroups=[${security_group_ids}]}"
+
+artifacts:
+  files:
+    - imagedefinitions.json
+  discard-paths: yes
