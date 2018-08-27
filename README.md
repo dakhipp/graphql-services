@@ -83,3 +83,22 @@ Each stage will have its own `terraform.tfvars` file to hold credentials. You ca
 1. `ssh-keygen -t rsa -b 4096 -C "<your_email@example.com>" -f $HOME/.ssh/<bastion-key-name>`
 2. `cat $HOME/.ssh/<bastion-key-name>.pub | pbcopy`
 3. Paste the value in your clipboard into the `bastion_public_key` field of the `terraform.tfvars` file.
+
+### Commands:
+- `yarn terraform:up` - Convenience command, cd's into the terraform AWS directory and runs `terraform apply`, then cd's back into main project directory.
+- `yarn terraform:destroy` - Convenience command, cd's into the terraform AWS directory and runs `terraform destroy`, then cd's back into main project directory.
+
+---
+
+## Migrations:
+
+### Dev:
+In development you can trigger migration creation, application, and roll back manually using commands from package.json. You must have the dev environment started up, since the commands will run inside docker containers to take advantage of environment variables.
+
+### Prod:
+In production or any external server environment migrations will automatically be applied when deployed. If you need to rollback a migration you'll have to SSH into the cluster and manually apply the migration rollback using the migration binary file inside the migration container.
+
+### Commands:
+- `yarn migrate:create <MIGRATION_NAME>` - Creates a new migration template file. NOTE: Commands are ran in a docker container and require that the dev environment has been started.
+- `yarn migrate:up` - Runs the next batch of migrations. NOTE: Commands are ran in a docker container and require that the dev environment has been started.
+- `yarn migrate:down` - Rolls back a batch of migrations. NOTE: Commands are ran in a docker container and require that the dev environment has been started.

@@ -22,7 +22,19 @@ services:
       - "psql"
     environment:
       - PORT=8001
-      - PLAYGROUND=true
+      - PSQL_ADDR=psql:5432
+      - PSQL_USER=root
+      - PSQL_PASS=toor
+      - PSQL_DB=psql
+      - PSQL_SSL=disable
+
+  migrations:
+    build:
+      context: "../../"
+      dockerfile: "deployments/docker/migrations/prod.Dockerfile"
+    depends_on:
+      - "psql"
+    environment:
       - PSQL_ADDR=psql:5432
       - PSQL_USER=root
       - PSQL_PASS=toor

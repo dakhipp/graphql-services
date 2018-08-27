@@ -32,6 +32,21 @@ services:
       - PSQL_DB=psql
       - PSQL_SSL=disable
 
+  migrations:
+    build:
+      context: "../../"
+      dockerfile: "deployments/docker/migrations/dev.Dockerfile"
+    depends_on:
+      - "psql"
+    volumes:
+      - ../../migrations:/go/src/github.com/dakhipp/graphql-services/migrations
+    environment:
+      - PSQL_ADDR=psql:5432
+      - PSQL_USER=root
+      - PSQL_PASS=toor
+      - PSQL_DB=psql
+      - PSQL_SSL=disable
+
   psql:
     image: postgres:10.4
     expose:

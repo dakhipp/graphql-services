@@ -8,7 +8,11 @@
     "start:prod": "docker-compose -f deployments/docker-compose/docker-compose.prod.yml up --build",
     "build:auth": "go generate auth/server.go",
     "build:graphql": "go generate graphql/graph/graph.go",
-    "migrate:create": "PSQL_USER=root PSQL_PASS=toor PSQL_ADDR=localhost:5432 PSQL_DB=psql go run auth/migrations/*.go create"
+    "terraform:up": "cd deployments/terraform/aws ; terraform apply ; cd ../../..",
+    "terraform:destroy": "cd deployments/terraform/aws ; terraform destroy ; cd ../../..",
+    "migrate:create": "docker-compose -f deployments/docker-compose/docker-compose.dev.yml run migrations sh -c 'go run *.go create $1' -- ",
+    "migrate:up": "docker-compose -f deployments/docker-compose/docker-compose.dev.yml run migrations sh -c 'go run *.go migrate'",
+    "migrate:down": "docker-compose -f deployments/docker-compose/docker-compose.dev.yml run migrations sh -c 'go run *.go rollback'"
   },
   "repository": {
     "type": "git",

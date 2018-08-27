@@ -17,7 +17,7 @@ type Config struct {
 	PSQLDB   string `envconfig:"PSQL_DB"`
 }
 
-const directory = "auth/migrations"
+const directory = "."
 
 func main() {
 	// Declare and attempt to cast config struct
