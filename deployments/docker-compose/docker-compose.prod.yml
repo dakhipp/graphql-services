@@ -12,7 +12,7 @@ services:
     environment:
       - PORT=8000
       - PLAYGROUND=true
-      - AUTH_SERVICE_URL=0.0.0.0:8001
+      - AUTH_SERVICE_URL=auth:8001
 
   auth:
     build:
@@ -22,7 +22,7 @@ services:
       - "psql"
     environment:
       - PORT=8001
-      - PSQL_ADDR=0.0.0.0:5432
+      - PSQL_ADDR=psql:5432
       - PSQL_USER=root
       - PSQL_PASS=toor
       - PSQL_DB=psql
@@ -35,7 +35,7 @@ services:
     depends_on:
       - "psql"
     environment:
-      - PSQL_ADDR=0.0.0.0:5432
+      - PSQL_ADDR=psql:5432
       - PSQL_USER=root
       - PSQL_PASS=toor
       - PSQL_DB=psql

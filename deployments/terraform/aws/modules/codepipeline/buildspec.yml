@@ -20,9 +20,7 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Starting Docker Compose...
-      - docker-compose -f deployments/docker-compose/docker-compose.prod.yml up -d --build
-      - echo Running tests...
-      - cd tests/integration/ ; go test ; cd ../..
+      - docker-compose -f deployments/docker-compose/docker-compose.prod.yml up -d --build ; cd tests/integration/ ; go test ; cd ../..
       - echo Tagging images built with Docker Compose...
       - docker tag docker-compose_graphql ${graphql_repository_url}:$COMMIT_HASH
       - docker tag docker-compose_auth ${auth_repository_url}:$COMMIT_HASH
