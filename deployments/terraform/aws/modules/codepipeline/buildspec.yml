@@ -35,7 +35,7 @@ phases:
       - docker push ${auth_repository_url}:$COMMIT_HASH
       - docker push ${migration_repository_url}:$COMMIT_HASH
       - echo Writing image definitions file...
-      - echo '[{"name":"graphql","imageUri":"${graphql_repository_url}:$COMMIT_HASH"},{"name":"auth","imageUri":"${auth_repository_url}:$COMMIT_HASH"}]'  > $CODEBUILD_SRC_DIR/imagedefinitions.json
+      - echo "[{\"name\":\"graphql\",\"imageUri\":\"${graphql_repository_url}:$COMMIT_HASH\"},{\"name\":\"auth\",\"imageUri\":\"${auth_repository_url}:$COMMIT_HASH\"}]" > $CODEBUILD_SRC_DIR/imagedefinitions.json
       - echo Running migration standalone ECS task...
       - aws ecs run-task --launch-type FARGATE --cluster ${cluster_name} --task-definition ${environment}_db_migrate --network-configuration "awsvpcConfiguration={subnets=[${subnet_id}],securityGroups=[${security_group_ids}]}"
 
