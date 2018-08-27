@@ -1,6 +1,6 @@
 [
   {
-    "name": "db-migrate",
+    "name": "migrations",
     "image": "${image}",
     "memory": 300,
     "logConfiguration": {
