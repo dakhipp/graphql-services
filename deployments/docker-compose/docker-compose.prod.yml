@@ -14,9 +14,9 @@ services:
     environment:
       - PORT=8000
       - PLAYGROUND=true
-      - AUTH_SERVICE_URL=auth:8005
+      - AUTH_SERVICE_URL=0.0.0.0:8001
 
-  auth:
+  0.0.0.0:
     build:
       context: "../../"
       dockerfile: "deployments/docker/auth/prod.Dockerfile"
@@ -26,7 +26,7 @@ services:
       - "appnet"
     environment:
       - PORT=8001
-      - PSQL_ADDR=psql:5432
+      - PSQL_ADDR=0.0.0.0:5432
       - PSQL_USER=root
       - PSQL_PASS=toor
       - PSQL_DB=psql
@@ -41,7 +41,7 @@ services:
     networks:
       - "appnet"
     environment:
-      - PSQL_ADDR=psql:5432
+      - PSQL_ADDR=0.0.0.0:5432
       - PSQL_USER=root
       - PSQL_PASS=toor
       - PSQL_DB=psql
