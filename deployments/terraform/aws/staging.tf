@@ -65,6 +65,8 @@ module "bastion" {
 
 module "ecs" {
   source                    = "./modules/ecs"
+  domain                    = "${var.domain}"
+  ssl_identifier            = "${var.ssl_identifier}"
   environment               = "${local.environment}"
   availability_zones        = "${local.production_availability_zones}"
   graphql_repository_name   = "${local.environment}/graphql"
@@ -96,6 +98,9 @@ module "ecs" {
 module "codepipeline" {
   source                      = "./modules/codepipeline"
   github_oauth                = "${var.github_oauth}"
+  github_user                 = "${var.github_user}"
+  github_repo                 = "${var.github_repo}"
+  github_branch               = "${var.github_branch}"
   environment                 = "${local.environment}"
   region                      = "${local.region}"
   graphql_repository_url      = "${module.ecs.graphql_repository_url}"
@@ -105,4 +110,12 @@ module "codepipeline" {
   ecs_cluster_name            = "${module.ecs.cluster_name}"
   run_task_subnet_id          = "${module.vpc.private_subnets_id[0]}"
   run_task_security_group_ids = ["${module.rds.db_access_sg_id}", "${module.vpc.security_groups_ids}", "${module.ecs.security_group_id}"]
+}
+
+module "route53" {
+  source          = "./modules/route53"
+  domain          = "${var.domain}"
+  route53_zone_id = "${var.route53_zone_id}"
+  alb_dns_name    = "${module.ecs.alb_dns_name}"
+  alb_zone_id     = "${module.ecs.alb_zone_id}"
 }

@@ -117,23 +117,6 @@ resource "random_id" "target_group_sufix" {
   byte_length = 2
 }
 
-// Load balancer target group forwarding traffic on port 80 to
-resource "aws_alb_target_group" "alb_target_group" {
-  name        = "${var.environment}-alb-target-group-${random_id.target_group_sufix.hex}"
-  port        = 80
-  protocol    = "HTTP"
-  vpc_id      = "${var.vpc_id}"
-  target_type = "ip"
-
-  health_check {
-    path = "/h"
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
 /* security group for ALB */
 resource "aws_security_group" "graphql_inbound_sg" {
   name        = "${var.environment}-web-inbound-sg"
@@ -143,6 +126,13 @@ resource "aws_security_group" "graphql_inbound_sg" {
   ingress {
     from_port   = 80
     to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -167,6 +157,13 @@ resource "aws_security_group" "graphql_inbound_sg" {
   }
 }
 
+// SSL cert for HTTPS fetched by domain name
+data "aws_acm_certificate" "ssl" {
+  domain      = "${var.ssl_identifier}"
+  types       = ["AMAZON_ISSUED"]
+  most_recent = true
+}
+
 resource "aws_alb" "alb_graphql" {
   name            = "${var.environment}-alb-graphql-services"
   subnets         = ["${var.public_subnet_ids}"]
@@ -178,7 +175,25 @@ resource "aws_alb" "alb_graphql" {
   }
 }
 
-resource "aws_alb_listener" "graphql-services" {
+// Load balancer target group forwarding traffic on port 80 to
+resource "aws_alb_target_group" "alb_target_group" {
+  name        = "${var.environment}-alb-target-group-${random_id.target_group_sufix.hex}"
+  port        = 80
+  protocol    = "HTTP"
+  vpc_id      = "${var.vpc_id}"
+  target_type = "ip"
+
+  health_check {
+    path = "/h"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+// HTTP listener on load balancer
+resource "aws_alb_listener" "graphql-services-http" {
   load_balancer_arn = "${aws_alb.alb_graphql.arn}"
   port              = "80"
   protocol          = "HTTP"
@@ -187,6 +202,62 @@ resource "aws_alb_listener" "graphql-services" {
   default_action {
     target_group_arn = "${aws_alb_target_group.alb_target_group.arn}"
     type             = "forward"
+  }
+}
+
+// HTTPS listener on load balancer
+resource "aws_alb_listener" "graphql-services-https" {
+  load_balancer_arn = "${aws_alb.alb_graphql.arn}"
+  port              = "443"
+  protocol          = "HTTPS"
+  depends_on        = ["aws_alb_target_group.alb_target_group"]
+  ssl_policy        = "ELBSecurityPolicy-2015-05"
+  certificate_arn   = "${data.aws_acm_certificate.ssl.arn}"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = "${aws_alb_target_group.alb_target_group.arn}"
+  }
+}
+
+// Redirect all traffic to https
+resource "aws_lb_listener_rule" "redirect_http_to_https" {
+  listener_arn = "${aws_alb_listener.graphql-services-http.arn}"
+
+  action {
+    type = "redirect"
+
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
+  }
+
+  condition {
+    field  = "host-header"
+    values = ["${var.domain}"]
+  }
+}
+
+// Redirect load balancer URL
+resource "aws_lb_listener_rule" "redirect_balancer_url" {
+  listener_arn = "${aws_alb_listener.graphql-services-http.arn}"
+
+  action {
+    type = "redirect"
+
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+      host        = "${var.domain}"
+    }
+  }
+
+  condition {
+    field  = "host-header"
+    values = ["${aws_alb.alb_graphql.dns_name}"]
   }
 }
 

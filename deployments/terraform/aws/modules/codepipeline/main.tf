@@ -108,9 +108,9 @@ resource "aws_codepipeline" "pipeline" {
       output_artifacts = ["source"]
 
       configuration {
-        Owner      = "dakhipp"
-        Repo       = "graphql-services"
-        Branch     = "master"
+        Owner      = "${var.github_user}"
+        Repo       = "${var.github_repo}"
+        Branch     = "${var.github_branch}"
         OAuthToken = "${var.github_oauth}"
       }
     }

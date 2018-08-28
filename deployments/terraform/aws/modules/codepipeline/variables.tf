@@ -7,6 +7,18 @@ variable "github_oauth" {
   description = "Github OAuth token"
 }
 
+variable "github_user" {
+  description = "Github user"
+}
+
+variable "github_repo" {
+  description = "Github repo"
+}
+
+variable "github_branch" {
+  description = "Github branch"
+}
+
 variable "region" {
   description = "The region to use"
 }

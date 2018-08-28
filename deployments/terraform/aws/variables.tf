@@ -6,6 +6,18 @@ variable "github_oauth" {
   description = "Github OAuth token supplied by terraform.tfvars file"
 }
 
+variable "github_user" {
+  description = "Github user"
+}
+
+variable "github_repo" {
+  description = "Github repo"
+}
+
+variable "github_branch" {
+  description = "Github branch"
+}
+
 variable "psql_user" {
   description = "Database user supplied by terraform.tfvars file"
 }
@@ -36,4 +48,16 @@ variable "auth_port" {
 
 variable "playground_enabled" {
   description = "Whether or not the GraphQL playground should be enabled, supplied by terraform.tfvars file"
+}
+
+variable "domain" {
+  description = "The domain to create an a record on, supplied by terraform.tfvars file"
+}
+
+variable "ssl_identifier" {
+  description = "A domain added to an ACM certificate, sometimes the same as the domain variable, but if using a wildcard cert it might not be. Originates from terraform.tfvars file"
+}
+
+variable "route53_zone_id" {
+  description = "Zone ID for an existing Route53 hosted zone, originates from terraform.tfvars file"
 }

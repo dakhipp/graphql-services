@@ -79,13 +79,23 @@ account
 ## Terraform Info:
 
 ### Secrets:
-Each stage will have its own `terraform.tfvars` file to hold credentials. You can use `terraform.example.tfvars` to see what fields are needed. In order to create a bastion server public key you will need to do the following:
+Each stage will have its own `terraform.tfvars` file to hold credentials. You can use `terraform.example.tfvars` to see what fields are needed. 
+
+In order to create a bastion server public key you will need to do the following:
 1. `ssh-keygen -t rsa -b 4096 -C "<your_email@example.com>" -f $HOME/.ssh/<bastion-key-name>`
 2. `cat $HOME/.ssh/<bastion-key-name>.pub | pbcopy`
 3. Paste the value in your clipboard into the `bastion_public_key` field of the `terraform.tfvars` file.
 
+In order to allow Codepipeline to automatically pull from a Github branch you will need to create a Github `Personal access token`: https://github.com/settings/tokens
+
+You'll want to create a Route53 hosted zone for a domain name and request an SSL certificate from Amazon's ACM service on the domain to host at.
+
+### Extra Info:
+- The VPC, RDS, and Bastion modules can easily be pulled into other projects, however ECS and Codepipeline contain quite a bit of project specific configuration. 
+
 ### Commands:
-- `yarn terraform:up` - Convenience command, cd's into the terraform AWS directory and runs `terraform apply`, then cd's back into main project directory.
+- `yarn terraform:init` - Convenience command, cd's into the terraform AWS directory and runs `terraform init`, then cd's back into main project directory.
+- `yarn terraform:apply` - Convenience command, cd's into the terraform AWS directory and runs `terraform apply`, then cd's back into main project directory.
 - `yarn terraform:destroy` - Convenience command, cd's into the terraform AWS directory and runs `terraform destroy`, then cd's back into main project directory.
 
 ---

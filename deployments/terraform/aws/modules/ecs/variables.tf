@@ -74,3 +74,11 @@ variable "psql_ssl" {
 variable "psql_port" {
   description = "The database port, originates from terraform.tfvars file"
 }
+
+variable "domain" {
+  description = "The domain to create an a record on, originates from terraform.tfvars file"
+}
+
+variable "ssl_identifier" {
+  description = "A domain added to an ACM certificate, sometimes the same as the domain variable, but if using a wildcard cert it might not be. Originates from terraform.tfvars file"
+}
