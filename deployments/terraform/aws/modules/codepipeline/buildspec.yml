@@ -1,6 +1,10 @@
 version: 0.2
 
 phases:
+  install:
+    commands:
+      - nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay&
+      - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
@@ -20,12 +24,12 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Starting Docker Compose...
-      - printenv
-      - docker-compose -f deployments/docker-compose/docker-compose.prod.yml up -d --build ; cd tests/integration/ ; go test ; cd ../..
+      - docker-compose -f deployments/docker-compose/docker-compose.prod.yml up -d --build ; cd tests/integration/
+      - docker ps
+      - go test ; cd ../..
       - echo Tagging images built with Docker Compose...
       - docker tag docker-compose_graphql ${graphql_repository_url}:$COMMIT_HASH
       - docker tag docker-compose_auth ${auth_repository_url}:$COMMIT_HASH
-      - docker ps
       - docker tag docker-compose_migrations ${migration_repository_url}:$COMMIT_HASH
       - if [[ "$CODEBUILD_BUILD_SUCCEEDING" == "0" ]]; then exit 1;
       - echo Build completed on `date`
