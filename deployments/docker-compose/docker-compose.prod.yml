@@ -20,6 +20,8 @@ services:
     build:
       context: "../../"
       dockerfile: "deployments/docker/auth/prod.Dockerfile"
+    ports:
+      - "8001:8001"
     depends_on:
       - "psql"
     networks:
