@@ -14,7 +14,7 @@ services:
     environment:
       - PORT=8000
       - PLAYGROUND=true
-      - AUTH_SERVICE_URL=localhost:8001
+      - AUTH_SERVICE_URL=auth:8005
 
   auth:
     build:
