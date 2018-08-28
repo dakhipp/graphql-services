@@ -31,11 +31,11 @@ phases:
       - docker tag docker-compose_graphql ${graphql_repository_url}:$COMMIT_HASH
       - docker tag docker-compose_auth ${auth_repository_url}:$COMMIT_HASH
       - docker tag docker-compose_migrations ${migration_repository_url}:$COMMIT_HASH
-      - if [[ "$CODEBUILD_BUILD_SUCCEEDING" == "0" ]]; then exit 1;
+      - # if [[ "$CODEBUILD_BUILD_SUCCEEDING" == "0" ]]; then exit 1;
       - echo Build completed on `date`
   post_build:
     commands:
-      - if [[ "$CODEBUILD_BUILD_SUCCEEDING" == "0" ]]; then exit 1;
+      - # if [[ "$CODEBUILD_BUILD_SUCCEEDING" == "0" ]]; then exit 1;
       - echo Pushing the Docker images...
       - docker push ${graphql_repository_url}:$COMMIT_HASH
       - docker push ${auth_repository_url}:$COMMIT_HASH

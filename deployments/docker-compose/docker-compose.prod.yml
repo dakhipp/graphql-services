@@ -9,23 +9,17 @@ services:
       - "8000:8000"
     depends_on:
       - "auth"
-    networks:
-      - "appnet"
     environment:
       - PORT=8000
       - PLAYGROUND=true
-      - AUTH_SERVICE_URL=0.0.0.0:8001
+      - AUTH_SERVICE_URL=auth:8001
 
   auth:
     build:
       context: "../../"
       dockerfile: "deployments/docker/auth/prod.Dockerfile"
-    ports:
-      - "8001:8001"
     depends_on:
       - "psql"
-    networks:
-      - "appnet"
     environment:
       - PORT=8001
       - PSQL_ADDR=psql:5432
@@ -40,8 +34,6 @@ services:
       dockerfile: "deployments/docker/migrations/prod.Dockerfile"
     depends_on:
       - "psql"
-    networks:
-      - "appnet"
     environment:
       - PSQL_ADDR=psql:5432
       - PSQL_USER=root
@@ -55,14 +47,8 @@ services:
       - "5432"
     ports:
       - "5432:5432"
-    networks:
-      - "appnet"
     environment:
       POSTGRES_DB: "psql"
       POSTGRES_USER: "root"
       POSTGRES_PASSWORD: "toor"
     restart: "unless-stopped"
-
-networks:
-  appnet:
-    driver: "bridge"
