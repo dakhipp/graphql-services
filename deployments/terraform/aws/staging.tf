@@ -28,10 +28,10 @@ terraform {
 module "vpc" {
   source               = "./modules/vpc"
   environment          = "${local.environment}"
+  region               = "${local.region}"
   vpc_cidr             = "10.0.0.0/16"
   public_subnets_cidr  = ["10.0.0.0/24", "10.0.1.0/24", "10.0.2.0/24"]
   private_subnets_cidr = ["10.0.100.0/24", "10.0.101.0/24", "10.0.102.0/24"]
-  region               = "${local.region}"
   availability_zones   = ["us-west-2a", "us-west-2b", "us-west-2c"]
 }
 
@@ -88,12 +88,12 @@ module "ecs" {
 
   // auth env vars
   auth_port = "${var.auth_port}"
-  psql_addr = "${module.rds.rds_address}"
   psql_user = "${var.psql_user}"
   psql_pass = "${var.psql_pass}"
   psql_db   = "${var.psql_db}"
   psql_ssl  = "${var.psql_ssl}"
   psql_port = "${var.psql_port}"
+  psql_addr = "${module.rds.rds_address}"
 }
 
 module "codepipeline" {
