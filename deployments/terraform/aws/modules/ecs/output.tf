@@ -1,12 +1,12 @@
-output "graphql_repository_url" {
+output "graphql_repo_url" {
   value = "${aws_ecr_repository.graphql_repo.repository_url}"
 }
 
-output "auth_repository_url" {
+output "auth_repo_url" {
   value = "${aws_ecr_repository.auth_repo.repository_url}"
 }
 
-output "migration_repository_url" {
+output "migration_repo_url" {
   value = "${aws_ecr_repository.migration_repo.repository_url}"
 }
 

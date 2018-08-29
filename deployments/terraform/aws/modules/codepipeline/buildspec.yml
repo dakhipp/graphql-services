@@ -28,23 +28,23 @@ phases:
       - docker ps
       - go test ; cd ../..
       - echo Tagging images built with Docker Compose...
-      - docker tag docker-compose_graphql ${graphql_repository_url}:$COMMIT_HASH
-      - docker tag docker-compose_auth ${auth_repository_url}:$COMMIT_HASH
-      - docker tag docker-compose_migrations ${migration_repository_url}:$COMMIT_HASH
+      - docker tag docker-compose_graphql ${graphql_repo_url}:$COMMIT_HASH
+      - docker tag docker-compose_auth ${auth_repo_url}:$COMMIT_HASH
+      - docker tag docker-compose_migrations ${migration_repo_url}:$COMMIT_HASH
       - # if [[ "$CODEBUILD_BUILD_SUCCEEDING" == "0" ]]; then exit 1;
       - echo Build completed on `date`
   post_build:
     commands:
       - # if [[ "$CODEBUILD_BUILD_SUCCEEDING" == "0" ]]; then exit 1;
       - echo Pushing the Docker images...
-      - docker push ${graphql_repository_url}:$COMMIT_HASH
-      - docker push ${auth_repository_url}:$COMMIT_HASH
-      - docker push ${migration_repository_url}:$COMMIT_HASH
+      - docker push ${graphql_repo_url}:$COMMIT_HASH
+      - docker push ${auth_repo_url}:$COMMIT_HASH
+      - docker push ${migration_repo_url}:$COMMIT_HASH
       - echo Writing image definitions file...
       - echo "[" \
-          "{\"name\":\"${graphql_name}\",\"imageUri\":\"${graphql_repository_url}:$COMMIT_HASH\"}," \
-          "{\"name\":\"${auth_name}\",\"imageUri\":\"${auth_repository_url}:$COMMIT_HASH\"}," \
-          "{\"name\":\"${migration_name}\",\"imageUri\":\"${migration_repository_url}:$COMMIT_HASH\"}" \
+          "{\"name\":\"${graphql_name}\",\"imageUri\":\"${graphql_repo_url}:$COMMIT_HASH\"}," \
+          "{\"name\":\"${auth_name}\",\"imageUri\":\"${auth_repo_url}:$COMMIT_HASH\"}," \
+          "{\"name\":\"${migration_name}\",\"imageUri\":\"${migration_repo_url}:$COMMIT_HASH\"}" \
         "]" > $CODEBUILD_SRC_DIR/imagedefinitions.json
 
 artifacts:

@@ -51,17 +51,17 @@ data "template_file" "buildspec" {
   template = "${file("${path.module}/buildspec.yml")}"
 
   vars {
-    region                   = "${var.region}"
-    environment              = "${var.environment}"
-    graphql_name             = "${var.graphql_service_name}"
-    graphql_repository_url   = "${var.graphql_repository_url}"
-    auth_name                = "${var.auth_service_name}"
-    auth_repository_url      = "${var.auth_repository_url}"
-    migration_name           = "${var.migration_service_name}"
-    migration_repository_url = "${var.migration_repository_url}"
-    cluster_name             = "${var.ecs_cluster_name}"
-    subnet_id                = "${var.run_task_subnet_id}"
-    security_group_ids       = "${join(",", var.run_task_security_group_ids)}"
+    region             = "${var.region}"
+    environment        = "${var.environment}"
+    graphql_name       = "${var.graphql_service_name}"
+    graphql_repo_url   = "${var.graphql_repo_url}"
+    auth_name          = "${var.auth_service_name}"
+    auth_repo_url      = "${var.auth_repo_url}"
+    migration_name     = "${var.migration_service_name}"
+    migration_repo_url = "${var.migration_repo_url}"
+    cluster_name       = "${var.ecs_cluster_name}"
+    subnet_id          = "${var.run_task_subnet_id}"
+    security_group_ids = "${join(",", var.run_task_security_group_ids)}"
   }
 }
 

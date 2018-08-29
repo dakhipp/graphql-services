@@ -35,15 +35,15 @@ variable "region" {
   description = "The region to use"
 }
 
-variable "graphql_repository_url" {
+variable "graphql_repo_url" {
   description = "The url of the GraphQL ECR repository"
 }
 
-variable "auth_repository_url" {
+variable "auth_repo_url" {
   description = "The url of the auth ECR repository"
 }
 
-variable "migration_repository_url" {
+variable "migration_repo_url" {
   description = "The url of the migraions ECR repository"
 }
 
