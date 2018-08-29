@@ -1,9 +1,6 @@
 locals {
-  region                    = "us-west-2"
-  environment               = "staging"
-  graphql_repository_name   = "${local.environment}/${var.graphql_service_name}"
-  auth_repository_name      = "${local.environment}/${var.auth_service_name}"
-  migration_repository_name = "${local.environment}/${var.migration_service_name}"
+  region      = "us-west-2"
+  environment = "staging"
 }
 
 /*====
@@ -68,17 +65,17 @@ module "bastion" {
 }
 
 module "ecs" {
-  source                    = "./modules/ecs"
-  domain                    = "${var.domain}"
-  ssl_identifier            = "${var.ssl_identifier}"
-  environment               = "${local.environment}"
-  availability_zones        = "${local.production_availability_zones}"
-  graphql_repository_name   = "${local.graphql_repository_name}"
-  auth_repository_name      = "${local.auth_repository_name}"
-  migration_repository_name = "${local.migration_repository_name}"
-  vpc_id                    = "${module.vpc.vpc_id}"
-  subnets_ids               = ["${module.vpc.private_subnets_id}"]
-  public_subnet_ids         = ["${module.vpc.public_subnets_id}"]
+  source                 = "./modules/ecs"
+  environment            = "${local.environment}"
+  domain                 = "${var.domain}"
+  ssl_identifier         = "${var.ssl_identifier}"
+  availability_zones     = "${var.graphql_service_name}"
+  graphql_service_name   = "${var.graphql_service_name}"
+  auth_service_name      = "${var.auth_service_name}"
+  migration_service_name = "${var.migration_service_name}"
+  vpc_id                 = "${module.vpc.vpc_id}"
+  subnets_ids            = ["${module.vpc.private_subnets_id}"]
+  public_subnet_ids      = ["${module.vpc.public_subnets_id}"]
 
   security_groups_ids = [
     "${module.vpc.security_groups_ids}",
@@ -101,18 +98,18 @@ module "ecs" {
 
 module "codepipeline" {
   source                      = "./modules/codepipeline"
+  environment                 = "${local.environment}"
+  region                      = "${local.region}"
   github_oauth                = "${var.github_oauth}"
   github_user                 = "${var.github_user}"
   github_repo                 = "${var.github_repo}"
   github_branch               = "${var.github_branch}"
   artifact_bucket_name        = "${var.artifact_bucket_name}"
-  environment                 = "${local.environment}"
-  region                      = "${local.region}"
-  graphql_repository_name     = "${local.graphql_repository_name}"
+  graphql_service_name        = "${var.graphql_service_name}"
+  auth_service_name           = "${var.auth_service_name}"
+  migration_service_name      = "${var.migration_service_name}"
   graphql_repository_url      = "${module.ecs.graphql_repository_url}"
-  auth_repository_name        = "${local.auth_repository_name}"
   auth_repository_url         = "${module.ecs.auth_repository_url}"
-  migration_repository_name   = "${local.migration_repository_name}"
   migration_repository_url    = "${module.ecs.migration_repository_url}"
   ecs_service_name            = "${module.ecs.service_name}"
   ecs_cluster_name            = "${module.ecs.cluster_name}"

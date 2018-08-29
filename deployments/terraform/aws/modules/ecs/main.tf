@@ -15,17 +15,17 @@ ECR repository to store our Docker images
 ======*/
 // GraphQL docker image
 resource "aws_ecr_repository" "graphql_repo" {
-  name = "${var.graphql_repository_name}"
+  name = "${var.environment}/${var.graphql_service_name}"
 }
 
 // Auth docker image
 resource "aws_ecr_repository" "auth_repo" {
-  name = "${var.auth_repository_name}"
+  name = "${var.environment}/${var.auth_service_name}"
 }
 
 // Migrations docker image
 resource "aws_ecr_repository" "migration_repo" {
-  name = "${var.migration_repository_name}"
+  name = "${var.environment}/${var.migration_service_name}"
 }
 
 /*====
@@ -45,11 +45,11 @@ data "template_file" "graphql_task" {
 
   // Variables passed into the task definition template file
   vars {
-    graphql_name    = "${var.graphql_repository_name}"
+    graphql_name    = "${var.graphql_service_name}"
     graphql_image   = "${aws_ecr_repository.graphql_repo.repository_url}"
-    auth_name       = "${var.auth_repository_name}"
+    auth_name       = "${var.auth_service_name}"
     auth_image      = "${aws_ecr_repository.auth_repo.repository_url}"
-    migration_name  = "${var.migration_repository_name}"
+    migration_name  = "${var.migration_service_name}"
     migration_image = "${aws_ecr_repository.migration_repo.repository_url}"
     log_group       = "${aws_cloudwatch_log_group.graphql-services.name}"
 

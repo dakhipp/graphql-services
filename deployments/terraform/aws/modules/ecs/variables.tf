@@ -8,15 +8,15 @@ variable "availability_zones" {
   description = "The azs to use"
 }
 
-variable "graphql_repository_name" {
+variable "graphql_service_name" {
   description = "The name of the GraphQL ECR repository"
 }
 
-variable "auth_repository_name" {
+variable "auth_service_name" {
   description = "The name of the auth ECR repository"
 }
 
-variable "migration_repository_name" {
+variable "migration_service_name" {
   description = "The name of the migrations ECR repository"
 }
 
