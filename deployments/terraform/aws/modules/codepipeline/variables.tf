@@ -3,6 +3,18 @@ variable "environment" {
   default     = "staging"
 }
 
+variable "graphql_repository_name" {
+  description = "The name of the GraphQL ECR repository"
+}
+
+variable "auth_repository_name" {
+  description = "The name of the auth ECR repository"
+}
+
+variable "migration_repository_name" {
+  description = "The name of the migrations ECR repository"
+}
+
 variable "github_oauth" {
   description = "Github OAuth token"
 }

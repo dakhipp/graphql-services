@@ -1,6 +1,6 @@
 [
   {
-    "name": "graphql",
+    "name": "${graphql_name}",
     "image": "${graphql_image}",
     "essential": true,
     "portMappings": [
@@ -34,7 +34,7 @@
     ]
   },
   {
-    "name": "auth",
+    "name": "${auth_name}",
     "image": "${auth_image}",
     "essential": true,
     "portMappings": [
@@ -80,8 +80,8 @@
     ]
   },
   {
-    "name": "migrations",
-    "image": "${migrations_image}",
+    "name": "${migration_name}",
+    "image": "${migration_image}",
     "essential": false,
     "memory": 300,
     "logConfiguration": {

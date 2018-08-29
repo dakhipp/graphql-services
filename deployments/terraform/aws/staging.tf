@@ -1,6 +1,9 @@
 locals {
-  region      = "us-west-2"
-  environment = "staging"
+  region                    = "us-west-2"
+  environment               = "staging"
+  graphql_repository_name   = "${local.environment}/${var.graphql_service_name}"
+  auth_repository_name      = "${local.environment}/${var.auth_service_name}"
+  migration_repository_name = "${local.environment}/${var.migration_service_name}"
 }
 
 /*====
@@ -33,7 +36,6 @@ module "vpc" {
   private_subnets_cidr = ["10.0.100.0/24", "10.0.101.0/24", "10.0.102.0/24"]
   region               = "${local.region}"
   availability_zones   = ["us-west-2a", "us-west-2b", "us-west-2c"]
-  key_name             = "production_key"
 }
 
 module "rds" {
@@ -71,9 +73,9 @@ module "ecs" {
   ssl_identifier            = "${var.ssl_identifier}"
   environment               = "${local.environment}"
   availability_zones        = "${local.production_availability_zones}"
-  graphql_repository_name   = "${local.environment}/graphql"
-  auth_repository_name      = "${local.environment}/auth"
-  migration_repository_name = "${local.environment}/migrations"
+  graphql_repository_name   = "${local.graphql_repository_name}"
+  auth_repository_name      = "${local.auth_repository_name}"
+  migration_repository_name = "${local.migration_repository_name}"
   vpc_id                    = "${module.vpc.vpc_id}"
   subnets_ids               = ["${module.vpc.private_subnets_id}"]
   public_subnet_ids         = ["${module.vpc.public_subnets_id}"]
@@ -106,8 +108,11 @@ module "codepipeline" {
   artifact_bucket_name        = "${var.artifact_bucket_name}"
   environment                 = "${local.environment}"
   region                      = "${local.region}"
+  graphql_repository_name     = "${local.graphql_repository_name}"
   graphql_repository_url      = "${module.ecs.graphql_repository_url}"
+  auth_repository_name        = "${local.auth_repository_name}"
   auth_repository_url         = "${module.ecs.auth_repository_url}"
+  migration_repository_name   = "${local.migration_repository_name}"
   migration_repository_url    = "${module.ecs.migration_repository_url}"
   ecs_service_name            = "${module.ecs.service_name}"
   ecs_cluster_name            = "${module.ecs.cluster_name}"

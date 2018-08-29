@@ -30,8 +30,3 @@ variable "availability_zones" {
   description = "The az that the resources will be launched"
   default     = ["us-west-2a", "us-west-2b", "us-west-2c"]
 }
-
-variable "key_name" {
-  description = "The public key for the bastion host"
-  default     = "Staging-Bastion-Key"
-}

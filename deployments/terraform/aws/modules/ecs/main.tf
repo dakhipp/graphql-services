@@ -45,10 +45,13 @@ data "template_file" "graphql_task" {
 
   // Variables passed into the task definition template file
   vars {
-    graphql_image    = "${aws_ecr_repository.graphql_repo.repository_url}"
-    auth_image       = "${aws_ecr_repository.auth_repo.repository_url}"
-    migrations_image = "${aws_ecr_repository.migration_repo.repository_url}"
-    log_group        = "${aws_cloudwatch_log_group.graphql-services.name}"
+    graphql_name    = "${var.graphql_repository_name}"
+    graphql_image   = "${aws_ecr_repository.graphql_repo.repository_url}"
+    auth_name       = "${var.auth_repository_name}"
+    auth_image      = "${aws_ecr_repository.auth_repo.repository_url}"
+    migration_name  = "${var.migration_repository_name}"
+    migration_image = "${aws_ecr_repository.migration_repo.repository_url}"
+    log_group       = "${aws_cloudwatch_log_group.graphql-services.name}"
 
     // GraphQL env vars
     graphql_port       = "${var.graphql_port}"

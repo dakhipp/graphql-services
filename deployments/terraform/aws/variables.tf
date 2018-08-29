@@ -1,3 +1,18 @@
+variable "graphql_service_name" {
+  description = "The name of the GraphQL service"
+  default     = "graphql"
+}
+
+variable "auth_service_name" {
+  description = "The name of the GraphQL service"
+  default     = "auth"
+}
+
+variable "migration_service_name" {
+  description = "The name of the GraphQL service"
+  default     = "migration"
+}
+
 variable "bastion_public_key" {
   description = "Public SSH key supplied by terraform.tfvars file"
 }
