@@ -2,7 +2,7 @@
 Cloudwatch Log Group
 ======*/
 resource "aws_cloudwatch_log_group" "graphql-services" {
-  name = "graphql-services"
+  name = "graphql_service_${var.environment}"
 
   tags {
     Environment = "${var.environment}"
@@ -148,7 +148,7 @@ resource "aws_alb" "alb_graphql" {
   }
 }
 
-// Load balancer target group forwarding traffic on port 80 to
+// Load balancer target group accepting traffic on port 80
 resource "aws_alb_target_group" "alb_target_group" {
   name        = "${var.environment}-alb-target-group-${random_id.target_group_sufix.hex}"
   port        = 80
@@ -250,7 +250,7 @@ data "aws_iam_policy_document" "ecs_service_role" {
 }
 
 resource "aws_iam_role" "ecs_role" {
-  name               = "ecs_role"
+  name               = "ecs_role_${var.environment}"
   assume_role_policy = "${data.aws_iam_policy_document.ecs_service_role.json}"
 }
 
@@ -271,7 +271,7 @@ data "aws_iam_policy_document" "ecs_service_policy" {
 
 /* ecs service scheduler role */
 resource "aws_iam_role_policy" "ecs_service_role_policy" {
-  name = "ecs_service_role_policy"
+  name = "ecs_service_role_policy_${var.environment}"
 
   policy = "${data.aws_iam_policy_document.ecs_service_policy.json}"
   role   = "${aws_iam_role.ecs_role.id}"
@@ -279,12 +279,12 @@ resource "aws_iam_role_policy" "ecs_service_role_policy" {
 
 /* role that the Amazon ECS container agent and the Docker daemon can assume */
 resource "aws_iam_role" "ecs_execution_role" {
-  name               = "ecs_task_execution_role"
+  name               = "ecs_task_execution_role_${var.environment}"
   assume_role_policy = "${file("${path.module}/policies/ecs-task-execution-role.json")}"
 }
 
 resource "aws_iam_role_policy" "ecs_execution_role_policy" {
-  name   = "ecs_execution_role_policy"
+  name   = "ecs_execution_role_policy_${var.environment}"
   policy = "${file("${path.module}/policies/ecs-execution-role-policy.json")}"
   role   = "${aws_iam_role.ecs_execution_role.id}"
 }
@@ -330,7 +330,7 @@ resource "aws_ecs_service" "graphql_web" {
   desired_count   = 1
   launch_type     = "FARGATE"
   cluster         = "${aws_ecs_cluster.cluster.id}"
-  depends_on      = ["aws_iam_role_policy.ecs_service_role_policy"]
+  depends_on      = ["aws_iam_role_policy.ecs_service_role_policy", "aws_alb_target_group.alb_target_group"]
 
   network_configuration {
     security_groups = ["${var.security_groups_ids}", "${aws_security_group.ecs_service.id}"]
@@ -343,8 +343,6 @@ resource "aws_ecs_service" "graphql_web" {
     container_name   = "graphql"
     container_port   = "${var.graphql_port}"
   }
-
-  depends_on = ["aws_alb_target_group.alb_target_group"]
 }
 
 /*====

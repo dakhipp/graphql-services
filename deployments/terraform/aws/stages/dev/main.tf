@@ -1,6 +1,5 @@
 locals {
-  region      = "us-west-2"
-  environment = "staging"
+  region = "us-west-2"
 }
 
 /*====
@@ -18,17 +17,17 @@ terraform {
   backend "s3" {
     bucket = "graphql-service-state"
     region = "us-west-2"
-    key    = "terraform-state"
+    key    = "terraform-state-dev"   // MUST be unique betweens stages
 
     # Slowing down builds, don't need this for now
-    # dynamodb_table = "graphql-lock-table"
+    # dynamodb_table = "graphql-lock-table"   // MUST be unique betweens stages
   }
 }
 
 module "vpc" {
-  source               = "./modules/vpc"
-  environment          = "${local.environment}"
+  source               = "../../modules/vpc"
   region               = "${local.region}"
+  environment          = "${var.environment}"
   vpc_cidr             = "10.0.0.0/16"
   public_subnets_cidr  = ["10.0.0.0/24", "10.0.1.0/24", "10.0.2.0/24"]
   private_subnets_cidr = ["10.0.100.0/24", "10.0.101.0/24", "10.0.102.0/24"]
@@ -36,8 +35,8 @@ module "vpc" {
 }
 
 module "rds" {
-  source                  = "./modules/rds"
-  environment             = "${local.environment}"
+  source                  = "../../modules/rds"
+  environment             = "${var.environment}"
   allocated_storage       = "20"
   instance_class          = "db.t2.micro"
   engine                  = "postgres"
@@ -55,9 +54,9 @@ module "rds" {
 }
 
 module "bastion" {
-  source             = "./modules/bastion"
-  environment        = "${local.environment}"
-  bastion_key_name   = "bastion-key-${local.environment}"
+  source             = "../../modules/bastion"
+  environment        = "${var.environment}"
+  bastion_key_name   = "bastion-key-${var.environment}"
   bastion_public_key = "${var.bastion_public_key}"
   subnet_id          = "${module.vpc.public_subnets_id[0]}"
   vpc_id             = "${module.vpc.vpc_id}"
@@ -65,8 +64,8 @@ module "bastion" {
 }
 
 module "ecs" {
-  source                 = "./modules/ecs"
-  environment            = "${local.environment}"
+  source                 = "../../modules/ecs"
+  environment            = "${var.environment}"
   domain                 = "${var.domain}"
   ssl_identifier         = "${var.ssl_identifier}"
   availability_zones     = "${var.graphql_service_name}"
@@ -97,9 +96,9 @@ module "ecs" {
 }
 
 module "codepipeline" {
-  source                      = "./modules/codepipeline"
-  environment                 = "${local.environment}"
+  source                      = "../../modules/codepipeline"
   region                      = "${local.region}"
+  environment                 = "${var.environment}"
   github_oauth                = "${var.github_oauth}"
   github_user                 = "${var.github_user}"
   github_repo                 = "${var.github_repo}"
@@ -118,7 +117,7 @@ module "codepipeline" {
 }
 
 module "route53" {
-  source          = "./modules/route53"
+  source          = "../../modules/route53"
   domain          = "${var.domain}"
   route53_zone_id = "${var.route53_zone_id}"
   alb_dns_name    = "${module.ecs.alb_dns_name}"

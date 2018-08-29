@@ -1,3 +1,7 @@
+locals {
+  named_codebuild = "graphql_codebuild_${var.environment}"
+}
+
 resource "aws_s3_bucket" "source" {
   bucket        = "${var.artifact_bucket_name}"
   acl           = "private"
@@ -5,7 +9,7 @@ resource "aws_s3_bucket" "source" {
 }
 
 resource "aws_iam_role" "codepipeline_role" {
-  name = "codepipeline-role"
+  name = "codepipeline_role_${var.environment}"
 
   assume_role_policy = "${file("${path.module}/policies/codepipeline_role.json")}"
 }
@@ -29,7 +33,7 @@ resource "aws_iam_role_policy" "codepipeline_policy" {
 /* CodeBuild
 */
 resource "aws_iam_role" "codebuild_role" {
-  name               = "codebuild-role"
+  name               = "codebuild_role_${var.environment}"
   assume_role_policy = "${file("${path.module}/policies/codebuild_role.json")}"
 }
 
@@ -66,7 +70,7 @@ data "template_file" "buildspec" {
 }
 
 resource "aws_codebuild_project" "graphql_build" {
-  name          = "graphql-codebuild"
+  name          = "${local.named_codebuild}"
   build_timeout = "10"
   service_role  = "${aws_iam_role.codebuild_role.arn}"
 
@@ -91,7 +95,7 @@ resource "aws_codebuild_project" "graphql_build" {
 
 /* CodePipeline */
 resource "aws_codepipeline" "pipeline" {
-  name     = "graphql-pipeline"
+  name     = "${local.named_codebuild}"
   role_arn = "${aws_iam_role.codepipeline_role.arn}"
 
   artifact_store {
@@ -132,7 +136,7 @@ resource "aws_codepipeline" "pipeline" {
       output_artifacts = ["imagedefinitions"]
 
       configuration {
-        ProjectName = "graphql-codebuild"
+        ProjectName = "graphql_codebuild_${var.environment}"
       }
     }
   }

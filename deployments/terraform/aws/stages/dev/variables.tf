@@ -1,3 +1,8 @@
+variable "environment" {
+  description = "The environment"
+  default     = "staging"
+}
+
 variable "graphql_service_name" {
   description = "The name of the GraphQL service"
   default     = "graphql"
