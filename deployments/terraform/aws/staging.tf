@@ -16,10 +16,12 @@ Remote State Config, S3 bucket must exist before running, values cannot be param
 ======*/
 terraform {
   backend "s3" {
-    bucket         = "graphql-service-state"
-    region         = "us-west-2"
-    key            = "terraform-state"
-    dynamodb_table = "graphql-lock-table"
+    bucket = "graphql-service-state"
+    region = "us-west-2"
+    key    = "terraform-state"
+
+    # Slowing down builds, don't need this for now
+    # dynamodb_table = "graphql-lock-table"
   }
 }
 

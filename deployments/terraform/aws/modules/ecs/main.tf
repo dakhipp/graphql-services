@@ -45,9 +45,10 @@ data "template_file" "graphql_task" {
 
   // Variables passed into the task definition template file
   vars {
-    graphql_image = "${aws_ecr_repository.graphql_repo.repository_url}"
-    auth_image    = "${aws_ecr_repository.auth_repo.repository_url}"
-    log_group     = "${aws_cloudwatch_log_group.graphql-services.name}"
+    graphql_image    = "${aws_ecr_repository.graphql_repo.repository_url}"
+    auth_image       = "${aws_ecr_repository.auth_repo.repository_url}"
+    migrations_image = "${aws_ecr_repository.migration_repo.repository_url}"
+    log_group        = "${aws_cloudwatch_log_group.graphql-services.name}"
 
     // GraphQL env vars
     graphql_port       = "${var.graphql_port}"
@@ -77,37 +78,6 @@ resource "aws_ecs_task_definition" "graphql_web" {
   // FIXME: The use of 'replace' here is because of a bug in 'jsonencode'. turns ints to integers unless prepended with 'string:':
   //        https://github.com/hashicorp/terraform/issues/17033
   container_definitions = "${replace(replace(data.template_file.graphql_task.rendered, "/\"([0-9]+\\.?[0-9]*)\"/", "$1"), "string:", "")}"
-}
-
-// The task definition for the db migration
-data "template_file" "db_migrate_task" {
-  template = "${file("${path.module}/tasks/db_migrations_task_definition.json")}"
-
-  vars {
-    image     = "${aws_ecr_repository.migration_repo.repository_url}"
-    log_group = "${aws_cloudwatch_log_group.graphql-services.name}"
-
-    // env vars
-    psql_addr = "${var.psql_addr}:${var.psql_port}"
-    psql_user = "${var.psql_user}"
-    psql_pass = "${var.psql_pass}"
-    psql_db   = "${var.psql_db}"
-    psql_ssl  = "${var.psql_ssl}"
-  }
-}
-
-resource "aws_ecs_task_definition" "db_migrate" {
-  family                   = "${var.environment}_db_migrate"
-  requires_compatibilities = ["FARGATE"]
-  network_mode             = "awsvpc"
-  cpu                      = "256"
-  memory                   = "512"
-  execution_role_arn       = "${aws_iam_role.ecs_execution_role.arn}"
-  task_role_arn            = "${aws_iam_role.ecs_execution_role.arn}"
-
-  // FIXME: The use of 'replace' here is because of a bug in 'jsonencode'. turns ints to integers unless prepended with 'string:':
-  //        https://github.com/hashicorp/terraform/issues/17033
-  container_definitions = "${replace(replace(data.template_file.db_migrate_task.rendered, "/\"([0-9]+\\.?[0-9]*)\"/", "$1"), "string:", "")}"
 }
 
 /*====
