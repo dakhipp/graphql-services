@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "source" {
-  bucket        = "graphql-source"
+  bucket        = "${var.artifact_bucket_name}"
   acl           = "private"
   force_destroy = true
 }

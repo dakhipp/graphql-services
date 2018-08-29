@@ -1,7 +1,6 @@
 locals {
-  region             = "us-west-2"
-  availability_zones = ["us-west-2a", "us-west-2b", "us-west-2c"]
-  environment        = "staging"
+  region      = "us-west-2"
+  environment = "staging"
 }
 
 /*====
@@ -13,13 +12,14 @@ provider "aws" {
 }
 
 /*====
-Remote State Config, S3 bucket must exist before running
+Remote State Config, S3 bucket must exist before running, values cannot be parameterized
 ======*/
 terraform {
   backend "s3" {
-    bucket = "terraform-remote-state-123"
-    region = "us-west-2"
-    key    = "staging"
+    bucket         = "graphql-service-state"
+    region         = "us-west-2"
+    key            = "terraform-state"
+    dynamodb_table = "graphql-lock-table"
   }
 }
 
@@ -30,7 +30,7 @@ module "vpc" {
   public_subnets_cidr  = ["10.0.0.0/24", "10.0.1.0/24", "10.0.2.0/24"]
   private_subnets_cidr = ["10.0.100.0/24", "10.0.101.0/24", "10.0.102.0/24"]
   region               = "${local.region}"
-  availability_zones   = "${local.availability_zones}"
+  availability_zones   = ["us-west-2a", "us-west-2b", "us-west-2c"]
   key_name             = "production_key"
 }
 
@@ -101,6 +101,7 @@ module "codepipeline" {
   github_user                 = "${var.github_user}"
   github_repo                 = "${var.github_repo}"
   github_branch               = "${var.github_branch}"
+  artifact_bucket_name        = "${var.artifact_bucket_name}"
   environment                 = "${local.environment}"
   region                      = "${local.region}"
   graphql_repository_url      = "${module.ecs.graphql_repository_url}"

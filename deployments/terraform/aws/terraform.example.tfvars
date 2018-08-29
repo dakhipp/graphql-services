@@ -29,3 +29,5 @@ domain = "example.example.com"
 ssl_identifier = "example.com"
 
 route53_zone_id = "ABC1234AB12A1"
+
+artifact_bucket_name = "artifcate-bucket-s3"

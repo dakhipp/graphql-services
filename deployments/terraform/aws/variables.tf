@@ -61,3 +61,7 @@ variable "ssl_identifier" {
 variable "route53_zone_id" {
   description = "Zone ID for an existing Route53 hosted zone, originates from terraform.tfvars file"
 }
+
+variable "artifact_bucket_name" {
+  description = "The name of the bucket to store codepipeline artifacts in, originates from terraform.tfvars file"
+}
