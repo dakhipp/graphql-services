@@ -56,7 +56,7 @@ module "rds" {
 module "bastion" {
   source             = "../../modules/bastion"
   environment        = "${var.environment}"
-  bastion_key_name   = "bastion-key-${var.environment}"
+  bastion_key_name   = "bastion_key_${var.environment}"
   bastion_public_key = "${var.bastion_public_key}"
   psql_root_db       = "${var.psql_root_db}"
   psql_root_user     = "${var.psql_root_user}"
