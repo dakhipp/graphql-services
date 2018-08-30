@@ -23,8 +23,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Println(cfg.PSQLURL)
-
 	// Attempt to create auth repository
 	var repository auth.Repository
 	retry.ForeverSleep(2*time.Second, func(_ int) (err error) {
