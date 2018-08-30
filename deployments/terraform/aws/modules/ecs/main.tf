@@ -1,12 +1,12 @@
 /*====
 Cloudwatch Log Group
 ======*/
-resource "aws_cloudwatch_log_group" "graphql-services" {
+resource "aws_cloudwatch_log_group" "graphql_services" {
   name = "graphql_service_${var.environment}"
 
   tags {
     Environment = "${var.environment}"
-    Application = "graphql-services"
+    Application = "graphql_services"
   }
 }
 
@@ -32,7 +32,7 @@ resource "aws_ecr_repository" "migration_repo" {
 ECS cluster
 ======*/
 resource "aws_ecs_cluster" "cluster" {
-  name = "${var.environment}-ecs-cluster"
+  name = "${var.environment}_ecs_cluster"
 }
 
 /*====
@@ -51,7 +51,7 @@ data "template_file" "graphql_task" {
     auth_image      = "${aws_ecr_repository.auth_repo.repository_url}"
     migration_name  = "${var.migration_service_name}"
     migration_image = "${aws_ecr_repository.migration_repo.repository_url}"
-    log_group       = "${aws_cloudwatch_log_group.graphql-services.name}"
+    log_group       = "${aws_cloudwatch_log_group.graphql_services.name}"
 
     // GraphQL env vars
     graphql_port       = "${var.graphql_port}"
@@ -94,7 +94,7 @@ resource "random_id" "target_group_sufix" {
 
 /* security group for ALB */
 resource "aws_security_group" "graphql_inbound_sg" {
-  name        = "${var.environment}-web-inbound-sg"
+  name        = "${var.environment}_web_inbound_sg"
   description = "Allow HTTP from Anywhere into ALB"
   vpc_id      = "${var.vpc_id}"
 
@@ -128,7 +128,7 @@ resource "aws_security_group" "graphql_inbound_sg" {
   }
 
   tags {
-    Name = "${var.environment}-web-inbound-sg"
+    Name = "${var.environment}_web_inbound_sg"
   }
 }
 
@@ -168,7 +168,7 @@ resource "aws_alb_target_group" "alb_target_group" {
 }
 
 // HTTP listener on load balancer
-resource "aws_alb_listener" "graphql-services-http" {
+resource "aws_alb_listener" "graphql_services_http" {
   load_balancer_arn = "${aws_alb.alb_graphql.arn}"
   port              = "80"
   protocol          = "HTTP"
@@ -181,7 +181,7 @@ resource "aws_alb_listener" "graphql-services-http" {
 }
 
 // HTTPS listener on load balancer
-resource "aws_alb_listener" "graphql-services-https" {
+resource "aws_alb_listener" "graphql_services_https" {
   load_balancer_arn = "${aws_alb.alb_graphql.arn}"
   port              = "443"
   protocol          = "HTTPS"
@@ -197,7 +197,7 @@ resource "aws_alb_listener" "graphql-services-https" {
 
 // Redirect all traffic to https
 resource "aws_lb_listener_rule" "redirect_http_to_https" {
-  listener_arn = "${aws_alb_listener.graphql-services-http.arn}"
+  listener_arn = "${aws_alb_listener.graphql_services_http.arn}"
 
   action {
     type = "redirect"
@@ -217,7 +217,7 @@ resource "aws_lb_listener_rule" "redirect_http_to_https" {
 
 // Redirect load balancer URL
 resource "aws_lb_listener_rule" "redirect_balancer_url" {
-  listener_arn = "${aws_alb_listener.graphql-services-http.arn}"
+  listener_arn = "${aws_alb_listener.graphql_services_http.arn}"
 
   action {
     type = "redirect"
@@ -298,7 +298,7 @@ ECS service
 /* Security Group for ECS */
 resource "aws_security_group" "ecs_service" {
   vpc_id      = "${var.vpc_id}"
-  name        = "${var.environment}-ecs-service-sg"
+  name        = "${var.environment}_ecs_service_sg"
   description = "Allow egress from container"
 
   egress {
@@ -316,7 +316,7 @@ resource "aws_security_group" "ecs_service" {
   }
 
   tags {
-    Name        = "${var.environment}-ecs-service-sg"
+    Name        = "${var.environment}_ecs_service_sg"
     Environment = "${var.environment}"
   }
 }
@@ -327,7 +327,7 @@ data "aws_ecs_task_definition" "graphql_web" {
 }
 
 resource "aws_ecs_service" "graphql_web" {
-  name            = "${var.environment}-graphql-web"
+  name            = "${var.environment}_graphql_web"
   task_definition = "${aws_ecs_task_definition.graphql_web.family}:${max("${aws_ecs_task_definition.graphql_web.revision}", "${data.aws_ecs_task_definition.graphql_web.revision}")}"
   desired_count   = 1
   launch_type     = "FARGATE"
@@ -413,7 +413,7 @@ resource "aws_appautoscaling_policy" "down" {
 
 /* metric used for auto scale */
 resource "aws_cloudwatch_metric_alarm" "service_cpu_high" {
-  alarm_name          = "${var.environment}_graphql-services_web_cpu_utilization_high"
+  alarm_name          = "${var.environment}_graphql_services_web_cpu_utilization_high"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "2"
   metric_name         = "CPUUtilization"

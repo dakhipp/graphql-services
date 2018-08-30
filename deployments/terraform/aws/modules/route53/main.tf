@@ -1,4 +1,4 @@
-resource "aws_route53_record" "www-prod" {
+resource "aws_route53_record" "www_prod" {
   zone_id = "${var.route53_zone_id}"
   name    = "${var.domain}"
   type    = "A"

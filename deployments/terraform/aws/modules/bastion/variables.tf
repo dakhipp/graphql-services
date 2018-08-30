@@ -5,7 +5,7 @@ variable "environment" {
 
 variable "bastion_key_name" {
   description = "A name for the SSH key"
-  default     = "bastion-key-staging"
+  default     = "bastion_key_staging"
 }
 
 variable "psql_root_db" {

@@ -26,7 +26,7 @@ resource "aws_instance" "bastion_instance" {
               EOF
 
   tags {
-    Name        = "bastion-${var.environment}"
+    Name        = "bastion_${var.environment}"
     Environment = "${var.environment}"
   }
 }
@@ -53,7 +53,7 @@ data "aws_ami" "ec2-linux" {
 
 // Allows inbound connections on port 22 and all outbound connections
 resource "aws_security_group" "bastion-sg" {
-  name   = "bastion-security-group"
+  name   = "bastion_security_group"
   vpc_id = "${var.vpc_id}"
 
   ingress {

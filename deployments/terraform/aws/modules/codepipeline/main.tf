@@ -46,7 +46,7 @@ data "template_file" "codebuild_policy" {
 }
 
 resource "aws_iam_role_policy" "codebuild_policy" {
-  name   = "codebuild-policy"
+  name   = "codebuild_policy"
   role   = "${aws_iam_role.codebuild_role.id}"
   policy = "${data.template_file.codebuild_policy.rendered}"
 }

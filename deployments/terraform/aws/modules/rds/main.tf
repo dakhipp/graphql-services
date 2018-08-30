@@ -4,7 +4,7 @@ RDS
 
 // subnets used by RDS
 resource "aws_db_subnet_group" "rds_subnet_group" {
-  name        = "${var.environment}-rds-subnet-group"
+  name        = "${var.environment}_rds_subnet_group"
   description = "RDS subnet group"
   subnet_ids  = ["${var.subnet_ids}"]
 
@@ -16,23 +16,23 @@ resource "aws_db_subnet_group" "rds_subnet_group" {
 // Security Group for resources that want to access the Database
 resource "aws_security_group" "db_access_sg" {
   vpc_id      = "${var.vpc_id}"
-  name        = "${var.environment}-db-access-sg"
+  name        = "${var.environment}_db_access_sg"
   description = "Allow access to RDS"
 
   tags {
-    Name        = "${var.environment}-db-access-sg"
+    Name        = "${var.environment}_db_access_sg"
     Environment = "${var.environment}"
   }
 }
 
 // Security group for the RDS service, only allows inbound access on port 5432
 resource "aws_security_group" "rds_sg" {
-  name        = "${var.environment}-rds-sg"
+  name        = "${var.environment}_rds_sg"
   description = "${var.environment} Security Group"
   vpc_id      = "${var.vpc_id}"
 
   tags {
-    Name        = "${var.environment}-rds-sg"
+    Name        = "${var.environment}_rds_sg"
     Environment = "${var.environment}"
   }
 
@@ -79,7 +79,7 @@ resource "aws_db_instance" "rds" {
   skip_final_snapshot     = true
 
   tags {
-    Name        = "${var.environment}-rds"
+    Name        = "${var.environment}_rds"
     Environment = "${var.environment}"
   }
 }
