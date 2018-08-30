@@ -2,19 +2,21 @@ locals {
   named_codebuild = "graphql_codebuild_${var.environment}"
 }
 
+// S3 bucket holding source downloaded from github and final artifact manifest for codeDeploy
 resource "aws_s3_bucket" "source" {
   bucket        = "${var.artifact_bucket_name}"
   acl           = "private"
   force_destroy = true
 }
 
+// CodePipeline IAM role
 resource "aws_iam_role" "codepipeline_role" {
   name = "codepipeline_role_${var.environment}"
 
   assume_role_policy = "${file("${path.module}/policies/codepipeline_role.json")}"
 }
 
-/* policies */
+// CodePipeline policy with templating variables
 data "template_file" "codepipeline_policy" {
   template = "${file("${path.module}/policies/codepipeline.json")}"
 
@@ -23,6 +25,7 @@ data "template_file" "codepipeline_policy" {
   }
 }
 
+// Rendered CodePipeline policy
 resource "aws_iam_role_policy" "codepipeline_policy" {
   name   = "codepipeline_policy"
   role   = "${aws_iam_role.codepipeline_role.id}"
@@ -32,11 +35,13 @@ resource "aws_iam_role_policy" "codepipeline_policy" {
 /*
 /* CodeBuild
 */
+// CodeBuild IAM role
 resource "aws_iam_role" "codebuild_role" {
   name               = "codebuild_role_${var.environment}"
   assume_role_policy = "${file("${path.module}/policies/codebuild_role.json")}"
 }
 
+// CodeBuild policy with templating variables
 data "template_file" "codebuild_policy" {
   template = "${file("${path.module}/policies/codebuild_policy.json")}"
 
@@ -45,12 +50,14 @@ data "template_file" "codebuild_policy" {
   }
 }
 
+// Rendered CodeBuild policy template
 resource "aws_iam_role_policy" "codebuild_policy" {
   name   = "codebuild_policy"
   role   = "${aws_iam_role.codebuild_role.id}"
   policy = "${data.template_file.codebuild_policy.rendered}"
 }
 
+// CodeBuild buildspec with templating variables
 data "template_file" "buildspec" {
   template = "${file("${path.module}/buildspec.yml")}"
 
@@ -69,6 +76,7 @@ data "template_file" "buildspec" {
   }
 }
 
+// CodeBuild configuration
 resource "aws_codebuild_project" "graphql_build" {
   name          = "${local.named_codebuild}"
   build_timeout = "10"
@@ -93,7 +101,7 @@ resource "aws_codebuild_project" "graphql_build" {
   }
 }
 
-/* CodePipeline */
+// CodePipeline configuration
 resource "aws_codepipeline" "pipeline" {
   name     = "${local.named_codebuild}"
   role_arn = "${aws_iam_role.codepipeline_role.arn}"

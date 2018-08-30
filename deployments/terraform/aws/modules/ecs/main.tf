@@ -13,17 +13,17 @@ resource "aws_cloudwatch_log_group" "graphql_services" {
 /*====
 ECR repository to store our Docker images
 ======*/
-// GraphQL docker image
+// GraphQL docker image repo
 resource "aws_ecr_repository" "graphql_repo" {
   name = "${var.environment}/${var.graphql_service_name}"
 }
 
-// Auth docker image
+// Auth docker image repo
 resource "aws_ecr_repository" "auth_repo" {
   name = "${var.environment}/${var.auth_service_name}"
 }
 
-// Migrations docker image
+// Migrations docker image repo
 resource "aws_ecr_repository" "migration_repo" {
   name = "${var.environment}/${var.migration_service_name}"
 }
@@ -92,7 +92,7 @@ resource "random_id" "target_group_sufix" {
   byte_length = 2
 }
 
-/* security group for ALB */
+// Security group for ALB
 resource "aws_security_group" "graphql_inbound_sg" {
   name        = "${var.environment}_web_inbound_sg"
   description = "Allow HTTP from Anywhere into ALB"
@@ -112,7 +112,7 @@ resource "aws_security_group" "graphql_inbound_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  // TODO: look into this block
+  // Allow inbound ICMP traffic
   ingress {
     from_port   = 8
     to_port     = 0
@@ -132,13 +132,14 @@ resource "aws_security_group" "graphql_inbound_sg" {
   }
 }
 
-// SSL cert for HTTPS fetched by domain name
+// Reference to existing ACM SSL cert for HTTPS fetched by domain name on cert
 data "aws_acm_certificate" "ssl" {
   domain      = "${var.ssl_identifier}"
   types       = ["AMAZON_ISSUED"]
   most_recent = true
 }
 
+// Application Load Balancer
 resource "aws_alb" "alb_graphql" {
   name            = "${var.environment}-alb-graphql-services"
   subnets         = ["${var.public_subnet_ids}"]
@@ -195,7 +196,7 @@ resource "aws_alb_listener" "graphql_services_https" {
   }
 }
 
-// Redirect all traffic to https
+// Redirect all traffic to https rule
 resource "aws_lb_listener_rule" "redirect_http_to_https" {
   listener_arn = "${aws_alb_listener.graphql_services_http.arn}"
 
@@ -215,7 +216,7 @@ resource "aws_lb_listener_rule" "redirect_http_to_https" {
   }
 }
 
-// Redirect load balancer URL
+// Redirect load balancer URL to domain name rule
 resource "aws_lb_listener_rule" "redirect_balancer_url" {
   listener_arn = "${aws_alb_listener.graphql_services_http.arn}"
 
@@ -237,8 +238,9 @@ resource "aws_lb_listener_rule" "redirect_balancer_url" {
 }
 
 /*
-* IAM service role
+* IAM roles
 */
+// ECS IAM service role
 data "aws_iam_policy_document" "ecs_service_role" {
   statement {
     effect  = "Allow"
@@ -251,6 +253,7 @@ data "aws_iam_policy_document" "ecs_service_role" {
   }
 }
 
+// ECS IAM role
 resource "aws_iam_role" "ecs_role" {
   name               = "ecs_role_${var.environment}"
   assume_role_policy = "${data.aws_iam_policy_document.ecs_service_role.json}"
@@ -271,7 +274,7 @@ data "aws_iam_policy_document" "ecs_service_policy" {
   }
 }
 
-/* ecs service scheduler role */
+// ECS service scheduler IAM role
 resource "aws_iam_role_policy" "ecs_service_role_policy" {
   name = "ecs_service_role_policy_${var.environment}"
 
@@ -279,7 +282,7 @@ resource "aws_iam_role_policy" "ecs_service_role_policy" {
   role   = "${aws_iam_role.ecs_role.id}"
 }
 
-/* role that the Amazon ECS container agent and the Docker daemon can assume */
+// IAM role that the Amazon ECS container agent and the Docker daemon can assume
 resource "aws_iam_role" "ecs_execution_role" {
   name               = "ecs_task_execution_role_${var.environment}"
   assume_role_policy = "${file("${path.module}/policies/ecs-task-execution-role.json")}"
@@ -295,7 +298,7 @@ resource "aws_iam_role_policy" "ecs_execution_role_policy" {
 ECS service
 ======*/
 
-/* Security Group for ECS */
+// Security Group for ECS
 resource "aws_security_group" "ecs_service" {
   vpc_id      = "${var.vpc_id}"
   name        = "${var.environment}_ecs_service_sg"
@@ -308,6 +311,7 @@ resource "aws_security_group" "ecs_service" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  // Allow inbound ICMP traffic
   ingress {
     from_port   = 8
     to_port     = 0
@@ -326,6 +330,7 @@ data "aws_ecs_task_definition" "graphql_web" {
   task_definition = "${aws_ecs_task_definition.graphql_web.family}"
 }
 
+// Main ECS config
 resource "aws_ecs_service" "graphql_web" {
   name            = "${var.environment}_graphql_web"
   task_definition = "${aws_ecs_task_definition.graphql_web.family}:${max("${aws_ecs_task_definition.graphql_web.revision}", "${data.aws_ecs_task_definition.graphql_web.revision}")}"
@@ -350,18 +355,20 @@ resource "aws_ecs_service" "graphql_web" {
 /*====
 Auto Scaling for ECS
 ======*/
-
+// Autoscaling IAM role
 resource "aws_iam_role" "ecs_autoscale_role" {
   name               = "${var.environment}_ecs_autoscale_role"
   assume_role_policy = "${file("${path.module}/policies/ecs-autoscale-role.json")}"
 }
 
+// Autoscaling IAM policy
 resource "aws_iam_role_policy" "ecs_autoscale_role_policy" {
   name   = "ecs_autoscale_role_policy"
   policy = "${file("${path.module}/policies/ecs-autoscale-role-policy.json")}"
   role   = "${aws_iam_role.ecs_autoscale_role.id}"
 }
 
+// Autoscaling target config
 resource "aws_appautoscaling_target" "target" {
   service_namespace  = "ecs"
   resource_id        = "service/${aws_ecs_cluster.cluster.name}/${aws_ecs_service.graphql_web.name}"
@@ -371,6 +378,7 @@ resource "aws_appautoscaling_target" "target" {
   max_capacity       = 4
 }
 
+// Autoscaling up policy config
 resource "aws_appautoscaling_policy" "up" {
   name               = "${var.environment}_scale_up"
   service_namespace  = "ecs"
@@ -391,6 +399,7 @@ resource "aws_appautoscaling_policy" "up" {
   depends_on = ["aws_appautoscaling_target.target"]
 }
 
+// Autoscaling down policy config
 resource "aws_appautoscaling_policy" "down" {
   name               = "${var.environment}_scale_down"
   service_namespace  = "ecs"
@@ -411,7 +420,7 @@ resource "aws_appautoscaling_policy" "down" {
   depends_on = ["aws_appautoscaling_target.target"]
 }
 
-/* metric used for auto scale */
+// Cloudwatch metric alarm used for auto scaling
 resource "aws_cloudwatch_metric_alarm" "service_cpu_high" {
   alarm_name          = "${var.environment}_graphql_services_web_cpu_utilization_high"
   comparison_operator = "GreaterThanOrEqualToThreshold"

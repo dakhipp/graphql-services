@@ -1,3 +1,8 @@
+variable "environment" {
+  description = "The environment"
+  default     = "staging"
+}
+
 variable "graphql_service_name" {
   description = "The name of the GraphQL service"
   default     = "graphql"
@@ -14,19 +19,19 @@ variable "migration_service_name" {
 }
 
 variable "bastion_public_key" {
-  description = "Public SSH key supplied by terraform.tfvars file"
+  description = "Public SSH key, originates from terraform.tfvars file"
 }
 
 variable "github_oauth" {
-  description = "Github OAuth token supplied by terraform.tfvars file"
+  description = "Github OAuth token, originates from terraform.tfvars file"
 }
 
 variable "github_user" {
-  description = "Github user"
+  description = "Github user, originates from terraform.tfvars file"
 }
 
 variable "github_repo" {
-  description = "Github repo"
+  description = "Github repo, originates from terraform.tfvars file"
 }
 
 variable "ssl_identifier" {
@@ -38,28 +43,23 @@ variable "route53_zone_id" {
 }
 
 variable "psql_root_db" {
-  description = "Database name supplied by terraform.tfvars file"
+  description = "Database name, originates from terraform.tfvars file"
 }
 
 variable "psql_root_user" {
-  description = "The root database user supplied by terraform.tfvars file"
+  description = "The root database user, originates from terraform.tfvars file"
 }
 
 variable "psql_root_pass" {
-  description = "The root database password supplied by terraform.tfvars file"
-}
-
-variable "environment" {
-  description = "The environment"
-  default     = "staging"
+  description = "The root database password, originates from terraform.tfvars file"
 }
 
 variable "github_branch" {
-  description = "Github branch"
+  description = "Github branch, originates from terraform.tfvars file"
 }
 
 variable "domain" {
-  description = "The domain to create an a record on, supplied by terraform.tfvars file"
+  description = "The domain to create an a record on, originates from terraform.tfvars file"
 }
 
 variable "artifact_bucket_name" {
@@ -67,29 +67,29 @@ variable "artifact_bucket_name" {
 }
 
 variable "psql_web_db" {
-  description = "The database name for this app supplied by terraform.tfvars file"
+  description = "The database name for this app, originates from terraform.tfvars file"
 }
 
 variable "psql_web_user" {
-  description = "A limited database user for this app supplied by terraform.tfvars file"
+  description = "A limited database user for this app, originates from terraform.tfvars file"
 }
 
 variable "psql_web_pass" {
-  description = "A database password for the limited database user for this app, supplied by terraform.tfvars file"
+  description = "A database password for the limited database user for this app, originates from terraform.tfvars file"
 }
 
 variable "psql_port" {
-  description = "PostgreSQL port supplied by terraform.tfvars file"
+  description = "PostgreSQL port, originates from terraform.tfvars file"
 }
 
 variable "graphql_port" {
-  description = "Port the GraphQL service container will start on supplied by terraform.tfvars file"
+  description = "Port the GraphQL service container will start on, originates from terraform.tfvars file"
 }
 
 variable "auth_port" {
-  description = "Port the auth service container will start on supplied by terraform.tfvars file"
+  description = "Port the auth service container will start on, originates from terraform.tfvars file"
 }
 
 variable "playground_enabled" {
-  description = "Whether or not the GraphQL playground should be enabled, supplied by terraform.tfvars file"
+  description = "Whether or not the GraphQL playground should be enabled, originates from terraform.tfvars file"
 }

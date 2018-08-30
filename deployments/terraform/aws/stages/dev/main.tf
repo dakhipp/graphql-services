@@ -24,6 +24,7 @@ terraform {
   }
 }
 
+// VPC for private networking
 module "vpc" {
   source               = "../../modules/vpc"
   region               = "${local.region}"
@@ -34,6 +35,7 @@ module "vpc" {
   availability_zones   = ["us-west-2a", "us-west-2b", "us-west-2c"]
 }
 
+// RDS service with PostgreSQL
 module "rds" {
   source                  = "../../modules/rds"
   environment             = "${var.environment}"
@@ -53,6 +55,7 @@ module "rds" {
   vpc_id                  = "${module.vpc.vpc_id}"
 }
 
+// Bastion server that allows access to resources in public and private subnets
 module "bastion" {
   source             = "../../modules/bastion"
   environment        = "${var.environment}"
@@ -71,12 +74,12 @@ module "bastion" {
   psql_addr          = "${module.rds.rds_address}"
 }
 
+// Container orchestration, load balancing, log aggregation, and metrics through ECS
 module "ecs" {
   source                 = "../../modules/ecs"
   environment            = "${var.environment}"
   domain                 = "${var.domain}"
   ssl_identifier         = "${var.ssl_identifier}"
-  availability_zones     = "${var.graphql_service_name}"
   graphql_service_name   = "${var.graphql_service_name}"
   auth_service_name      = "${var.auth_service_name}"
   migration_service_name = "${var.migration_service_name}"
@@ -104,6 +107,7 @@ module "ecs" {
   psql_addr     = "${module.rds.rds_address}:${var.psql_port}"
 }
 
+// CI / CD Pipeline with CodePipeline, CodeBuild, and CodeDeploy
 module "codepipeline" {
   source                      = "../../modules/codepipeline"
   region                      = "${local.region}"
@@ -125,6 +129,7 @@ module "codepipeline" {
   run_task_security_group_ids = ["${module.rds.db_access_sg_id}", "${module.vpc.security_groups_ids}", "${module.ecs.security_group_id}"]
 }
 
+// DNS services with Route53
 module "route53" {
   source          = "../../modules/route53"
   domain          = "${var.domain}"
