@@ -11,12 +11,8 @@ import (
 
 // Config : Configuration values created from environment variables
 type Config struct {
-	Port     string `envconfig:"PORT"`
-	PSQLUser string `envconfig:"PSQL_USER"`
-	PSQLPass string `envconfig:"PSQL_PASS"`
-	PSQLAddr string `envconfig:"PSQL_ADDR"`
-	PSQLDB   string `envconfig:"PSQL_DB"`
-	PSQLSSL  string `envconfig:"PSQL_SSL"`
+	Port    string `envconfig:"PORT"`
+	PSQLURL string `envconfig:"PSQL_URL"`
 }
 
 func main() {
@@ -27,11 +23,12 @@ func main() {
 		log.Fatal(err)
 	}
 
+	log.Println(cfg.PSQLURL)
+
 	// Attempt to create auth repository
 	var repository auth.Repository
 	retry.ForeverSleep(2*time.Second, func(_ int) (err error) {
-		databaseURL := "postgres://" + cfg.PSQLUser + ":" + cfg.PSQLPass + "@" + cfg.PSQLAddr + "/" + cfg.PSQLDB + "?sslmode=" + cfg.PSQLSSL
-		repository, err = auth.NewPostgresRepository(databaseURL)
+		repository, err = auth.NewPostgresRepository(cfg.PSQLURL)
 		if err != nil {
 			log.Println(err)
 		}

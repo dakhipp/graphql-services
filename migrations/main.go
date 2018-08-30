@@ -3,10 +3,12 @@ package main
 import (
 	"log"
 	"os"
+	"time"
 
 	"github.com/go-pg/pg"
 	"github.com/kelseyhightower/envconfig"
 	migrations "github.com/robinjoseph08/go-pg-migrations"
+	"github.com/tinrab/retry"
 )
 
 // Config : Configuration values created from environment variables
@@ -27,15 +29,18 @@ func main() {
 		log.Fatal(err)
 	}
 
-	db := pg.Connect(&pg.Options{
-		User:     cfg.PSQLUser,
-		Password: cfg.PSQLPass,
-		Addr:     cfg.PSQLAddr,
-		Database: cfg.PSQLDB,
-	})
+	retry.ForeverSleep(2*time.Second, func(_ int) (err error) {
+		db := pg.Connect(&pg.Options{
+			User:     cfg.PSQLUser,
+			Password: cfg.PSQLPass,
+			Addr:     cfg.PSQLAddr,
+			Database: cfg.PSQLDB,
+		})
 
-	err = migrations.Run(db, directory, os.Args)
-	if err != nil {
-		log.Fatalln(err)
-	}
+		err = migrations.Run(db, directory, os.Args)
+		if err != nil {
+			log.Println(err)
+		}
+		return
+	})
 }

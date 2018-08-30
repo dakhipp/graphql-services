@@ -1,8 +1,3 @@
-variable "environment" {
-  description = "The environment"
-  default     = "staging"
-}
-
 variable "graphql_service_name" {
   description = "The name of the GraphQL service"
   default     = "graphql"
@@ -34,24 +29,53 @@ variable "github_repo" {
   description = "Github repo"
 }
 
+variable "ssl_identifier" {
+  description = "A domain added to an ACM certificate, sometimes the same as the domain variable, but if using a wildcard cert it might not be. Originates from terraform.tfvars file"
+}
+
+variable "route53_zone_id" {
+  description = "Zone ID for an existing Route53 hosted zone, originates from terraform.tfvars file"
+}
+
+variable "psql_root_db" {
+  description = "Database name supplied by terraform.tfvars file"
+}
+
+variable "psql_root_user" {
+  description = "The root database user supplied by terraform.tfvars file"
+}
+
+variable "psql_root_pass" {
+  description = "The root database password supplied by terraform.tfvars file"
+}
+
+variable "environment" {
+  description = "The environment"
+  default     = "staging"
+}
+
 variable "github_branch" {
   description = "Github branch"
 }
 
-variable "psql_user" {
-  description = "Database user supplied by terraform.tfvars file"
+variable "domain" {
+  description = "The domain to create an a record on, supplied by terraform.tfvars file"
 }
 
-variable "psql_pass" {
-  description = "Database password supplied by terraform.tfvars file"
+variable "artifact_bucket_name" {
+  description = "The name of the bucket to store codepipeline artifacts in, originates from terraform.tfvars file"
 }
 
-variable "psql_db" {
-  description = "Database name supplied by terraform.tfvars file"
+variable "psql_web_db" {
+  description = "The database name for this app supplied by terraform.tfvars file"
 }
 
-variable "psql_ssl" {
-  description = "Database ssl enabled or disabled supplied by terraform.tfvars file"
+variable "psql_web_user" {
+  description = "A limited database user for this app supplied by terraform.tfvars file"
+}
+
+variable "psql_web_pass" {
+  description = "A database password for the limited database user for this app, supplied by terraform.tfvars file"
 }
 
 variable "psql_port" {
@@ -68,20 +92,4 @@ variable "auth_port" {
 
 variable "playground_enabled" {
   description = "Whether or not the GraphQL playground should be enabled, supplied by terraform.tfvars file"
-}
-
-variable "domain" {
-  description = "The domain to create an a record on, supplied by terraform.tfvars file"
-}
-
-variable "ssl_identifier" {
-  description = "A domain added to an ACM certificate, sometimes the same as the domain variable, but if using a wildcard cert it might not be. Originates from terraform.tfvars file"
-}
-
-variable "route53_zone_id" {
-  description = "Zone ID for an existing Route53 hosted zone, originates from terraform.tfvars file"
-}
-
-variable "artifact_bucket_name" {
-  description = "The name of the bucket to store codepipeline artifacts in, originates from terraform.tfvars file"
 }

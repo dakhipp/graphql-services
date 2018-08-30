@@ -45,9 +45,9 @@ module "rds" {
   backup_window           = "02:00-03:00"
   multi_az                = false
   apply_immediately       = true
-  psql_db                 = "${var.psql_db}"
-  psql_user               = "${var.psql_user}"
-  psql_pass               = "${var.psql_pass}"
+  psql_root_db            = "${var.psql_root_db}"
+  psql_root_user          = "${var.psql_root_user}"
+  psql_root_pass          = "${var.psql_root_pass}"
   psql_port               = "${var.psql_port}"
   subnet_ids              = ["${module.vpc.private_subnets_id}"]
   vpc_id                  = "${module.vpc.vpc_id}"
@@ -58,9 +58,17 @@ module "bastion" {
   environment        = "${var.environment}"
   bastion_key_name   = "bastion-key-${var.environment}"
   bastion_public_key = "${var.bastion_public_key}"
+  psql_root_db       = "${var.psql_root_db}"
+  psql_root_user     = "${var.psql_root_user}"
+  psql_root_pass     = "${var.psql_root_pass}"
+  psql_web_db        = "${var.psql_web_db}"
+  psql_web_user      = "${var.psql_web_user}"
+  psql_web_pass      = "${var.psql_web_pass}"
+  psql_port          = "${var.psql_port}"
   subnet_id          = "${module.vpc.public_subnets_id[0]}"
   vpc_id             = "${module.vpc.vpc_id}"
   rds_sg             = "${module.rds.db_access_sg_id}"
+  psql_addr          = "${module.rds.rds_address}"
 }
 
 module "ecs" {
@@ -87,12 +95,13 @@ module "ecs" {
 
   // auth env vars
   auth_port = "${var.auth_port}"
-  psql_user = "${var.psql_user}"
-  psql_pass = "${var.psql_pass}"
-  psql_db   = "${var.psql_db}"
-  psql_ssl  = "${var.psql_ssl}"
-  psql_port = "${var.psql_port}"
-  psql_addr = "${module.rds.rds_address}"
+  psql_url  = "postgres://${var.psql_web_user}:${var.psql_web_pass}@${module.rds.rds_address}:${var.psql_port}/${var.psql_web_db}?sslmode=disable"
+
+  // migration env vars
+  psql_web_db   = "${var.psql_web_db}"
+  psql_web_user = "${var.psql_web_user}"
+  psql_web_pass = "${var.psql_web_pass}"
+  psql_addr     = "${module.rds.rds_address}:${var.psql_port}"
 }
 
 module "codepipeline" {

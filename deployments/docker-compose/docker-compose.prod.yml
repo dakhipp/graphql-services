@@ -22,11 +22,7 @@ services:
       - "psql"
     environment:
       - PORT=8001
-      - PSQL_ADDR=psql:5432
-      - PSQL_USER=root
-      - PSQL_PASS=toor
-      - PSQL_DB=psql
-      - PSQL_SSL=disable
+      - PSQL_URL=postgres://root:toor@psql/psql?sslmode=disable
 
   migrations:
     build:
@@ -39,7 +35,6 @@ services:
       - PSQL_USER=root
       - PSQL_PASS=toor
       - PSQL_DB=psql
-      - PSQL_SSL=disable
 
   psql:
     image: postgres:10.4

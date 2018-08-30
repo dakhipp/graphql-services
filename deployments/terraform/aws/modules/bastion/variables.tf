@@ -8,8 +8,40 @@ variable "bastion_key_name" {
   default     = "bastion-key-staging"
 }
 
+variable "psql_root_db" {
+  description = "Database name supplied by terraform.tfvars file"
+}
+
+variable "psql_root_user" {
+  description = "The root database user supplied by terraform.tfvars file"
+}
+
+variable "psql_root_pass" {
+  description = "The root database password supplied by terraform.tfvars file"
+}
+
+variable "psql_web_db" {
+  description = "The database name for this app supplied by terraform.tfvars file"
+}
+
+variable "psql_web_user" {
+  description = "A limited database user for this app supplied by terraform.tfvars file"
+}
+
+variable "psql_web_pass" {
+  description = "A database password for the limited database user for this app, supplied by terraform.tfvars file"
+}
+
+variable "psql_port" {
+  description = "PostgreSQL port supplied by terraform.tfvars file"
+}
+
 variable "bastion_public_key" {
   description = "Public SSH key supplied by terraform.tfvars file, orginates from terraform.tfvars file"
+}
+
+variable "psql_addr" {
+  description = "The database endpoint, originates from RDS module"
 }
 
 variable "subnet_id" {

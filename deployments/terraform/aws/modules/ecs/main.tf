@@ -59,11 +59,13 @@ data "template_file" "graphql_task" {
 
     // Auth env vars
     auth_port = "${var.auth_port}"
-    psql_addr = "${var.psql_addr}:${var.psql_port}"
-    psql_user = "${var.psql_user}"
-    psql_pass = "${var.psql_pass}"
-    psql_db   = "${var.psql_db}"
-    psql_ssl  = "${var.psql_ssl}"
+    psql_url  = "${var.psql_url}"
+
+    // Migrations env vars
+    psql_addr = "${var.psql_addr}"
+    psql_user = "${var.psql_web_user}"
+    psql_pass = "${var.psql_web_pass}"
+    psql_db   = "${var.psql_web_db}"
   }
 }
 

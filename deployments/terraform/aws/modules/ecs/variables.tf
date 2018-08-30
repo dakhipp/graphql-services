@@ -51,28 +51,24 @@ variable "auth_port" {
   description = "The port the auth container will start on, originates from terraform.tfvars file"
 }
 
-variable "psql_addr" {
-  description = "The database endpoint, originates from RDS service"
+variable "psql_url" {
+  description = "The database url, originates from RDS service"
 }
 
-variable "psql_user" {
-  description = "The database username, originates from terraform.tfvars file"
-}
-
-variable "psql_pass" {
-  description = "The database password, originates from terraform.tfvars file"
-}
-
-variable "psql_db" {
+variable "psql_web_db" {
   description = "The database that the app will use, originates from terraform.tfvars file"
 }
 
-variable "psql_ssl" {
-  description = "Database ssl enabled or disabled, originates from terraform.tfvars file"
+variable "psql_web_user" {
+  description = "The database username, originates from terraform.tfvars file"
 }
 
-variable "psql_port" {
-  description = "The database port, originates from terraform.tfvars file"
+variable "psql_web_pass" {
+  description = "The database password, originates from terraform.tfvars file"
+}
+
+variable "psql_addr" {
+  description = "The database endpoint, originates from RDS service"
 }
 
 variable "domain" {

@@ -43,16 +43,16 @@ variable "apply_immediately" {
   default     = false
 }
 
-variable "psql_db" {
-  description = "The database name, originates from terraform.tfvars file"
+variable "psql_root_db" {
+  description = "The root database name, originates from terraform.tfvars file"
 }
 
-variable "psql_user" {
-  description = "The username of the database, originates from terraform.tfvars file"
+variable "psql_root_user" {
+  description = "The root username of the database, originates from terraform.tfvars file"
 }
 
-variable "psql_pass" {
-  description = "The password of the database, originates from terraform.tfvars file"
+variable "psql_root_pass" {
+  description = "The root password for the root user of the database, originates from terraform.tfvars file"
 }
 
 variable "psql_port" {

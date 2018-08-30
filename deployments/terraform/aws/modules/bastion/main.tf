@@ -12,8 +12,16 @@ resource "aws_instance" "bastion_instance" {
   // User Data is a command that is ran at boot up time, updates, install psql, and stops instance
   user_data = <<-EOF
               #!/bin/bash
+              # Install updates and PSQL CLI
               sudo yum upgrade -y ;
               sudo yum install postgresql96-server.x86_64 -y ;
+              # Create limited web user
+              a="postgresql://${var.psql_root_user}:${var.psql_root_pass}@${var.psql_addr}"
+              psql "$a/${var.psql_root_db}" -c "CREATE DATABASE ${var.psql_web_db};"
+              psql "$a/${var.psql_web_db}" -c "CREATE USER ${var.psql_web_user} WITH ENCRYPTED PASSWORD '${var.psql_web_pass}';"
+              psql "$a/${var.psql_web_db}" -c "GRANT CONNECT ON DATABASE ${var.psql_web_db} TO ${var.psql_web_user};"
+              psql "$a/${var.psql_web_db}" -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE ON TABLES TO ${var.psql_web_user};"
+              # Power off machine since it has access to private resources
               sudo poweroff
               EOF
 
