@@ -2,7 +2,7 @@ version: 0.2
 
 env:
   variables:
-    GQL_ENDPOINT: "0.0.0.0:8000"
+    GQL_ENDPOINT: "http://localhost:8000/graphql"
 
 phases:
   pre_build:
