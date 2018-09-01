@@ -1,8 +1,9 @@
 package register
 
 import (
-	. "github.com/franela/goblin"
 	"testing"
+
+	. "github.com/franela/goblin"
 
 	"github.com/vektah/gqlgen/client"
 )
@@ -10,7 +11,7 @@ import (
 func TestRegister(t *testing.T) {
 	g := Goblin(t)
 
-	c := client.New("http://0.0.0.0:8000/graphql")
+	c := client.New("http://172.27.0.1:8000/graphql")
 
 	g.Describe("Register", func() {
 		g.It("Should create a new user ", func() {
@@ -22,11 +23,11 @@ func TestRegister(t *testing.T) {
 				}
 			}
 			c.MustPost(`
-				mutation { 
+				mutation {
 					register(user: {
 						firstName:"First",
 						lastName:"Last"
-					}) { 
+					}) {
 						id,
 						firstName,
 						lastName
