@@ -1,10 +1,13 @@
 version: 0.2
 
+env:
+  variables:
+    GQL_ENDPOINT: "0.0.0.0:8000"
+
 phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-      - echo "$CODEBUILD_BUILD_SUCCEEDING"
       - $(aws ecr get-login --region ${region} --no-include-email)
       - echo Fetching Dep for Golang dependency management...
       - go get -u github.com/golang/dep/cmd/dep
@@ -16,28 +19,22 @@ phases:
       - echo Installing vendor dependencies...
       - dep ensure
       - echo Entering the build phase...
-      - echo "$CODEBUILD_BUILD_SUCCEEDING"
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
   build:
     commands:
       - echo Build started on `date`
-      - echo "$CODEBUILD_BUILD_SUCCEEDING"
       - echo Starting Docker Compose...
-      - docker-compose -f deployments/docker-compose/docker-compose.prod.yml up --build -d
-      - echo "$CODEBUILD_BUILD_SUCCEEDING"
-      - sleep 5
-      - echo "$CODEBUILD_BUILD_SUCCEEDING"
-      - cd tests/integration/ ; go test ; cd ../..
+      - docker-compose -f deployments/docker-compose/docker-compose.prod.yml up --build -d ; sleep 5
+      - cd tests/integration/ ; if ! go test ; then CODEBUILD_BUILD_SUCCEEDING=0; fi ; cd ../..
+      - if [ $CODEBUILD_BUILD_SUCCEEDING != 1 ]; then exit 1; fi;
       - echo Tagging images built with Docker Compose...
       - docker tag docker-compose_graphql ${graphql_repo_url}:$COMMIT_HASH
       - docker tag docker-compose_auth ${auth_repo_url}:$COMMIT_HASH
       - docker tag docker-compose_migrations ${migration_repo_url}:$COMMIT_HASH
-      - echo "$CODEBUILD_BUILD_SUCCEEDING"
-      - if [[ "$CODEBUILD_BUILD_SUCCEEDING" == "0" ]]; then exit 1; fi;
       - echo Build completed on `date`
   post_build:
     commands:
-      - if [[ "$CODEBUILD_BUILD_SUCCEEDING" == "0" ]]; then exit 1; fi;
+      - if [ $CODEBUILD_BUILD_SUCCEEDING != 1 ]; then exit 1; fi;
       - echo Pushing the Docker images...
       - docker push ${graphql_repo_url}:$COMMIT_HASH
       - docker push ${auth_repo_url}:$COMMIT_HASH
