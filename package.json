@@ -8,6 +8,8 @@
     "start:prod": "docker-compose -f deployments/docker-compose/docker-compose.prod.yml up --build",
     "build:auth": "go generate auth/server.go",
     "build:graphql": "go generate graphql/graph/graph.go",
+    "test": "yarn test:integration",
+    "test:integration": "cd integration ; GQL_ENDPOINT=http://localhost:8000/graphql go test ; cd ..",
     "terraform:init": "cd deployments/terraform/aws/stages/dev ; terraform init ; cd ../../../../..",
     "terraform:apply": "cd deployments/terraform/aws/stages/dev ; terraform apply ; cd ../../../../..",
     "terraform:destroy": "cd deployments/terraform/aws/stages/dev ; terraform destroy ; cd ../../../../..",

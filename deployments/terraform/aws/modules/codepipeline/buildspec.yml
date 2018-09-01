@@ -25,7 +25,7 @@ phases:
       - echo Build started on `date`
       - echo Starting Docker Compose...
       - docker-compose -f deployments/docker-compose/docker-compose.prod.yml up --build -d ; sleep 5
-      - cd tests/integration/ ; if ! go test ; then CODEBUILD_BUILD_SUCCEEDING=0; fi ; cd ../..
+      - cd integration/ ; if ! go test ; then CODEBUILD_BUILD_SUCCEEDING=0; fi ; cd ..
       - if [ $CODEBUILD_BUILD_SUCCEEDING != 1 ]; then exit 1; fi;
       - echo Tagging images built with Docker Compose...
       - docker tag docker-compose_graphql ${graphql_repo_url}:$COMMIT_HASH
