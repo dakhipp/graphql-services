@@ -46,7 +46,6 @@ func main() {
 
 	// Log when the server starts
   log.Println("Listening on port " + cfg.Port + "...")
-  log.Println("Listening on port " + cfg.AuthURL + "...")
 
 	// Start or throw fatal error
 	log.Fatal(http.ListenAndServe(":"+cfg.Port, nil))

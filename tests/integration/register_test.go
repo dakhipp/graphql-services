@@ -11,7 +11,7 @@ import (
 func TestRegister(t *testing.T) {
 	g := Goblin(t)
 
-	c := client.New("http://0.0.0.0:8000/graphql")
+	c := client.New("http://0.0.0.1:8000/graphql")
 
 	g.Describe("Register", func() {
 		g.It("Should create a new user ", func() {

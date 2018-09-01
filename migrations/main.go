@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"time"
@@ -37,8 +36,6 @@ func main() {
 			Addr:     cfg.PSQLAddr,
 			Database: cfg.PSQLDB,
 		})
-
-		fmt.Println(cfg.PSQLAddr)
 
 		err = migrations.Run(db, directory, os.Args)
 		if err != nil {
