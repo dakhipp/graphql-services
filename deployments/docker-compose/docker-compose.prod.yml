@@ -13,6 +13,8 @@ services:
       - PORT=8000
       - PLAYGROUND=true
       - AUTH_SERVICE_URL=auth:8001
+      - REDIS_URL=redis://root:toor@redis:6379/0
+      - DOMAIN=localhost
 
   auth:
     build:
@@ -35,6 +37,16 @@ services:
       - PSQL_USER=root
       - PSQL_PASS=toor
       - PSQL_DB=psql
+
+  redis:
+    image: redis
+    expose:
+      - "6379"
+    ports:
+      - "6379:6379"
+    command: >
+      --requirepass toor
+    restart: "unless-stopped"
 
   psql:
     image: postgres:10.4

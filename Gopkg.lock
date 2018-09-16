@@ -33,6 +33,14 @@
   version = "0.0.2"
 
 [[projects]]
+  digest = "1:b9914f85d95a0968bafd1be1908ba29e2eafafd88d6fd13696be42bf5368c380"
+  name = "github.com/go-chi/chi"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "b5294d10673813fac8558e7f47242bc9e61b4c25"
+  version = "v3.3.3"
+
+[[projects]]
   digest = "1:5b14f08247db438a2d11b77aff373b6536028673e38eab87fb5062e07b3b7487"
   name = "github.com/go-pg/pg"
   packages = [
@@ -61,6 +69,17 @@
   pruneopts = "UT"
   revision = "aa810b61a9c79d51363740d207bb46cf8e620ed5"
   version = "v1.2.0"
+
+[[projects]]
+  digest = "1:38ec74012390146c45af1f92d46e5382b50531247929ff3a685d2b2be65155ac"
+  name = "github.com/gomodule/redigo"
+  packages = [
+    "internal",
+    "redis",
+  ]
+  pruneopts = "UT"
+  revision = "9c11da706d9b7902c6da69c592f75637793fe121"
+  version = "v2.0.0"
 
 [[projects]]
   digest = "1:cee8e8ac80df6373e7daa11baf1f98c1b6f7242c49ccae7e1ec34a971dc408d9"
@@ -311,9 +330,11 @@
     "github.com/99designs/gqlgen/graphql",
     "github.com/99designs/gqlgen/graphql/introspection",
     "github.com/franela/goblin",
+    "github.com/go-chi/chi",
     "github.com/go-pg/pg",
     "github.com/go-pg/pg/orm",
     "github.com/golang/protobuf/proto",
+    "github.com/gomodule/redigo/redis",
     "github.com/kelseyhightower/envconfig",
     "github.com/lib/pq",
     "github.com/robinjoseph08/go-pg-migrations",
