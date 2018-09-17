@@ -2,12 +2,13 @@ package graph
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/gomodule/redigo/redis"
 )
 
 type Redis interface {
-	CreateSession(sId string, s Session) error
+	CreateSession(sId string, s *Session) error
 	GetSession(sId string) (Session, error)
 }
 
@@ -25,8 +26,8 @@ func NewRedisRepository(url string) (Redis, error) {
 }
 
 // CreateSession takes a session ID and a session and creates that session in Redis
-func (r *redisRepository) CreateSession(sID string, s Session) error {
-	_, err := r.client.Do("HMSET", sID, "ID", s.ID, "Name", s.Name)
+func (r *redisRepository) CreateSession(sID string, s *Session) error {
+	_, err := r.client.Do("HMSET", sID, "ID", s.ID, "Roles", s.Roles)
 	if err != nil {
 		fmt.Println(err)
 		return err
@@ -36,13 +37,15 @@ func (r *redisRepository) CreateSession(sID string, s Session) error {
 
 // GetSession takes a session ID and looks up a session in Redis
 func (r *redisRepository) GetSession(sID string) (Session, error) {
-	result, err := redis.Strings(r.client.Do("HMGET", sID, "ID", "Name"))
+	result, err := redis.Strings(r.client.Do("HMGET", sID, "ID", "Roles"))
 	if err != nil {
 		fmt.Println(err)
 		return Session{}, err
 	}
+
 	return Session{
-		result[0],
-		result[1],
+		ID: result[0],
+		// we get a slice-like string from redis and need to cast it into a slice of Roles
+		Roles: toRoles(strings.Split(strings.Trim(result[1], "[]"), " ")),
 	}, nil
 }

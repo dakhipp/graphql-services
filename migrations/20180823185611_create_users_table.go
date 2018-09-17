@@ -9,9 +9,15 @@ func init() {
 	up := func(db orm.DB) error {
 		_, err := db.Exec(`
       CREATE TABLE IF NOT EXISTS users (
-        id 					CHAR(27) 			PRIMARY KEY,
-        firstName 	VARCHAR(24) 	NOT NULL,
-        lastName 		VARCHAR(24) 	NOT NULL
+        id 					    TEXT 		PRIMARY KEY,
+        first_name 	    TEXT 	  NOT NULL,
+        last_name 	    TEXT 	  NOT NULL,
+        email           TEXT    NOT NULL,
+        phone           TEXT    NOT NULL,
+        password        TEXT    NOT NULL,
+        phone_verified  BOOL    DEFAULT FALSE,
+        email_verified  BOOL    DEFAULT FALSE,
+        roles           JSONB
       );
     `)
 		return err

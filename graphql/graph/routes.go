@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/vektah/gqlgen/handler"
 )
@@ -86,4 +87,22 @@ func (s *GraphQLServer) attachUserMiddleware() func(http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 		})
 	}
+}
+
+// writeSessionCookie takes context and a session ID and users http.ResponseWriter attached to conext to create a cookie
+func (s *GraphQLServer) writeSessionCookie(ctx context.Context, sID string) {
+	// pull http.Response writer off of context
+	w, _ := ctx.Value(CONTEXT_WRITER_KEY).(http.ResponseWriter)
+
+	// create cookie
+	c := http.Cookie{
+		Name:   SESSION_COOKIE_NAME,
+		Value:  sID,
+		Domain: s.cfg.Domain,
+		// cookie will get expired after 7 days
+		Expires: time.Now().AddDate(0, 0, 7),
+	}
+
+	// write the cookie to response
+	http.SetCookie(w, &c)
 }

@@ -28,14 +28,13 @@ func ListenGRPC(service Service, port string) error {
 
 // Register : GRPC function which registers a user
 func (server *grpcServer) Register(ctx context.Context, args *pb.RegisterRequest) (*pb.RegisterResponse, error) {
-	resp, err := server.service.Register(ctx, args.FirstName, args.LastName)
+	resp, err := server.service.Register(ctx, args)
 	if err != nil {
 		return nil, err
 	}
-	return &pb.RegisterResponse{User: &pb.User{
-		Id:        resp.ID,
-		FirstName: resp.FirstName,
-		LastName:  resp.LastName,
+	return &pb.RegisterResponse{User: &pb.Auth{
+		Id:    resp.ID,
+		Roles: resp.Roles,
 	}}, nil
 }
 

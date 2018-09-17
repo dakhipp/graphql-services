@@ -34,7 +34,7 @@ type ResolverRoot interface {
 type DirectiveRoot struct {
 }
 type MutationResolver interface {
-	Register(ctx context.Context, user RegisterArgs) (*User, error)
+	Register(ctx context.Context, args RegisterArgs) (*Session, error)
 }
 type QueryResolver interface {
 	GetUsers(ctx context.Context) ([]User, error)
@@ -121,7 +121,7 @@ func (ec *executionContext) _Mutation_register(ctx context.Context, field graphq
 	rawArgs := field.ArgumentMap(ec.Variables)
 	args := map[string]interface{}{}
 	var arg0 RegisterArgs
-	if tmp, ok := rawArgs["user"]; ok {
+	if tmp, ok := rawArgs["args"]; ok {
 		var err error
 		arg0, err = UnmarshalRegisterArgs(tmp)
 		if err != nil {
@@ -129,7 +129,7 @@ func (ec *executionContext) _Mutation_register(ctx context.Context, field graphq
 			return graphql.Null
 		}
 	}
-	args["user"] = arg0
+	args["args"] = arg0
 	rctx := graphql.GetResolverContext(ctx)
 	rctx.Object = "Mutation"
 	rctx.Args = args
@@ -137,16 +137,16 @@ func (ec *executionContext) _Mutation_register(ctx context.Context, field graphq
 	rctx.PushField(field.Alias)
 	defer rctx.Pop()
 	resTmp := ec.FieldMiddleware(ctx, func(ctx context.Context) (interface{}, error) {
-		return ec.resolvers.Mutation().Register(ctx, args["user"].(RegisterArgs))
+		return ec.resolvers.Mutation().Register(ctx, args["args"].(RegisterArgs))
 	})
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*User)
+	res := resTmp.(*Session)
 	if res == nil {
 		return graphql.Null
 	}
-	return ec._User(ctx, field.Selections, res)
+	return ec._Session(ctx, field.Selections, res)
 }
 
 var queryImplementors = []string{"Query"}
@@ -265,6 +265,74 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 		return graphql.Null
 	}
 	return ec.___Schema(ctx, field.Selections, res)
+}
+
+var sessionImplementors = []string{"Session"}
+
+// nolint: gocyclo, errcheck, gas, goconst
+func (ec *executionContext) _Session(ctx context.Context, sel ast.SelectionSet, obj *Session) graphql.Marshaler {
+	fields := graphql.CollectFields(ctx, sel, sessionImplementors)
+
+	out := graphql.NewOrderedMap(len(fields))
+	for i, field := range fields {
+		out.Keys[i] = field.Alias
+
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Session")
+		case "id":
+			out.Values[i] = ec._Session_id(ctx, field, obj)
+		case "roles":
+			out.Values[i] = ec._Session_roles(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+
+	return out
+}
+
+func (ec *executionContext) _Session_id(ctx context.Context, field graphql.CollectedField, obj *Session) graphql.Marshaler {
+	rctx := graphql.GetResolverContext(ctx)
+	rctx.Object = "Session"
+	rctx.Args = nil
+	rctx.Field = field
+	rctx.PushField(field.Alias)
+	defer rctx.Pop()
+	resTmp := ec.FieldMiddleware(ctx, func(ctx context.Context) (interface{}, error) {
+		return obj.ID, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	return graphql.MarshalString(res)
+}
+
+func (ec *executionContext) _Session_roles(ctx context.Context, field graphql.CollectedField, obj *Session) graphql.Marshaler {
+	rctx := graphql.GetResolverContext(ctx)
+	rctx.Object = "Session"
+	rctx.Args = nil
+	rctx.Field = field
+	rctx.PushField(field.Alias)
+	defer rctx.Pop()
+	resTmp := ec.FieldMiddleware(ctx, func(ctx context.Context) (interface{}, error) {
+		return obj.Roles, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]Roles)
+	arr1 := graphql.Array{}
+	for idx1 := range res {
+		arr1 = append(arr1, func() graphql.Marshaler {
+			rctx := graphql.GetResolverContext(ctx)
+			rctx.PushIndex(idx1)
+			defer rctx.Pop()
+			return res[idx1]
+		}())
+	}
+	return arr1
 }
 
 var userImplementors = []string{"User"}
@@ -1235,6 +1303,30 @@ func UnmarshalRegisterArgs(v interface{}) (RegisterArgs, error) {
 			if err != nil {
 				return it, err
 			}
+		case "email":
+			var err error
+			it.Email, err = graphql.UnmarshalString(v)
+			if err != nil {
+				return it, err
+			}
+		case "phone":
+			var err error
+			it.Phone, err = graphql.UnmarshalString(v)
+			if err != nil {
+				return it, err
+			}
+		case "password":
+			var err error
+			it.Password, err = graphql.UnmarshalString(v)
+			if err != nil {
+				return it, err
+			}
+		case "passwordConf":
+			var err error
+			it.PasswordConf, err = graphql.UnmarshalString(v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -1259,19 +1351,34 @@ func (ec *executionContext) introspectType(name string) *introspection.Type {
 }
 
 var parsedSchema = gqlparser.MustLoadSchema(
-	&ast.Source{Name: "../schema.graphql", Input: `type User {
+	&ast.Source{Name: "../schema.graphql", Input: `enum Roles {
+  ADMIN
+  OWNER
+  USER
+}
+
+type User {
 	id: String!,
 	firstName: String!,
 	lastName: String!
 }
 
+type Session {
+  id: String!,
+  roles: [Roles!]!
+}
+
 input RegisterArgs {
 	firstName: String!,
-	lastName: String!
+	lastName: String!,
+  email: String!,
+  phone: String!,
+  password: String!,
+  passwordConf: String!
 }
 
 type Mutation {
-	register(user: RegisterArgs!): User
+	register(args: RegisterArgs!): Session
 }
 
 type Query {

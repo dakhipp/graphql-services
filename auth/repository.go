@@ -2,9 +2,10 @@ package auth
 
 import (
 	"context"
-	"database/sql"
+	"fmt"
 
-	_ "github.com/lib/pq" // import postgres driver
+	"github.com/go-pg/pg"
+	"github.com/go-pg/pg/orm"
 )
 
 // Repository : A repository object which allows interactions with the database
@@ -15,58 +16,50 @@ type Repository interface {
 }
 
 type postgresRepository struct {
-	db *sql.DB
+	db *pg.DB
 }
 
-// NewPostgresRepository : Initiates a new database connection for the repository
+// NewPostgresRepository initializes a new database connection for the repository
 func NewPostgresRepository(url string) (Repository, error) {
-	db, err := sql.Open("postgres", url)
+	opts, err := pg.ParseURL(url)
 	if err != nil {
-		return nil, err
+		fmt.Println(err)
 	}
-	err = db.Ping()
-	if err != nil {
-		return nil, err
-	}
+	db := pg.Connect(opts)
+
 	return &postgresRepository{db}, nil
 }
 
-// Close : Closes the connection for the repository database
+// Close closes the connection
 func (repository *postgresRepository) Close() {
 	repository.db.Close()
 }
 
-// Ping : Checks for an error when pinging the database
-func (repository *postgresRepository) Ping() error {
-	return repository.db.Ping()
-}
-
-// CreateUser : Creates a user in the database
+// CreateUser creates a user in the database
 func (repository *postgresRepository) CreateUser(ctx context.Context, args User) error {
-	_, err := repository.db.ExecContext(ctx, "INSERT INTO users(id, firstName, lastName) VALUES($1, $2, $3)", args.ID, args.FirstName, args.LastName)
+	err := repository.db.Insert(&args)
 	return err
 }
 
-// ReadUsers : Reads users from the database
+// ReadUsers reads users from the database
 func (repository *postgresRepository) ReadUsers(ctx context.Context) ([]User, error) {
-	rows, err := repository.db.QueryContext(
-		ctx,
-		"SELECT * FROM users ORDER BY id DESC",
-	)
+	var users []User
+	err := repository.db.Model(&users).Select()
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	return users, nil
+}
 
-	users := []User{}
-	for rows.Next() {
-		u := &User{}
-		if err = rows.Scan(&u.ID, &u.FirstName, &u.LastName); err == nil {
-			users = append(users, *u)
+// create schema migrates
+func createSchema(db *pg.DB) error {
+	for _, model := range []interface{}{(*User)(nil)} {
+		err := db.CreateTable(model, &orm.CreateTableOptions{
+			IfNotExists: true,
+		})
+		if err != nil {
+			return err
 		}
 	}
-	if err = rows.Err(); err != nil {
-		return nil, err
-	}
-	return users, nil
+	return nil
 }

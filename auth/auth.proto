@@ -1,22 +1,31 @@
 syntax = "proto3";
 package pb;
 
-message RegisterRequest {
-  string firstName = 1;
-  string lastName = 2;
-}
-
-message RegisterResponse {
-  User user = 1;
-}
-
-message EmptyRequest {}
-
 message User {
   string id = 1;
   string firstName = 2;
   string lastName = 3;
 }
+
+message Auth {
+  string id = 1;
+  repeated string roles = 2;
+}
+
+message RegisterRequest {
+  string firstName = 1;
+  string lastName = 2;
+  string email = 3;
+  string phone = 4;
+  string password = 5;
+  string passwordConf = 6;
+}
+
+message RegisterResponse {
+  Auth user = 1;
+}
+
+message EmptyRequest {}
 
 message GetUsersResponse {
   repeated User users = 1;

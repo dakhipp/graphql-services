@@ -1,16 +1,31 @@
+enum Roles {
+  ADMIN
+  OWNER
+  USER
+}
+
 type User {
 	id: String!,
 	firstName: String!,
 	lastName: String!
 }
 
+type Session {
+  id: String!,
+  roles: [Roles!]!
+}
+
 input RegisterArgs {
 	firstName: String!,
-	lastName: String!
+	lastName: String!,
+  email: String!,
+  phone: String!,
+  password: String!,
+  passwordConf: String!
 }
 
 type Mutation {
-	register(user: RegisterArgs!): User
+	register(args: RegisterArgs!): Session
 }
 
 type Query {

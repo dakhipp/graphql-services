@@ -2,12 +2,63 @@
 
 package graph
 
+import (
+	fmt "fmt"
+	io "io"
+	strconv "strconv"
+)
+
 type RegisterArgs struct {
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
+	FirstName    string `json:"firstName"`
+	LastName     string `json:"lastName"`
+	Email        string `json:"email"`
+	Phone        string `json:"phone"`
+	Password     string `json:"password"`
+	PasswordConf string `json:"passwordConf"`
+}
+type Session struct {
+	ID    string  `json:"id"`
+	Roles []Roles `json:"roles"`
 }
 type User struct {
 	ID        string `json:"id"`
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
+}
+
+type Roles string
+
+const (
+	RolesAdmin Roles = "ADMIN"
+	RolesOwner Roles = "OWNER"
+	RolesUser  Roles = "USER"
+)
+
+func (e Roles) IsValid() bool {
+	switch e {
+	case RolesAdmin, RolesOwner, RolesUser:
+		return true
+	}
+	return false
+}
+
+func (e Roles) String() string {
+	return string(e)
+}
+
+func (e *Roles) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Roles(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Roles", str)
+	}
+	return nil
+}
+
+func (e Roles) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }

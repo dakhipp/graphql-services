@@ -28,22 +28,18 @@ func (client *Client) Close() {
 	client.conn.Close()
 }
 
-// Register : Register function avilable on the grpc client, registers a user in the database
-func (client *Client) Register(ctx context.Context, firstName string, lastName string) (*User, error) {
+// Register : Register function available on the grpc client, registers a user in the database
+func (client *Client) Register(ctx context.Context, r *pb.RegisterRequest) (*User, error) {
 	resp, err := client.service.Register(
 		ctx,
-		&pb.RegisterRequest{
-			FirstName: firstName,
-			LastName:  lastName,
-		},
+		r,
 	)
 	if err != nil {
 		return nil, err
 	}
 	return &User{
-		ID:        resp.User.Id,
-		FirstName: resp.User.FirstName,
-		LastName:  resp.User.LastName,
+		ID:    resp.User.Id,
+		Roles: resp.User.Roles,
 	}, nil
 }
 
