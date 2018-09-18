@@ -1,4 +1,6 @@
-enum Roles {
+directive @hasRole(role: Role!) on FIELD_DEFINITION
+
+enum Role {
   ADMIN
   OWNER
   USER
@@ -12,7 +14,7 @@ type User {
 
 type Session {
   id: String!,
-  roles: [Roles!]!
+  roles: [Role!]!
 }
 
 input RegisterArgs {
@@ -35,5 +37,5 @@ type Mutation {
 }
 
 type Query {
-	getUsers() : [User!]!
+	getUsers(): [User!] @hasRole(role: USER)
 }

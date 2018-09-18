@@ -5,9 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/dakhipp/graphql-services/auth"
 	"github.com/dakhipp/graphql-services/auth/pb"
-	"github.com/segmentio/ksuid"
 )
 
 type mutationResolver struct{ *GraphQLServer }
@@ -17,7 +15,7 @@ func (server *GraphQLServer) Mutation() MutationResolver {
 	return &mutationResolver{server}
 }
 
-// Register : Register mutation exposed via GraphQL
+// Register is a mutation resolver that registers a user
 func (server *GraphQLServer) Register(ctx context.Context, args RegisterArgs) (*Session, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
@@ -40,7 +38,7 @@ func (server *GraphQLServer) Register(ctx context.Context, args RegisterArgs) (*
 	return server.createSession(ctx, resp), nil
 }
 
-// Login is a mutation resolver
+// Login is a mutation resolver that logs in a user
 func (server *GraphQLServer) Login(ctx context.Context, args LoginArgs) (*Session, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
@@ -57,26 +55,4 @@ func (server *GraphQLServer) Login(ctx context.Context, args LoginArgs) (*Sessio
 	}
 
 	return server.createSession(ctx, resp), nil
-}
-
-func (server *GraphQLServer) createSession(ctx context.Context, resp *auth.User) *Session {
-	s := &Session{
-		ID:    resp.ID,
-		Roles: toRoles(resp.Roles),
-	}
-
-	sID := ksuid.New().String()
-	server.redisRepository.CreateSession(sID, s)
-
-	server.writeSessionCookie(ctx, sID)
-
-	return s
-}
-
-func toRoles(s []string) []Roles {
-	c := make([]Roles, len(s))
-	for i, v := range s {
-		c[i] = Roles(v)
-	}
-	return c
 }

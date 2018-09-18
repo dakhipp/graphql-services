@@ -6,10 +6,12 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dakhipp/graphql-services/auth"
+	"github.com/segmentio/ksuid"
 	"github.com/vektah/gqlgen/handler"
 )
 
-// RegisterRoutes takes a GraphQLServer pointer and registers all needed middlewares and router handlers
+// RegisterRoutes takes a GraphQLServer pointer and registers all needed middlewares, router handlers, and directives
 func RegisterRoutes(s *GraphQLServer) {
 	gqlConfig := Config{
 		Resolvers: s,
@@ -20,6 +22,9 @@ func RegisterRoutes(s *GraphQLServer) {
 
 	// register global middleware to attach a user based on the session cookie to the context of the request
 	s.mux.Use(s.attachUserMiddleware())
+
+	// register directives
+	gqlConfig.Directives.HasRole = s.hasRole
 
 	// register GraphQL route
 	s.mux.Handle("/graphql", handler.GraphQL(NewExecutableSchema(gqlConfig)))
@@ -65,14 +70,7 @@ func (s *GraphQLServer) attachUserMiddleware() func(http.Handler) http.Handler {
 				return
 			}
 
-			// TODO: validate cookie
-			// userId, err := validateAndGetUserID(c)
-			// if err != nil {
-			// 	http.Error(w, "Invalid cookie", http.StatusForbidden)
-			// 	return
-			// }
-
-			// get session ID from cookie and attempt to look up the session in redis
+			// get session ID and attempt to look up the session in redis
 			sID := c.Value
 			ses, err := s.redisRepository.GetSession(sID)
 			if err != nil {
@@ -96,15 +94,41 @@ func (s *GraphQLServer) writeSessionCookie(ctx context.Context, sID string) {
 	// pull http.Response writer off of context
 	w, _ := ctx.Value(CONTEXT_WRITER_KEY).(http.ResponseWriter)
 
+	// cookie will get expired after 7 days
+	e := time.Now().AddDate(0, 0, 7)
+
 	// create cookie
 	c := http.Cookie{
-		Name:   SESSION_COOKIE_NAME,
-		Value:  sID,
-		Domain: s.cfg.Domain,
-		// cookie will get expired after 7 days
-		Expires: time.Now().AddDate(0, 0, 7),
+		Name:    SESSION_COOKIE_NAME,
+		Value:   sID,
+		Domain:  s.cfg.Domain,
+		Expires: e,
 	}
 
 	// write the cookie to response
 	http.SetCookie(w, &c)
+}
+
+// createSession takes an authenticated user response and returns a session as well as a session cookie
+func (s *GraphQLServer) createSession(ctx context.Context, resp *auth.User) *Session {
+	ses := &Session{
+		ID:    resp.ID,
+		Roles: toRoles(resp.Roles),
+	}
+
+	sID := ksuid.New().String()
+	s.redisRepository.CreateSession(sID, ses)
+
+	s.writeSessionCookie(ctx, sID)
+
+	return ses
+}
+
+// toRoles converts a string array into a Roles array
+func toRoles(s []string) []Role {
+	c := make([]Role, len(s))
+	for i, v := range s {
+		c[i] = Role(v)
+	}
+	return c
 }

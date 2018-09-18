@@ -21,8 +21,8 @@ type RegisterArgs struct {
 	PasswordConf string `json:"passwordConf"`
 }
 type Session struct {
-	ID    string  `json:"id"`
-	Roles []Roles `json:"roles"`
+	ID    string `json:"id"`
+	Roles []Role `json:"roles"`
 }
 type User struct {
 	ID        string `json:"id"`
@@ -30,39 +30,39 @@ type User struct {
 	LastName  string `json:"lastName"`
 }
 
-type Roles string
+type Role string
 
 const (
-	RolesAdmin Roles = "ADMIN"
-	RolesOwner Roles = "OWNER"
-	RolesUser  Roles = "USER"
+	RoleAdmin Role = "ADMIN"
+	RoleOwner Role = "OWNER"
+	RoleUser  Role = "USER"
 )
 
-func (e Roles) IsValid() bool {
+func (e Role) IsValid() bool {
 	switch e {
-	case RolesAdmin, RolesOwner, RolesUser:
+	case RoleAdmin, RoleOwner, RoleUser:
 		return true
 	}
 	return false
 }
 
-func (e Roles) String() string {
+func (e Role) String() string {
 	return string(e)
 }
 
-func (e *Roles) UnmarshalGQL(v interface{}) error {
+func (e *Role) UnmarshalGQL(v interface{}) error {
 	str, ok := v.(string)
 	if !ok {
 		return fmt.Errorf("enums must be strings")
 	}
 
-	*e = Roles(str)
+	*e = Role(str)
 	if !e.IsValid() {
-		return fmt.Errorf("%s is not a valid Roles", str)
+		return fmt.Errorf("%s is not a valid Role", str)
 	}
 	return nil
 }
 
-func (e Roles) MarshalGQL(w io.Writer) {
+func (e Role) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }

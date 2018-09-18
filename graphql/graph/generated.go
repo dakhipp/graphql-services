@@ -32,6 +32,7 @@ type ResolverRoot interface {
 }
 
 type DirectiveRoot struct {
+	HasRole func(ctx context.Context, next graphql.Resolver, role Role) (res interface{}, err error)
 }
 type MutationResolver interface {
 	Register(ctx context.Context, args RegisterArgs) (*Session, error)
@@ -357,7 +358,7 @@ func (ec *executionContext) _Session_roles(ctx context.Context, field graphql.Co
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]Roles)
+	res := resTmp.([]Role)
 	arr1 := graphql.Array{}
 	for idx1 := range res {
 		arr1 = append(arr1, func() graphql.Marshaler {
@@ -1393,6 +1394,30 @@ func UnmarshalRegisterArgs(v interface{}) (RegisterArgs, error) {
 }
 
 func (ec *executionContext) FieldMiddleware(ctx context.Context, next graphql.Resolver) interface{} {
+	rctx := graphql.GetResolverContext(ctx)
+	for _, d := range rctx.Field.Definition.Directives {
+		switch d.Name {
+		case "hasRole":
+			if ec.directives.HasRole != nil {
+				rawArgs := d.ArgumentMap(ec.Variables)
+				args := map[string]interface{}{}
+				var arg0 Role
+				if tmp, ok := rawArgs["role"]; ok {
+					var err error
+					err = (&arg0).UnmarshalGQL(tmp)
+					if err != nil {
+						ec.Error(ctx, err)
+						return graphql.Null
+					}
+				}
+				args["role"] = arg0
+				n := next
+				next = func(ctx context.Context) (interface{}, error) {
+					return ec.directives.HasRole(ctx, n, args["role"].(Role))
+				}
+			}
+		}
+	}
 	res, err := ec.ResolverMiddleware(ctx, next)
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1410,7 +1435,9 @@ func (ec *executionContext) introspectType(name string) *introspection.Type {
 }
 
 var parsedSchema = gqlparser.MustLoadSchema(
-	&ast.Source{Name: "../schema.graphql", Input: `enum Roles {
+	&ast.Source{Name: "../schema.graphql", Input: `directive @hasRole(role: Role!) on FIELD_DEFINITION
+
+enum Role {
   ADMIN
   OWNER
   USER
@@ -1424,7 +1451,7 @@ type User {
 
 type Session {
   id: String!,
-  roles: [Roles!]!
+  roles: [Role!]!
 }
 
 input RegisterArgs {
@@ -1447,7 +1474,7 @@ type Mutation {
 }
 
 type Query {
-	getUsers() : [User!]!
+	getUsers(): [User!] @hasRole(role: USER)
 }
 `},
 )
