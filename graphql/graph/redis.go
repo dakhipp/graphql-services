@@ -1,8 +1,8 @@
 package graph
 
 import (
+	"encoding/json"
 	"fmt"
-	"strings"
 
 	"github.com/gomodule/redigo/redis"
 )
@@ -16,7 +16,7 @@ type redisRepository struct {
 	client redis.Conn
 }
 
-// NewRedisRepository : Initiates a new database connection for the repository
+// NewRedisRepository initiates a new redis connection
 func NewRedisRepository(url string) (Redis, error) {
 	client, err := redis.DialURL(url)
 	if err != nil {
@@ -27,9 +27,13 @@ func NewRedisRepository(url string) (Redis, error) {
 
 // CreateSession takes a session ID and a session and creates that session in Redis
 func (r *redisRepository) CreateSession(sID string, s *Session) error {
-	_, err := r.client.Do("HMSET", sID, "ID", s.ID, "Roles", s.Roles)
+	// marshal session into byte array
+	b, _ := json.Marshal(s)
+	// expires in 7 days
+	e := "604800"
+	// save byte array into redis, if there is an error return it
+	_, err := r.client.Do("SET", sID, b, "EX", e)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 	return nil
@@ -37,15 +41,14 @@ func (r *redisRepository) CreateSession(sID string, s *Session) error {
 
 // GetSession takes a session ID and looks up a session in Redis
 func (r *redisRepository) GetSession(sID string) (Session, error) {
-	result, err := redis.Strings(r.client.Do("HMGET", sID, "ID", "Roles"))
+	// get byte representation of session from redis
+	b, err := redis.Bytes(r.client.Do("GET", sID))
 	if err != nil {
 		fmt.Println(err)
 		return Session{}, err
 	}
-
-	return Session{
-		ID: result[0],
-		// we get a slice-like string from redis and need to cast it into a slice of Roles
-		Roles: toRoles(strings.Split(strings.Trim(result[1], "[]"), " ")),
-	}, nil
+	// unmarshal bytes into a Session and return it
+	var s Session
+	json.Unmarshal(b, &s)
+	return s, nil
 }
