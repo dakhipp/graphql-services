@@ -8,6 +8,10 @@ import (
 	strconv "strconv"
 )
 
+type LoginArgs struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
 type RegisterArgs struct {
 	FirstName    string `json:"firstName"`
 	LastName     string `json:"lastName"`

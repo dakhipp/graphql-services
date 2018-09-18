@@ -43,6 +43,21 @@ func (client *Client) Register(ctx context.Context, r *pb.RegisterRequest) (*Use
 	}, nil
 }
 
+// Login is a function available on the GRPC client, it logs in a user
+func (client *Client) Login(ctx context.Context, r *pb.LoginRequest) (*User, error) {
+	resp, err := client.service.Login(
+		ctx,
+		r,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &User{
+		ID:    resp.User.Id,
+		Roles: resp.User.Roles,
+	}, nil
+}
+
 // GetUsers : GetUsers function avilable on the grpc client, fetches all users from the database
 func (client *Client) GetUsers(ctx context.Context) ([]User, error) {
 	resp, err := client.service.GetUsers(ctx, &pb.EmptyRequest{})

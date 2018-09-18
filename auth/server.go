@@ -38,6 +38,18 @@ func (server *grpcServer) Register(ctx context.Context, args *pb.RegisterRequest
 	}}, nil
 }
 
+// Login is a GRPC function that logs in a user
+func (server *grpcServer) Login(ctx context.Context, args *pb.LoginRequest) (*pb.LoginResponse, error) {
+	resp, err := server.service.Login(ctx, args)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.LoginResponse{User: &pb.Auth{
+		Id:    resp.ID,
+		Roles: resp.Roles,
+	}}, nil
+}
+
 // Register : GRPC function which fetches users
 func (server *grpcServer) GetUsers(ctx context.Context, args *pb.EmptyRequest) (*pb.GetUsersResponse, error) {
 	resp, err := server.service.GetUsers(ctx)

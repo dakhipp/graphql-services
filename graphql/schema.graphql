@@ -24,8 +24,14 @@ input RegisterArgs {
   passwordConf: String!
 }
 
+input LoginArgs {
+  email: String!,
+  password: String!,
+}
+
 type Mutation {
 	register(args: RegisterArgs!): Session
+  login(args: LoginArgs!): Session
 }
 
 type Query {

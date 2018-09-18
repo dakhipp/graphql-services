@@ -79,6 +79,8 @@ func (s *GraphQLServer) attachUserMiddleware() func(http.Handler) http.Handler {
 				fmt.Println(err)
 			}
 
+			fmt.Println(fmt.Sprintf("Currently logged in user: %v", ses))
+
 			// attach session to context, it might be an empty session if there is an error
 			ctx := context.WithValue(r.Context(), CONTEXT_SESSION_KEY, ses)
 

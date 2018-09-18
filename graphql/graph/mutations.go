@@ -2,10 +2,10 @@ package graph
 
 import (
 	context "context"
-	"fmt"
 	"log"
 	"time"
 
+	"github.com/dakhipp/graphql-services/auth"
 	"github.com/dakhipp/graphql-services/auth/pb"
 	"github.com/segmentio/ksuid"
 )
@@ -22,10 +22,6 @@ func (server *GraphQLServer) Register(ctx context.Context, args RegisterArgs) (*
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 
-	// user is attached to context, remove this
-	ss, _ := ctx.Value(CONTEXT_SESSION_KEY).(Session)
-	fmt.Println(ss)
-
 	r := &pb.RegisterRequest{
 		FirstName:    args.FirstName,
 		LastName:     args.LastName,
@@ -41,6 +37,29 @@ func (server *GraphQLServer) Register(ctx context.Context, args RegisterArgs) (*
 		return nil, err
 	}
 
+	return server.createSession(ctx, resp), nil
+}
+
+// Login is a mutation resolver
+func (server *GraphQLServer) Login(ctx context.Context, args LoginArgs) (*Session, error) {
+	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+
+	r := &pb.LoginRequest{
+		Email:    args.Email,
+		Password: args.Password,
+	}
+
+	resp, err := server.authClient.Login(ctx, r)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	return server.createSession(ctx, resp), nil
+}
+
+func (server *GraphQLServer) createSession(ctx context.Context, resp *auth.User) *Session {
 	s := &Session{
 		ID:    resp.ID,
 		Roles: toRoles(resp.Roles),
@@ -51,7 +70,7 @@ func (server *GraphQLServer) Register(ctx context.Context, args RegisterArgs) (*
 
 	server.writeSessionCookie(ctx, sID)
 
-	return s, nil
+	return s
 }
 
 func toRoles(s []string) []Roles {

@@ -12,6 +12,7 @@ import (
 type Repository interface {
 	Close()
 	CreateUser(ctx context.Context, args User) error
+	GetUserByEmail(ctx context.Context, email string) (*User, error)
 	ReadUsers(ctx context.Context) ([]User, error)
 }
 
@@ -39,6 +40,15 @@ func (repository *postgresRepository) Close() {
 func (repository *postgresRepository) CreateUser(ctx context.Context, args User) error {
 	err := repository.db.Insert(&args)
 	return err
+}
+
+func (repository *postgresRepository) GetUserByEmail(ctx context.Context, email string) (*User, error) {
+	u := User{}
+	_, err := repository.db.QueryOne(&u, `SELECT * FROM users WHERE email = ?`, email)
+	if err != nil {
+		return nil, err
+	}
+	return &u, nil
 }
 
 // ReadUsers reads users from the database

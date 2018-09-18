@@ -35,6 +35,7 @@ type DirectiveRoot struct {
 }
 type MutationResolver interface {
 	Register(ctx context.Context, args RegisterArgs) (*Session, error)
+	Login(ctx context.Context, args LoginArgs) (*Session, error)
 }
 type QueryResolver interface {
 	GetUsers(ctx context.Context) ([]User, error)
@@ -109,6 +110,8 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = graphql.MarshalString("Mutation")
 		case "register":
 			out.Values[i] = ec._Mutation_register(ctx, field)
+		case "login":
+			out.Values[i] = ec._Mutation_login(ctx, field)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -138,6 +141,38 @@ func (ec *executionContext) _Mutation_register(ctx context.Context, field graphq
 	defer rctx.Pop()
 	resTmp := ec.FieldMiddleware(ctx, func(ctx context.Context) (interface{}, error) {
 		return ec.resolvers.Mutation().Register(ctx, args["args"].(RegisterArgs))
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*Session)
+	if res == nil {
+		return graphql.Null
+	}
+	return ec._Session(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_login(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args := map[string]interface{}{}
+	var arg0 LoginArgs
+	if tmp, ok := rawArgs["args"]; ok {
+		var err error
+		arg0, err = UnmarshalLoginArgs(tmp)
+		if err != nil {
+			ec.Error(ctx, err)
+			return graphql.Null
+		}
+	}
+	args["args"] = arg0
+	rctx := graphql.GetResolverContext(ctx)
+	rctx.Object = "Mutation"
+	rctx.Args = args
+	rctx.Field = field
+	rctx.PushField(field.Alias)
+	defer rctx.Pop()
+	resTmp := ec.FieldMiddleware(ctx, func(ctx context.Context) (interface{}, error) {
+		return ec.resolvers.Mutation().Login(ctx, args["args"].(LoginArgs))
 	})
 	if resTmp == nil {
 		return graphql.Null
@@ -1285,6 +1320,30 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 	return ec.___Type(ctx, field.Selections, res)
 }
 
+func UnmarshalLoginArgs(v interface{}) (LoginArgs, error) {
+	var it LoginArgs
+	var asMap = v.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "email":
+			var err error
+			it.Email, err = graphql.UnmarshalString(v)
+			if err != nil {
+				return it, err
+			}
+		case "password":
+			var err error
+			it.Password, err = graphql.UnmarshalString(v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func UnmarshalRegisterArgs(v interface{}) (RegisterArgs, error) {
 	var it RegisterArgs
 	var asMap = v.(map[string]interface{})
@@ -1377,8 +1436,14 @@ input RegisterArgs {
   passwordConf: String!
 }
 
+input LoginArgs {
+  email: String!,
+  password: String!,
+}
+
 type Mutation {
 	register(args: RegisterArgs!): Session
+  login(args: LoginArgs!): Session
 }
 
 type Query {
