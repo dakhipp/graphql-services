@@ -6,6 +6,10 @@ enum Role {
   USER
 }
 
+type Message {
+  message: String!,
+}
+
 type User {
 	id: String!,
 	firstName: String!,
@@ -34,6 +38,7 @@ input LoginArgs {
 type Mutation {
 	register(args: RegisterArgs!): Session
   login(args: LoginArgs!): Session
+  logout(): Message
 }
 
 type Query {

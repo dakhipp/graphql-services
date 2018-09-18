@@ -16,8 +16,9 @@ import (
 // key type is needed to avoid warning: "should not use basic type string as key in context.withValue"
 type key string
 
-const CONTEXT_SESSION_KEY key = "user"
-const CONTEXT_WRITER_KEY key = "writer"
+const CONTEXT_SESSION_ID_KEY = "SESSION_ID"
+const CONTEXT_SESSION_KEY key = "authed_user"
+const CONTEXT_WRITER_KEY key = "request_writer"
 const SESSION_COOKIE_NAME = "SESSION_ID"
 
 // configuration struct created from environment variables

@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/dakhipp/graphql-services/auth"
-	"github.com/segmentio/ksuid"
 	"github.com/vektah/gqlgen/handler"
 )
 
@@ -82,18 +81,19 @@ func (s *GraphQLServer) attachUserMiddleware() func(http.Handler) http.Handler {
 			// attach session to context, it might be an empty session if there is an error
 			ctx := context.WithValue(r.Context(), CONTEXT_SESSION_KEY, ses)
 
+			// attach session ID to context, this is needed in order to delete the session
+			ctx2 := context.WithValue(ctx, CONTEXT_SESSION_ID_KEY, sID)
+
 			// call the next with our new context
 			r = r.WithContext(ctx)
+			r = r.WithContext(ctx2)
 			next.ServeHTTP(w, r)
 		})
 	}
 }
 
-// writeSessionCookie takes context and a session ID and users http.ResponseWriter attached to conext to create a cookie
-func (s *GraphQLServer) writeSessionCookie(ctx context.Context, sID string) {
-	// pull http.Response writer off of context
-	w, _ := ctx.Value(CONTEXT_WRITER_KEY).(http.ResponseWriter)
-
+// createSessionCookie takes a session ID and returns a cookie with it as the value
+func (s *GraphQLServer) createSessionCookie(ctx context.Context, sID string) http.Cookie {
 	// cookie will get expired after 7 days
 	e := time.Now().AddDate(0, 0, 7)
 
@@ -105,22 +105,50 @@ func (s *GraphQLServer) writeSessionCookie(ctx context.Context, sID string) {
 		Expires: e,
 	}
 
+	// return cookie
+	return c
+}
+
+// expireSessionCookie pulls the session ID off of context and creates a new cookie expired cookie using it as the value
+func (s *GraphQLServer) expireSessionCookie(sID string) http.Cookie {
+	// create cookie
+	c := http.Cookie{
+		Name:    SESSION_COOKIE_NAME,
+		Value:   sID,
+		Domain:  s.cfg.Domain,
+		Expires: time.Now().AddDate(0, 0, -1),
+	}
+
+	// return cookie
+	return c
+}
+
+// getSessionID gets the session ID off of context
+func (s *GraphQLServer) getSessionID(ctx context.Context) string {
+	// pull session ID off of context
+	sID, _ := ctx.Value(CONTEXT_SESSION_ID_KEY).(string)
+
+	return sID
+}
+
+// writeSessionCookie takes context and a session ID and users http.ResponseWriter attached to conext to create a cookie
+func (s *GraphQLServer) writeSessionCookie(ctx context.Context, c http.Cookie) {
+	// pull http.Response writer off of context
+	w, _ := ctx.Value(CONTEXT_WRITER_KEY).(http.ResponseWriter)
+
 	// write the cookie to response
 	http.SetCookie(w, &c)
 }
 
 // createSession takes an authenticated user response and returns a session as well as a session cookie
 func (s *GraphQLServer) createSession(ctx context.Context, resp *auth.User) *Session {
+	// create unique session ID and a session based on the user who authenticated
 	ses := &Session{
 		ID:    resp.ID,
 		Roles: toRoles(resp.Roles),
 	}
 
-	sID := ksuid.New().String()
-	s.redisRepository.CreateSession(sID, ses)
-
-	s.writeSessionCookie(ctx, sID)
-
+	// return the session
 	return ses
 }
 

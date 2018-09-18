@@ -10,6 +10,7 @@ import (
 type Redis interface {
 	CreateSession(sId string, s *Session) error
 	GetSession(sId string) (Session, error)
+	DeleteSession(sID string) error
 }
 
 type redisRepository struct {
@@ -51,4 +52,10 @@ func (r *redisRepository) GetSession(sID string) (Session, error) {
 	var s Session
 	json.Unmarshal(b, &s)
 	return s, nil
+}
+
+// DeleteSession takes a session ID and uses it to delete the session from Redis
+func (r *redisRepository) DeleteSession(sID string) error {
+	_, err := r.client.Do("DEL", sID)
+	return err
 }

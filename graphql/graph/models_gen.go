@@ -12,6 +12,9 @@ type LoginArgs struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
+type Message struct {
+	Message string `json:"message"`
+}
 type RegisterArgs struct {
 	FirstName    string `json:"firstName"`
 	LastName     string `json:"lastName"`

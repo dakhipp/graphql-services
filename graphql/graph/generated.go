@@ -37,6 +37,7 @@ type DirectiveRoot struct {
 type MutationResolver interface {
 	Register(ctx context.Context, args RegisterArgs) (*Session, error)
 	Login(ctx context.Context, args LoginArgs) (*Session, error)
+	Logout(ctx context.Context) (*Message, error)
 }
 type QueryResolver interface {
 	GetUsers(ctx context.Context) ([]User, error)
@@ -92,6 +93,46 @@ type executionContext struct {
 	*executableSchema
 }
 
+var messageImplementors = []string{"Message"}
+
+// nolint: gocyclo, errcheck, gas, goconst
+func (ec *executionContext) _Message(ctx context.Context, sel ast.SelectionSet, obj *Message) graphql.Marshaler {
+	fields := graphql.CollectFields(ctx, sel, messageImplementors)
+
+	out := graphql.NewOrderedMap(len(fields))
+	for i, field := range fields {
+		out.Keys[i] = field.Alias
+
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Message")
+		case "message":
+			out.Values[i] = ec._Message_message(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+
+	return out
+}
+
+func (ec *executionContext) _Message_message(ctx context.Context, field graphql.CollectedField, obj *Message) graphql.Marshaler {
+	rctx := graphql.GetResolverContext(ctx)
+	rctx.Object = "Message"
+	rctx.Args = nil
+	rctx.Field = field
+	rctx.PushField(field.Alias)
+	defer rctx.Pop()
+	resTmp := ec.FieldMiddleware(ctx, func(ctx context.Context) (interface{}, error) {
+		return obj.Message, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	return graphql.MarshalString(res)
+}
+
 var mutationImplementors = []string{"Mutation"}
 
 // nolint: gocyclo, errcheck, gas, goconst
@@ -113,6 +154,8 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec._Mutation_register(ctx, field)
 		case "login":
 			out.Values[i] = ec._Mutation_login(ctx, field)
+		case "logout":
+			out.Values[i] = ec._Mutation_logout(ctx, field)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -183,6 +226,26 @@ func (ec *executionContext) _Mutation_login(ctx context.Context, field graphql.C
 		return graphql.Null
 	}
 	return ec._Session(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_logout(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	rctx := graphql.GetResolverContext(ctx)
+	rctx.Object = "Mutation"
+	rctx.Args = nil
+	rctx.Field = field
+	rctx.PushField(field.Alias)
+	defer rctx.Pop()
+	resTmp := ec.FieldMiddleware(ctx, func(ctx context.Context) (interface{}, error) {
+		return ec.resolvers.Mutation().Logout(ctx)
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*Message)
+	if res == nil {
+		return graphql.Null
+	}
+	return ec._Message(ctx, field.Selections, res)
 }
 
 var queryImplementors = []string{"Query"}
@@ -1443,6 +1506,10 @@ enum Role {
   USER
 }
 
+type Message {
+  message: String!,
+}
+
 type User {
 	id: String!,
 	firstName: String!,
@@ -1471,6 +1538,7 @@ input LoginArgs {
 type Mutation {
 	register(args: RegisterArgs!): Session
   login(args: LoginArgs!): Session
+  logout(): Message
 }
 
 type Query {
