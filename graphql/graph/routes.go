@@ -45,7 +45,7 @@ func (s *GraphQLServer) attachResponseWriterMiddleware() func(http.Handler) http
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// put ResponseWriter into context
-			ctx := context.WithValue(r.Context(), CONTEXT_WRITER_KEY, w)
+			ctx := context.WithValue(r.Context(), contextWriterKey, w)
 
 			// call the next with our new context
 			r = r.WithContext(ctx)
@@ -59,7 +59,7 @@ func (s *GraphQLServer) attachUserMiddleware() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// get session cookie
-			c, err := r.Cookie(SESSION_COOKIE_NAME)
+			c, err := r.Cookie(sessionCookieName)
 
 			// allow unauthenticated users in
 			if err != nil || c == nil {
@@ -77,10 +77,10 @@ func (s *GraphQLServer) attachUserMiddleware() func(http.Handler) http.Handler {
 			fmt.Println(fmt.Sprintf("Currently logged in user: %v", ses))
 
 			// attach session to context, it might be an empty session if there is an error
-			ctx := context.WithValue(r.Context(), CONTEXT_SESSION_KEY, ses)
+			ctx := context.WithValue(r.Context(), contextSessionKey, ses)
 
 			// attach session ID to context, this is needed in order to delete the session
-			ctx2 := context.WithValue(ctx, CONTEXT_SESSION_ID_KEY, sID)
+			ctx2 := context.WithValue(ctx, contextSessionIDKey, sID)
 
 			// call the next with our new context
 			r = r.WithContext(ctx)

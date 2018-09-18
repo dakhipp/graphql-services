@@ -8,8 +8,8 @@ import (
 )
 
 type Redis interface {
-	CreateSession(sId string, s *Session) error
-	GetSession(sId string) (Session, error)
+	CreateSession(sID string, s *Session) error
+	GetSession(sID string) (Session, error)
 	DeleteSession(sID string) error
 }
 

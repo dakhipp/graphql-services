@@ -14,7 +14,7 @@ import (
 // hasRole is a directive resolver which checks if the currently logged in user has the role required to access a field of the schema
 func (s *GraphQLServer) hasRole(ctx context.Context, next graphql.Resolver, role Role) (interface{}, error) {
 	// pull current session off of context
-	a, ok := ctx.Value(CONTEXT_SESSION_KEY).(Session)
+	a, ok := ctx.Value(contextSessionKey).(Session)
 
 	if ok {
 		for _, v := range a.Roles {

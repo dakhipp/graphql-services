@@ -15,7 +15,7 @@ func (s *GraphQLServer) createSessionCookie(ctx context.Context, sID string) htt
 
 	// create cookie
 	c := http.Cookie{
-		Name:    SESSION_COOKIE_NAME,
+		Name:    sessionCookieName,
 		Value:   sID,
 		Domain:  s.cfg.Domain,
 		Expires: e,
@@ -29,7 +29,7 @@ func (s *GraphQLServer) createSessionCookie(ctx context.Context, sID string) htt
 func (s *GraphQLServer) expireSessionCookie(sID string) http.Cookie {
 	// create cookie
 	c := http.Cookie{
-		Name:    SESSION_COOKIE_NAME,
+		Name:    sessionCookieName,
 		Value:   sID,
 		Domain:  s.cfg.Domain,
 		Expires: time.Now().AddDate(0, 0, -1),
@@ -42,7 +42,7 @@ func (s *GraphQLServer) expireSessionCookie(sID string) http.Cookie {
 // writeSessionCookie takes context and a session ID and users http.ResponseWriter attached to conext to create a cookie
 func (s *GraphQLServer) writeSessionCookie(ctx context.Context, c http.Cookie) {
 	// pull http.Response writer off of context
-	w, _ := ctx.Value(CONTEXT_WRITER_KEY).(http.ResponseWriter)
+	w, _ := ctx.Value(contextWriterKey).(http.ResponseWriter)
 
 	// write the cookie to response
 	http.SetCookie(w, &c)
@@ -51,7 +51,7 @@ func (s *GraphQLServer) writeSessionCookie(ctx context.Context, c http.Cookie) {
 // getSessionID gets the session ID off of context
 func (s *GraphQLServer) getSessionID(ctx context.Context) string {
 	// pull session ID off of context
-	sID, _ := ctx.Value(CONTEXT_SESSION_ID_KEY).(string)
+	sID, _ := ctx.Value(contextSessionIDKey).(string)
 
 	return sID
 }
