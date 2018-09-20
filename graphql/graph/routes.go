@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/go-chi/chi/middleware"
 	"github.com/vektah/gqlgen/handler"
 )
 
@@ -13,6 +14,12 @@ func RegisterRoutes(s *GraphQLServer) {
 	gqlConfig := Config{
 		Resolvers: s,
 	}
+
+	// A good base middleware stack
+	s.mux.Use(middleware.RequestID)
+	s.mux.Use(middleware.RealIP)
+	s.mux.Use(middleware.Logger)
+	s.mux.Use(middleware.Recoverer)
 
 	// register global middleware to attach a http.ResponseWriter to the context of the request
 	s.mux.Use(s.attachResponseWriterMiddleware())

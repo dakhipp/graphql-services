@@ -33,9 +33,12 @@
   version = "0.0.2"
 
 [[projects]]
-  digest = "1:b9914f85d95a0968bafd1be1908ba29e2eafafd88d6fd13696be42bf5368c380"
+  digest = "1:a9fe0f8ff72c388d0128e88ce5f3c27d37dcd0950acd7cdb8323555f12463396"
   name = "github.com/go-chi/chi"
-  packages = ["."]
+  packages = [
+    ".",
+    "middleware",
+  ]
   pruneopts = "UT"
   revision = "b5294d10673813fac8558e7f47242bc9e61b4c25"
   version = "v3.3.3"
@@ -112,17 +115,6 @@
   pruneopts = "UT"
   revision = "f611eb38b3875cc3bd991ca91c51d06446afa14c"
   version = "v1.3.0"
-
-[[projects]]
-  digest = "1:8ef506fc2bb9ced9b151dafa592d4046063d744c646c1bbe801982ce87e4bc24"
-  name = "github.com/lib/pq"
-  packages = [
-    ".",
-    "oid",
-  ]
-  pruneopts = "UT"
-  revision = "4ded0e9383f75c197b3a2aaa6d590ac52df6fd79"
-  version = "v1.0.0"
 
 [[projects]]
   branch = "master"
@@ -206,6 +198,17 @@
   ]
   pruneopts = "UT"
   revision = "d0fbd67c7fe908a304fbd2e2a625b397d793af41"
+
+[[projects]]
+  branch = "master"
+  digest = "1:1ecf2a49df33be51e757d0033d5d51d5f784f35f68e5a38f797b2d3f03357d71"
+  name = "golang.org/x/crypto"
+  packages = [
+    "bcrypt",
+    "blowfish",
+  ]
+  pruneopts = "UT"
+  revision = "0e37d006457bf46f9e6692014ba72ef82c33022c"
 
 [[projects]]
   branch = "master"
@@ -331,12 +334,12 @@
     "github.com/99designs/gqlgen/graphql/introspection",
     "github.com/franela/goblin",
     "github.com/go-chi/chi",
+    "github.com/go-chi/chi/middleware",
     "github.com/go-pg/pg",
     "github.com/go-pg/pg/orm",
     "github.com/golang/protobuf/proto",
     "github.com/gomodule/redigo/redis",
     "github.com/kelseyhightower/envconfig",
-    "github.com/lib/pq",
     "github.com/robinjoseph08/go-pg-migrations",
     "github.com/segmentio/ksuid",
     "github.com/tinrab/retry",
@@ -344,6 +347,7 @@
     "github.com/vektah/gqlgen/handler",
     "github.com/vektah/gqlparser",
     "github.com/vektah/gqlparser/ast",
+    "golang.org/x/crypto/bcrypt",
     "golang.org/x/net/context",
     "google.golang.org/grpc",
     "google.golang.org/grpc/reflection",
