@@ -7,6 +7,7 @@ import (
 	"github.com/gomodule/redigo/redis"
 )
 
+// Redis is an interface which allows interactions with Redis
 type Redis interface {
 	CreateSession(sID string, s *Session) error
 	GetSession(sID string) (Session, error)

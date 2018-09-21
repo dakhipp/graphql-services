@@ -22,24 +22,11 @@ type Service interface {
 
 // configuration struct created from environment variables
 type envConfig struct {
-	PSQLURL string `envconfig:"PSQL_URL"`
-}
-
-// User : User model
-type User struct {
-	ID            string   `json:"id"`
-	FirstName     string   `json:"firstName"`
-	LastName      string   `json:"lastName"`
-	Email         string   `json:"email"`
-	Phone         string   `json:"phone"`
-	Password      string   `json:"password"`
-	Roles         []string `json:"roles"`
-	EmailVerified bool     `json:"emailVerified"`
-	PhoneVerified bool     `json:"phoneVerified"`
+	MongoURL string `envconfig:"MONGO_URL"`
 }
 
 type authService struct {
-	repository Repository
+	repository Mongo
 }
 
 // New creates and returns a new authService
@@ -52,9 +39,9 @@ func New() Service {
 	}
 
 	// Attempt to create auth repository
-	var repository Repository
+	var repository Mongo
 	retry.ForeverSleep(2*time.Second, func(_ int) (err error) {
-		repository, err = NewPostgresRepository(cfg.PSQLURL)
+		repository, err = NewMongoDBRepository(cfg.MongoURL)
 		if err != nil {
 			log.Println(err)
 		}

@@ -2,74 +2,75 @@ package auth
 
 import (
 	"context"
-	"fmt"
 
-	"github.com/go-pg/pg"
-	"github.com/go-pg/pg/orm"
+	"github.com/globalsign/mgo"
+	"github.com/globalsign/mgo/bson"
 )
 
-// Repository : A repository object which allows interactions with the database
-type Repository interface {
-	Close()
+const (
+	collection = "users"
+	database   = "graphql-services"
+)
+
+// User model
+type User struct {
+	ID            string   `bson:"_id" json:"id"`
+	FirstName     string   `bson:"firstName" json:"firstName"`
+	LastName      string   `bson:"lastName" json:"lastName"`
+	Email         string   `bson:"email" json:"email"`
+	Phone         string   `bson:"phone" json:"phone"`
+	Password      string   `bson:"password" json:"password"`
+	Roles         []string `bson:"roles" json:"roles"`
+	EmailVerified bool     `bson:"emailVerified" json:"emailVerified"`
+	PhoneVerified bool     `bson:"phoneVerified" phoneVerified"`
+}
+
+// Mongo is an interface which allows interactions with MongoDB
+type Mongo interface {
 	CreateUser(ctx context.Context, args User) error
 	GetUserByEmail(ctx context.Context, email string) (*User, error)
 	ReadUsers(ctx context.Context) ([]User, error)
 }
 
-type postgresRepository struct {
-	db *pg.DB
+type mongoRepository struct {
+	db *mgo.Database
 }
 
-// NewPostgresRepository initializes a new database connection for the repository
-func NewPostgresRepository(url string) (Repository, error) {
-	opts, err := pg.ParseURL(url)
-	if err != nil {
-		fmt.Println(err)
+// NewMongoDBRepository initializes a new database connection for the repository
+func NewMongoDBRepository(url string) (Mongo, error) {
+	session, err := mgo.Dial(url)
+	db := session.DB(database)
+	c := db.C(collection)
+
+	// ensure unique indexes
+	for _, key := range []string{"email", "phone"} {
+		index := mgo.Index{
+			Key:    []string{key},
+			Unique: true,
+		}
+		if err := c.EnsureIndex(index); err != nil {
+			return nil, err
+		}
 	}
-	db := pg.Connect(opts)
 
-	return &postgresRepository{db}, nil
+	return &mongoRepository{db}, err
 }
 
-// Close closes the connection
-func (repository *postgresRepository) Close() {
-	repository.db.Close()
-}
-
-// CreateUser creates a user in the database
-func (repository *postgresRepository) CreateUser(ctx context.Context, args User) error {
-	err := repository.db.Insert(&args)
+// // CreateUser creates a user in the database
+func (r *mongoRepository) CreateUser(ctx context.Context, args User) error {
+	err := r.db.C(collection).Insert(&args)
 	return err
 }
 
-func (repository *postgresRepository) GetUserByEmail(ctx context.Context, email string) (*User, error) {
-	u := User{}
-	_, err := repository.db.QueryOne(&u, `SELECT * FROM users WHERE email = ?`, email)
-	if err != nil {
-		return nil, err
-	}
-	return &u, nil
+func (r *mongoRepository) GetUserByEmail(ctx context.Context, email string) (*User, error) {
+	var user User
+	err := r.db.C(collection).Find(bson.M{"email": email}).One(&user)
+	return &user, err
 }
 
-// ReadUsers reads users from the database
-func (repository *postgresRepository) ReadUsers(ctx context.Context) ([]User, error) {
+// // ReadUsers reads users from the database
+func (r *mongoRepository) ReadUsers(ctx context.Context) ([]User, error) {
 	var users []User
-	err := repository.db.Model(&users).Select()
-	if err != nil {
-		return nil, err
-	}
-	return users, nil
-}
-
-// create schema migrates
-func createSchema(db *pg.DB) error {
-	for _, model := range []interface{}{(*User)(nil)} {
-		err := db.CreateTable(model, &orm.CreateTableOptions{
-			IfNotExists: true,
-		})
-		if err != nil {
-			return err
-		}
-	}
-	return nil
+	err := r.db.C(collection).Find(bson.M{}).All(&users)
+	return users, err
 }

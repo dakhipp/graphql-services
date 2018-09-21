@@ -21,22 +21,10 @@ services:
       context: "../../"
       dockerfile: "deployments/docker/auth/prod.Dockerfile"
     depends_on:
-      - "psql"
+      - "mongodb"
     environment:
       - PORT=8001
-      - PSQL_URL=postgres://root:toor@psql/psql?sslmode=disable
-
-  migrations:
-    build:
-      context: "../../"
-      dockerfile: "deployments/docker/migrations/prod.Dockerfile"
-    depends_on:
-      - "psql"
-    environment:
-      - PSQL_ADDR=psql:5432
-      - PSQL_USER=root
-      - PSQL_PASS=toor
-      - PSQL_DB=psql
+      - MONGO_URL=mongodb://user:pass@mongodb/graphql-services
 
   redis:
     image: redis
@@ -48,14 +36,14 @@ services:
       --requirepass toor
     restart: "unless-stopped"
 
-  psql:
-    image: postgres:10.4
+  mongodb:
+    image: 'bitnami/mongodb:3.6'
     expose:
-      - "5432"
+      - "27017"
     ports:
-      - "5432:5432"
+      - "27017:27017"
     environment:
-      POSTGRES_DB: "psql"
-      POSTGRES_USER: "root"
-      POSTGRES_PASSWORD: "toor"
+      - MONGODB_USERNAME=user
+      - MONGODB_PASSWORD=pass
+      - MONGODB_DATABASE=graphql-services
     restart: "unless-stopped"
