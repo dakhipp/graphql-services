@@ -39,24 +39,36 @@ type mongoRepository struct {
 // NewMongoDBRepository initializes a new database connection for the repository
 func NewMongoDBRepository(url string) (Mongo, error) {
 	session, err := mgo.Dial(url)
+	if err != nil {
+		return nil, err
+	}
+
 	db := session.DB(database)
 	c := db.C(collection)
 
-	// ensure unique indexes
+	err = createCollectionIndexes(c)
+	if err != nil {
+		return nil, err
+	}
+
+	return &mongoRepository{db}, err
+}
+
+func createCollectionIndexes(c *mgo.Collection) error {
+	// create indexes for each indexed field
 	for _, key := range []string{"email", "phone"} {
 		index := mgo.Index{
 			Key:    []string{key},
 			Unique: true,
 		}
 		if err := c.EnsureIndex(index); err != nil {
-			return nil, err
+			return err
 		}
 	}
-
-	return &mongoRepository{db}, err
+	return nil
 }
 
-// // CreateUser creates a user in the database
+// CreateUser creates a user in the database
 func (r *mongoRepository) CreateUser(ctx context.Context, args User) error {
 	err := r.db.C(collection).Insert(&args)
 	return err
