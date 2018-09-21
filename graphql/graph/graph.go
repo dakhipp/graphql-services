@@ -1,4 +1,4 @@
-//go:generate gorunpkg github.com/99designs/gqlgen --schema ../schema.graphql
+//go:generate gorunpkg github.com/99designs/gqlgen
 package graph
 
 import (
@@ -25,6 +25,7 @@ type envConfig struct {
 type GraphQLServer struct {
 	cfg             envConfig
 	mux             *chi.Mux
+	validation      *validation
 	authClient      *auth.Client
 	redisRepository Redis
 }
@@ -58,6 +59,7 @@ func New() *GraphQLServer {
 	s := &GraphQLServer{
 		cfg,
 		chi.NewRouter(),
+		NewValidator(),
 		authClient,
 		redisRepository,
 	}

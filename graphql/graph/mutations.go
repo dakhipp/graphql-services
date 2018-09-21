@@ -22,6 +22,12 @@ func (s *GraphQLServer) Register(ctx context.Context, args RegisterArgs) (*Sessi
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 
+	// handle validation
+	valErr := s.validation.validate.Struct(args)
+	if valErr != nil {
+		return nil, formatValidationErrors(ctx, valErr)
+	}
+
 	// cast GraphQL arguments into gRPC RegisterRequest
 	r := &pb.RegisterRequest{
 		FirstName:    args.FirstName,
@@ -62,6 +68,12 @@ func (s *GraphQLServer) Register(ctx context.Context, args RegisterArgs) (*Sessi
 func (s *GraphQLServer) Login(ctx context.Context, args LoginArgs) (*Session, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
+
+	// handle validation
+	valErr := s.validation.validate.Struct(args)
+	if valErr != nil {
+		return nil, formatValidationErrors(ctx, valErr)
+	}
 
 	// cast GraphQL arguments into gRPC LoginRequest
 	r := &pb.LoginRequest{

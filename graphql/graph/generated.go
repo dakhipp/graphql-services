@@ -1498,7 +1498,7 @@ func (ec *executionContext) introspectType(name string) *introspection.Type {
 }
 
 var parsedSchema = gqlparser.MustLoadSchema(
-	&ast.Source{Name: "../schema.graphql", Input: `directive @hasRole(role: Role!) on FIELD_DEFINITION
+	&ast.Source{Name: "schema.graphql", Input: `directive @hasRole(role: Role!) on FIELD_DEFINITION
 
 enum Role {
   ADMIN

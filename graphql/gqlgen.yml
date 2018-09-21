@@ -1,0 +1,18 @@
+schema: schema.graphql
+
+# Let gqlgen know where to put the generated server
+exec:
+  filename: graph/generated.go
+  package: graph
+
+# Let gqlgen know where to the generated models (if any)
+model:
+  filename: graph/models_gen.go
+  package: graph
+
+# Tell gqlgen about any existing models you want to reuse for
+models:
+  RegisterArgs:
+    model: github.com/dakhipp/graphql-services/graphql/graph.RegisterArgs
+  LoginArgs:
+    model: github.com/dakhipp/graphql-services/graphql/graph.LoginArgs

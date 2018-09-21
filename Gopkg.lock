@@ -58,19 +58,23 @@
   version = "v3.3.3"
 
 [[projects]]
-  digest = "1:5b14f08247db438a2d11b77aff373b6536028673e38eab87fb5062e07b3b7487"
-  name = "github.com/go-pg/pg"
+  digest = "1:e1ff887e232b2d8f4f7c7db15a5fac7be418025afc4dda53c59c765dbb5aa6b4"
+  name = "github.com/go-playground/locales"
   packages = [
     ".",
-    "internal",
-    "internal/parser",
-    "internal/pool",
-    "orm",
-    "types",
+    "currency",
   ]
   pruneopts = "UT"
-  revision = "c0368cd6ee62269f0a5c3d6c9c02c6d192760bc6"
-  version = "v6.14.3"
+  revision = "f63010822830b6fe52288ee52d5a1151088ce039"
+  version = "v0.12.1"
+
+[[projects]]
+  digest = "1:e022cf244bcac1b6ef933f1a2e0adcf6a6dfd7b872d8d41e4d4179bb09a87cbc"
+  name = "github.com/go-playground/universal-translator"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "b32fa301c9fe55953584134cb6853a13c87ec0a1"
+  version = "v0.16.0"
 
 [[projects]]
   digest = "1:5d1b5a25486fc7d4e133646d834f6fca7ba1cef9903d40e7aa786c41b89e9e91"
@@ -115,14 +119,6 @@
   version = "v1.0"
 
 [[projects]]
-  branch = "master"
-  digest = "1:fd97437fbb6b7dce04132cf06775bd258cce305c44add58eb55ca86c6c325160"
-  name = "github.com/jinzhu/inflection"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "04140366298a54a039076d798123ffa108fff46c"
-
-[[projects]]
   digest = "1:edbef42561faa44c19129b68d1e109fbc1647f63239250391eadc8d0e7c9f669"
   name = "github.com/kelseyhightower/envconfig"
   packages = ["."]
@@ -145,14 +141,6 @@
   pruneopts = "UT"
   revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
   version = "v0.8.0"
-
-[[projects]]
-  digest = "1:ae042b0dd6841b6df0b9ab2006a5ca7af46f0dc3d6d6a8e4649bd00ab15eaa3c"
-  name = "github.com/robinjoseph08/go-pg-migrations"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "389858665432c5014fdb2bb89b2c174c2a80156b"
-  version = "v0.1.1"
 
 [[projects]]
   digest = "1:8a3e7525dc0cf0236b163166800ecbc78d6c8c5d7ac956996e7b3bef8cfadc41"
@@ -187,10 +175,11 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:0140126607294e195e814823563da49f32c7d12fddb47320baf0aa2c97de0198"
+  digest = "1:78972e53ece57b78d2affba230326368ad2860126b62e61831a6ce6ad239b9f3"
   name = "github.com/vektah/gqlgen"
   packages = [
     "client",
+    "graphql",
     "handler",
   ]
   pruneopts = "UT"
@@ -332,6 +321,14 @@
   version = "v1.14.0"
 
 [[projects]]
+  digest = "1:e2f64cca6e235f32cd4c2f9be9ae0cda1f8608fc6fdb68936e8d10e4e0bb074d"
+  name = "gopkg.in/go-playground/validator.v9"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "e69e9a28bb62b977fdc58d051f1bb477b7cbe486"
+  version = "v9.21.0"
+
+[[projects]]
   digest = "1:342378ac4dcb378a5448dd723f0784ae519383532f5e70ade24132c4c8693202"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
@@ -351,22 +348,22 @@
     "github.com/globalsign/mgo/bson",
     "github.com/go-chi/chi",
     "github.com/go-chi/chi/middleware",
-    "github.com/go-pg/pg",
-    "github.com/go-pg/pg/orm",
     "github.com/golang/protobuf/proto",
     "github.com/gomodule/redigo/redis",
     "github.com/kelseyhightower/envconfig",
-    "github.com/robinjoseph08/go-pg-migrations",
     "github.com/segmentio/ksuid",
     "github.com/tinrab/retry",
     "github.com/vektah/gqlgen/client",
+    "github.com/vektah/gqlgen/graphql",
     "github.com/vektah/gqlgen/handler",
     "github.com/vektah/gqlparser",
     "github.com/vektah/gqlparser/ast",
+    "github.com/vektah/gqlparser/gqlerror",
     "golang.org/x/crypto/bcrypt",
     "golang.org/x/net/context",
     "google.golang.org/grpc",
     "google.golang.org/grpc/reflection",
+    "gopkg.in/go-playground/validator.v9",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
