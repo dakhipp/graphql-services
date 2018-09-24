@@ -17,12 +17,36 @@
   version = "v0.4.4"
 
 [[projects]]
+  digest = "1:55388fd080150b9a072912f97b1f5891eb0b50df43401f8b75fb4273d3fec9fc"
+  name = "github.com/Masterminds/semver"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "c7af12943936e8c39859482e61f0574c2fd7fc75"
+  version = "v1.4.2"
+
+[[projects]]
+  digest = "1:b0baf96eb3f1387dfd368f38f1d9c91adb947239530014d1006540ccee7579b2"
+  name = "github.com/Masterminds/sprig"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "15f9564e7e9cf0da02a48e0d25f12a7b83559aa6"
+  version = "v2.16.0"
+
+[[projects]]
   digest = "1:897d91c431ce469d35a5e6030e60e617dccd9a0e95bdffa6a80594f5c5800d29"
   name = "github.com/agnivade/levenshtein"
   packages = ["."]
   pruneopts = "UT"
   revision = "3d21ba515fe27b856f230847e856431ae1724adc"
   version = "v1.0.0"
+
+[[projects]]
+  digest = "1:8f5416c7f59da8600725ae1ff00a99af1da8b04c211ae6f3c8f8bcab0164f650"
+  name = "github.com/aokoli/goutils"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "3391d3790d23d03408670993e957e8f408993c34"
+  version = "v1.0.1"
 
 [[projects]]
   digest = "1:0afa63759ae8c5aa13d813346e414e7ed3bde76a98f48b9ebe3272f5a5e2f7ec"
@@ -103,12 +127,36 @@
   version = "v2.0.0"
 
 [[projects]]
+  digest = "1:3a26588bc48b96825977c1b3df964f8fd842cd6860cc26370588d3563433cf11"
+  name = "github.com/google/uuid"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "d460ce9f8df2e77fb1ba55ca87fafed96c607494"
+  version = "v1.0.0"
+
+[[projects]]
   digest = "1:cee8e8ac80df6373e7daa11baf1f98c1b6f7242c49ccae7e1ec34a971dc408d9"
   name = "github.com/gorilla/websocket"
   packages = ["."]
   pruneopts = "UT"
   revision = "3ff3320c2a1756a3691521efc290b4701575147c"
   version = "v1.3.0"
+
+[[projects]]
+  digest = "1:f9a5e090336881be43cfc1cf468330c1bdd60abdc9dd194e0b1ab69f4b94dd7c"
+  name = "github.com/huandu/xstrings"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "f02667b379e2fb5916c3cda2cf31e0eb885d79f8"
+  version = "v1.2.0"
+
+[[projects]]
+  digest = "1:1069357a2767ba898fd6c715fb15d005403e5becf9b2e747630fbdde2a340302"
+  name = "github.com/imdario/mergo"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "7fe0c75c13abdee74b09fcacef5ea1c6bba6a874"
+  version = "0.2.4"
 
 [[projects]]
   digest = "1:870d441fe217b8e689d7949fef6e43efbc787e50f200cb1e70dbca9204a1d6be"
@@ -119,12 +167,47 @@
   version = "v1.0"
 
 [[projects]]
+  branch = "master"
+  digest = "1:8bacc2118e6cc6a207eb144656537ff7ee0397f8bc8c1f7639519b0de2bb949a"
+  name = "github.com/jaytaylor/html2text"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "57d518f124b0cf46ea2021f25a01396b3522e6fb"
+
+[[projects]]
+  digest = "1:1f4b55d7c57681ad91b7ce3ac7c8e7b139e6dd2f477c5f87e6a7749d298645dc"
+  name = "github.com/joho/godotenv"
+  packages = [
+    ".",
+    "autoload",
+  ]
+  pruneopts = "UT"
+  revision = "23d116af351c84513e1946b527c88823e476be13"
+  version = "v1.3.0"
+
+[[projects]]
   digest = "1:edbef42561faa44c19129b68d1e109fbc1647f63239250391eadc8d0e7c9f669"
   name = "github.com/kelseyhightower/envconfig"
   packages = ["."]
   pruneopts = "UT"
   revision = "f611eb38b3875cc3bd991ca91c51d06446afa14c"
   version = "v1.3.0"
+
+[[projects]]
+  digest = "1:71f7e9072bdef9e2c86deb94616e1c44f55fe1bd8f9e724cd2a09b7f65e519e1"
+  name = "github.com/matcornic/hermes"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "ab1a08cd578c2c5ddaae5490bb9fc9a4759ae85e"
+  version = "v1.2.0"
+
+[[projects]]
+  digest = "1:cdb899c199f907ac9fb50495ec71212c95cb5b0e0a8ee0800da0238036091033"
+  name = "github.com/mattn/go-runewidth"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "ce7b0b5c7b45a81508558cd1dba6bb1e4ddb51bb"
+  version = "v0.0.3"
 
 [[projects]]
   branch = "master"
@@ -135,6 +218,14 @@
   revision = "fa473d140ef3c6adf42d6b391fe76707f1f243c8"
 
 [[projects]]
+  branch = "master"
+  digest = "1:f611266e3ac01ab4adb6f1d67f6c1be82998d02f452faff450596658712d860b"
+  name = "github.com/olekukonko/tablewriter"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "be2c049b30ccd4d3fd795d6bf7dce74e42eeedaa"
+
+[[projects]]
   digest = "1:40e195917a951a8bf867cd05de2a46aaf1806c50cf92eebf4c16f78cd196f747"
   name = "github.com/pkg/errors"
   packages = ["."]
@@ -143,12 +234,28 @@
   version = "v0.8.0"
 
 [[projects]]
+  digest = "1:7f081bc4c81e3e69f4d3b4a87e1b23f2a395e9804f06895c52f8f4157af7a35a"
+  name = "github.com/segmentio/kafka-go"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "48c37f796910d8154479aaa04ade5843ae4f55d0"
+  version = "v0.1.0"
+
+[[projects]]
   digest = "1:8a3e7525dc0cf0236b163166800ecbc78d6c8c5d7ac956996e7b3bef8cfadc41"
   name = "github.com/segmentio/ksuid"
   packages = ["."]
   pruneopts = "UT"
   revision = "112f929a3020abfcd06b77c963ec919130796a35"
   version = "1.0.1"
+
+[[projects]]
+  branch = "master"
+  digest = "1:def689e73e9252f6f7fe66834a76751a41b767e03daab299e607e7226c58a855"
+  name = "github.com/shurcooL/sanitized_anchor_name"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "86672fcb3f950f35f2e675df2240550f2a50762f"
 
 [[projects]]
   digest = "1:645cabccbb4fa8aab25a956cbcbdf6a6845ca736b2c64e197ca7cbb9d210b939"
@@ -167,6 +274,14 @@
   version = "v1.0.2"
 
 [[projects]]
+  branch = "master"
+  digest = "1:362b269942e8508aed33025593090ad4cdbd9077de4b1cd505e6124728e9e856"
+  name = "github.com/ssor/bom"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "6386211fdfcf24c0bfbdaceafd02849ed9a8a509"
+
+[[projects]]
   digest = "1:ac9b9680c595e5e4344341f7ccea0aaf2e858648711b41a4d68eddcb8fd769f2"
   name = "github.com/tinrab/retry"
   packages = ["."]
@@ -175,11 +290,10 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:78972e53ece57b78d2affba230326368ad2860126b62e61831a6ce6ad239b9f3"
+  digest = "1:0140126607294e195e814823563da49f32c7d12fddb47320baf0aa2c97de0198"
   name = "github.com/vektah/gqlgen"
   packages = [
     "client",
-    "graphql",
     "handler",
   ]
   pruneopts = "UT"
@@ -204,21 +318,25 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:1ecf2a49df33be51e757d0033d5d51d5f784f35f68e5a38f797b2d3f03357d71"
+  digest = "1:b22cb6330a3836e3a562754b1a7315f3b1e19c96e906a37373ad1b24c9fc44d0"
   name = "golang.org/x/crypto"
   packages = [
     "bcrypt",
     "blowfish",
+    "pbkdf2",
+    "scrypt",
   ]
   pruneopts = "UT"
   revision = "0e37d006457bf46f9e6692014ba72ef82c33022c"
 
 [[projects]]
   branch = "master"
-  digest = "1:deafe4ab271911fec7de5b693d7faae3f38796d9eb8622e2b9e7df42bb3dfea9"
+  digest = "1:d183e34f6e35f7a9434c7cc925688b1f8f439a02b484aeefe959b69785517bde"
   name = "golang.org/x/net"
   packages = [
     "context",
+    "html",
+    "html/atom",
     "http/httpguts",
     "http2",
     "http2/hpack",
@@ -321,12 +439,36 @@
   version = "v1.14.0"
 
 [[projects]]
+  branch = "v3"
+  digest = "1:7388652e2215a3f45d341d58766ed58317971030eb1cbd75f005f96ace8e9196"
+  name = "gopkg.in/alexcesaro/quotedprintable.v3"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "2caba252f4dc53eaf6b553000885530023f54623"
+
+[[projects]]
   digest = "1:e2f64cca6e235f32cd4c2f9be9ae0cda1f8608fc6fdb68936e8d10e4e0bb074d"
   name = "gopkg.in/go-playground/validator.v9"
   packages = ["."]
   pruneopts = "UT"
   revision = "e69e9a28bb62b977fdc58d051f1bb477b7cbe486"
   version = "v9.21.0"
+
+[[projects]]
+  digest = "1:eebd52aee67d9f1e0af1859a584e14b1817581dd5f90d4585418c27b6a93c966"
+  name = "gopkg.in/gomail.v2"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "41f3572897373c5538c50a2402db15db079fa4fd"
+  version = "2.0.0"
+
+[[projects]]
+  digest = "1:39c2113f3a89585666e6f973650cff186b2d06deb4aa202c88addb87b0a201db"
+  name = "gopkg.in/russross/blackfriday.v2"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "cadec560ec52d93835bf2f15bd794700d3a2473b"
+  version = "v2.0.0"
 
 [[projects]]
   digest = "1:342378ac4dcb378a5448dd723f0784ae519383532f5e70ade24132c4c8693202"
@@ -350,11 +492,13 @@
     "github.com/go-chi/chi/middleware",
     "github.com/golang/protobuf/proto",
     "github.com/gomodule/redigo/redis",
+    "github.com/joho/godotenv/autoload",
     "github.com/kelseyhightower/envconfig",
+    "github.com/matcornic/hermes",
+    "github.com/segmentio/kafka-go",
     "github.com/segmentio/ksuid",
     "github.com/tinrab/retry",
     "github.com/vektah/gqlgen/client",
-    "github.com/vektah/gqlgen/graphql",
     "github.com/vektah/gqlgen/handler",
     "github.com/vektah/gqlparser",
     "github.com/vektah/gqlparser/ast",
@@ -364,6 +508,7 @@
     "google.golang.org/grpc",
     "google.golang.org/grpc/reflection",
     "gopkg.in/go-playground/validator.v9",
+    "gopkg.in/gomail.v2",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -9,6 +9,7 @@ services:
       - "8000:8000"
     depends_on:
       - "auth"
+      - "redis"
     volumes:
       - ../../graphql:/go/src/github.com/dakhipp/graphql-services/graphql
     environment:
@@ -24,11 +25,26 @@ services:
       dockerfile: "deployments/docker/auth/dev.Dockerfile"
     depends_on:
       - "mongodb"
+      - "kafka"
+      - "email"
     volumes:
       - ../../auth:/go/src/github.com/dakhipp/graphql-services/auth
     environment:
       - PORT=8001
       - MONGO_URL=mongodb://user:pass@mongodb/graphql-services
+      - KAFKA_ADDR=kafka:9092
+
+  email:
+    build:
+      context: "../../"
+      dockerfile: "deployments/docker/email/dev.Dockerfile"
+    depends_on:
+      - "kafka"
+    volumes:
+      - ../../email:/go/src/github.com/dakhipp/graphql-services/email
+    environment:
+      - KAFKA_BROKERS=kafka:9092
+      - ENV=dev
 
   redis:
     image: redis
@@ -39,6 +55,23 @@ services:
     command: >
       --requirepass toor
     restart: "unless-stopped"
+
+  zookeeper:
+    image: 'bitnami/zookeeper:latest'
+    ports:
+      - '2181:2181'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    restart: "always"
+
+  kafka:
+    image: 'bitnami/kafka:latest'
+    ports:
+      - '9092:9092'
+    environment:
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    restart: "always"
 
   mongodb:
     image: 'bitnami/mongodb:3.6'

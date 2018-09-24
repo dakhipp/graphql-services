@@ -3,6 +3,7 @@ RUN apk --no-cache add gcc g++ make ca-certificates
 WORKDIR /go/src/github.com/dakhipp/graphql-services/graphql
 COPY vendor ../vendor
 COPY auth ../auth
+COPY email ../email
 COPY graphql ./
 RUN go build -o /go/bin/app
 

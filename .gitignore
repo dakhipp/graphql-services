@@ -6,4 +6,11 @@ vendor/
 *.tfstate.backup
 terraform.tfvars
 
+# env files
+.env
+.env.dev
+.env.test
+.env.prod
+
+
 todo.txt

@@ -4,8 +4,8 @@ settings:
     force: false
     interval: 100ms
 schema:
-- name: auth
-  path: ./cmd/auth
+- name: email
+  path: ./cmd/email
   commands:
     run:
       status: true
@@ -18,3 +18,4 @@ schema:
     - .git
     - .realize
     - vendor
+    - auth
