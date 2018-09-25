@@ -22,7 +22,7 @@ type User struct {
 	Password      string   `bson:"password" json:"password"`
 	Roles         []string `bson:"roles" json:"roles"`
 	EmailVerified bool     `bson:"emailVerified" json:"emailVerified"`
-	PhoneVerified bool     `bson:"phoneVerified" phoneVerified"`
+	PhoneVerified bool     `bson:"phoneVerified" json:"phoneVerified"`
 }
 
 // Mongo is an interface which allows interactions with MongoDB
