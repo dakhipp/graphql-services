@@ -60,13 +60,13 @@ services:
       - ENV=dev
 
   redis:
-    image: redis
+    image: 'bitnami/redis:latest'
     expose:
       - "6379"
     ports:
       - "6379:6379"
-    command: >
-      --requirepass toor
+    environment:
+      - REDIS_PASSWORD=toor
     restart: "unless-stopped"
 
   zookeeper:
