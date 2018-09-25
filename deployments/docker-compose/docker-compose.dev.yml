@@ -27,6 +27,7 @@ services:
       - "mongodb"
       - "kafka"
       - "email"
+      - "text"
     volumes:
       - ../../auth:/go/src/github.com/dakhipp/graphql-services/auth
     environment:
@@ -42,6 +43,18 @@ services:
       - "kafka"
     volumes:
       - ../../email:/go/src/github.com/dakhipp/graphql-services/email
+    environment:
+      - KAFKA_BROKERS=kafka:9092
+      - ENV=dev
+
+  text:
+    build:
+      context: "../../"
+      dockerfile: "deployments/docker/text/dev.Dockerfile"
+    depends_on:
+      - "kafka"
+    volumes:
+      - ../../text:/go/src/github.com/dakhipp/graphql-services/text
     environment:
       - KAFKA_BROKERS=kafka:9092
       - ENV=dev

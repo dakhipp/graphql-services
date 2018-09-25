@@ -9,9 +9,9 @@ import (
 
 // ConfirmAccountArgs is a struct containing all values needed to the Confirm Account email template
 type ConfirmAccountArgs struct {
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
-	Email     string `json:"email"`
+	FirstName string
+	LastName  string
+	Email     string
 }
 
 // SendConfirmAccountEmail is a function that is ran when a kafka message is received with the key "confirm-account"

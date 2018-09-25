@@ -4,6 +4,7 @@ WORKDIR /go/src/github.com/dakhipp/graphql-services/graphql
 COPY vendor ../vendor
 COPY auth ../auth
 COPY email ../email
+COPY text ../text
 COPY graphql ./
 RUN go build -o /go/bin/app
 

@@ -34,8 +34,6 @@ func send(to, subject, text, html string) {
 		log.Fatal(err)
 	}
 
-	fmt.Println(cfg.FromEmail)
-
 	// build out the email
 	m := gomail.NewMessage()
 	m.SetHeader("From", cfg.FromEmail)
@@ -50,6 +48,8 @@ func send(to, subject, text, html string) {
 	// send the created email
 	if err := d.DialAndSend(m); err != nil {
 		fmt.Printf("Failed to send email %v", err)
+	} else {
+		fmt.Println("Successfully sent email via SMTP")
 	}
 }
 

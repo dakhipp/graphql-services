@@ -85,12 +85,17 @@ func (service *authService) Register(ctx context.Context, args *pb.RegisterReque
 	}
 
 	// create user in database
-	if err := service.repository.CreateUser(ctx, *user); err != nil {
+	// if err := service.repository.CreateUser(ctx, *user); err != nil {
+	// 	return nil, err
+	// }
+
+	// produce a message to kafka so our email service will send out the registration email
+	if err := service.kafkaProducer.RegisterEmail(ctx, *user); err != nil {
 		return nil, err
 	}
 
 	// produce a message to kafka so our email service will send out the registration email
-	if err := service.kafkaProducer.RegisterEmail(ctx, *user); err != nil {
+	if err := service.kafkaProducer.ConfirmPhone(ctx, *user); err != nil {
 		return nil, err
 	}
 
