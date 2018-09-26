@@ -7,4 +7,4 @@ COPY vendor ../vendor
 COPY email ../email
 COPY text ../text
 COPY auth ./
-CMD realize start
+CMD ["realize", "start"]

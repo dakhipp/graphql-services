@@ -10,4 +10,4 @@ RUN go build -o /go/bin/app ./cmd/auth/main.go
 FROM alpine:3.7
 WORKDIR /usr/bin
 COPY --from=build /go/bin .
-CMD app
+CMD ["app"]

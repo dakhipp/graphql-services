@@ -34,7 +34,7 @@ services:
   email:
     build:
       context: "../../"
-      dockerfile: "deployments/docker/email/dev.Dockerfile"
+      dockerfile: "deployments/docker/email/prod.Dockerfile"
     depends_on:
       - "kafka"
     volumes:
@@ -46,7 +46,7 @@ services:
   text:
     build:
       context: "../../"
-      dockerfile: "deployments/docker/text/dev.Dockerfile"
+      dockerfile: "deployments/docker/text/prod.Dockerfile"
     depends_on:
       - "kafka"
     volumes:
@@ -67,18 +67,28 @@ services:
 
   zookeeper:
     image: 'bitnami/zookeeper:latest'
+    expose:
+      - "2181"
+      - "2888"
+      - "3888"
     ports:
-      - '2181:2181'
+      - "2181:2181"
+      - "2888:2888"
+      - "3888:3888"
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
     restart: "always"
 
   kafka:
     image: 'bitnami/kafka:latest'
+    expose:
+      - "9092"
     ports:
       - '9092:9092'
+    depends_on:
+      - "zookeeper"
     environment:
-      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181,zookeeper:2888,zookeeper:3888
       - ALLOW_PLAINTEXT_LISTENER=yes
     restart: "always"
 

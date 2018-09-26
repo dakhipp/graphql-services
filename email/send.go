@@ -24,7 +24,10 @@ type envConfig struct {
 func send(to, subject, text, html string) {
 	// load in secret env vars from file in development
 	if os.Getenv("ENV") == "dev" {
-		_ = godotenv.Load(".env.dev")
+		err := godotenv.Load(".env.dev")
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 
 	// attempt to cast env variables into envConfig struct
@@ -47,7 +50,7 @@ func send(to, subject, text, html string) {
 
 	// send the created email
 	if err := d.DialAndSend(m); err != nil {
-		fmt.Printf("Failed to send email %v", err)
+		fmt.Printf("Failed to send email %v\n", err)
 	} else {
 		fmt.Println("Successfully sent email via SMTP")
 	}

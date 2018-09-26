@@ -24,7 +24,10 @@ type envConfig struct {
 func send(to, body string) {
 	// load in secret env vars from file in development
 	if os.Getenv("ENV") == "dev" {
-		_ = godotenv.Load(".env.dev")
+		err := godotenv.Load(".env.dev")
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 
 	// attempt to cast env variables into envConfig struct
@@ -52,7 +55,10 @@ func send(to, body string) {
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	// make HTTP POST request
-	resp, _ := client.Do(req)
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+	}
 	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
 		var data map[string]interface{}
 		decoder := json.NewDecoder(resp.Body)
