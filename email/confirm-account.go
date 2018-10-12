@@ -9,9 +9,9 @@ import (
 
 // ConfirmAccountArgs is a struct containing all values needed to the Confirm Account email template
 type ConfirmAccountArgs struct {
-	FirstName string
-	LastName  string
-	Email     string
+	FirstName        string
+	Email            string
+	VerificationCode string
 }
 
 // SendConfirmAccountEmail is a function that is ran when a kafka message is received with the key "confirm-account"
@@ -51,7 +51,7 @@ func SendConfirmAccountEmail(b []byte) {
 func getConfirmAccountEmail(args ConfirmAccountArgs) hermes.Email {
 	return hermes.Email{
 		Body: hermes.Body{
-			Name: args.FirstName + " " + args.LastName,
+			Name: args.FirstName,
 			Intros: []string{
 				"Welcome! We're very excited to have you on board.",
 			},
@@ -62,7 +62,7 @@ func getConfirmAccountEmail(args ConfirmAccountArgs) hermes.Email {
 						Color:     "#22BC66", // Optional action button color
 						Text:      "Confirm your account",
 						TextColor: "#FFF",
-						Link:      "https://hermes-example.com/confirm?token=d9729feb74992cc3482b350163a1a010",
+						Link:      "https://hermes-example.com/confirm?code=" + args.VerificationCode,
 					},
 				},
 			},

@@ -12,8 +12,14 @@ type Message struct {
 	Message string `json:"message"`
 }
 type Session struct {
-	ID    string `json:"id"`
-	Roles []Role `json:"roles"`
+	ID            string `json:"id"`
+	FirstName     string `json:"firstName"`
+	LastName      string `json:"lastName"`
+	Email         string `json:"email"`
+	Phone         string `json:"phone"`
+	Roles         []Role `json:"roles"`
+	EmailVerified bool   `json:"emailVerified"`
+	PhoneVerified bool   `json:"phoneVerified"`
 }
 type User struct {
 	ID        string `json:"id"`

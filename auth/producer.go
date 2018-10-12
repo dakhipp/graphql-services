@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/dakhipp/graphql-services/auth/pb"
 	"github.com/dakhipp/graphql-services/email"
 	"github.com/dakhipp/graphql-services/text"
 	"github.com/segmentio/kafka-go"
@@ -12,8 +13,8 @@ import (
 
 // Kafka is an interface which produces Kafka messages
 type Kafka interface {
-	RegisterEmail(ctx context.Context, args User) error
-	ConfirmPhone(ctx context.Context, args User) error
+	RegisterEmail(ctx context.Context, args *pb.TriggerVerifyEmailRequest, code string) error
+	ConfirmPhone(ctx context.Context, args *pb.TriggerVerifyPhoneRequest, code string) error
 }
 
 type kafkaProducer struct {
@@ -40,16 +41,16 @@ func NewKafkaProducer(kafkaAddr string) (Kafka, error) {
 }
 
 // RegisterEmail takes a user and uses their info to send an email verification email
-func (k *kafkaProducer) RegisterEmail(ctx context.Context, u User) error {
+func (k *kafkaProducer) RegisterEmail(ctx context.Context, args *pb.TriggerVerifyEmailRequest, code string) error {
 	// build kafka argument body
-	args := email.ConfirmAccountArgs{
-		FirstName: u.FirstName,
-		LastName:  u.LastName,
-		Email:     u.Email,
+	a := email.ConfirmAccountArgs{
+		FirstName:        args.FirstName,
+		Email:            args.Email,
+		VerificationCode: code,
 	}
 
 	// marshal email.ConfirmAccountArgs into byte array
-	b, _ := json.Marshal(args)
+	b, _ := json.Marshal(a)
 
 	// create kafka message the key identifies which template to use and the value contains arguments needed to compile the template
 	m := kafka.Message{
@@ -70,15 +71,15 @@ func (k *kafkaProducer) RegisterEmail(ctx context.Context, u User) error {
 }
 
 // ConfirmPhone takes a user and uses their info to send a phone verification text message
-func (k *kafkaProducer) ConfirmPhone(ctx context.Context, u User) error {
+func (k *kafkaProducer) ConfirmPhone(ctx context.Context, args *pb.TriggerVerifyPhoneRequest, code string) error {
 	// build kafka argument body
-	args := text.ConfirmPhoneArgs{
-		ToPhone:          u.Phone,
-		VerificationCode: "123456",
+	a := text.ConfirmPhoneArgs{
+		ToPhone:          args.Phone,
+		VerificationCode: code,
 	}
 
 	// marshal text.ConfirmPhoneArgs into byte array
-	b, _ := json.Marshal(args)
+	b, _ := json.Marshal(a)
 
 	// create kafka message the key identifies which template to use and the value contains arguments needed to compile the template
 	m := kafka.Message{

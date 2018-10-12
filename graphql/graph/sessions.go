@@ -5,7 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dakhipp/graphql-services/auth"
+	"github.com/dakhipp/graphql-services/auth/pb"
+	"github.com/segmentio/ksuid"
 )
 
 // createSessionCookie takes a session ID and returns a cookie with it as the value
@@ -57,14 +58,48 @@ func (s *GraphQLServer) getSessionID(ctx context.Context) string {
 }
 
 // createSession takes an authenticated user response and returns a session as well as a session cookie
-func (s *GraphQLServer) createSession(ctx context.Context, resp *auth.User) *Session {
+func (s *GraphQLServer) createSession(ctx context.Context, resp *pb.AuthResponse) *Session {
 	// create unique session ID and a session based on the user who authenticated
 	ses := &Session{
-		ID:    resp.ID,
-		Roles: toRoles(resp.Roles),
+		ID:            resp.User.Id,
+		FirstName:     resp.User.FirstName,
+		LastName:      resp.User.LastName,
+		Email:         resp.User.Email,
+		Phone:         resp.User.Phone,
+		Roles:         toRoles(resp.User.Roles),
+		EmailVerified: resp.User.EmailVerified,
+		PhoneVerified: resp.User.PhoneVerified,
 	}
 
 	// return the session
+	return ses
+}
+
+// handleWriteSession creates a session ID, creates a session, creates and writes a session cookie, and saves the session in redis. It is called at the end of the login and register mutations.
+func (s *GraphQLServer) handleWriteSession(ctx context.Context, resp *pb.AuthResponse) (*Session, error) {
+	// create unique session ID
+	sID := ksuid.New().String()
+
+	// create session
+	ses := s.createSession(ctx, resp)
+
+	// create session cookie
+	c := s.createSessionCookie(ctx, sID)
+
+	// use http.ResponseWriter to write the cookie into the response
+	s.writeSessionCookie(ctx, c)
+
+	// save session in redis
+	s.redisRepository.CreateSession(sID, ses)
+
+	// return the session
+	return ses, nil
+}
+
+// getSessionFromContext takes context returns the current session
+func (s *GraphQLServer) getSessionFromContext(ctx context.Context) Session {
+	// pull user off of context and return the user
+	ses, _ := ctx.Value(contextSessionKey).(Session)
 	return ses
 }
 

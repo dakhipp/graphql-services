@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/dakhipp/graphql-services/auth/pb"
-	"github.com/segmentio/ksuid"
 )
 
 type mutationResolver struct{ *GraphQLServer }
@@ -23,9 +22,8 @@ func (s *GraphQLServer) Register(ctx context.Context, args RegisterArgs) (*Sessi
 	defer cancel()
 
 	// handle validation
-	valErr := s.validation.validate.Struct(args)
-	if valErr != nil {
-		return nil, formatValidationErrors(ctx, valErr)
+	if err := s.validation.validate.Struct(args); err != nil {
+		return nil, formatValidationErrors(ctx, err)
 	}
 
 	// cast GraphQL arguments into gRPC RegisterRequest
@@ -45,23 +43,8 @@ func (s *GraphQLServer) Register(ctx context.Context, args RegisterArgs) (*Sessi
 		return nil, err
 	}
 
-	// create unique session ID
-	sID := ksuid.New().String()
-
-	// create session
-	ses := s.createSession(ctx, resp)
-
-	// create session cookie
-	c := s.createSessionCookie(ctx, sID)
-
-	// use http.ResponseWriter to write the cookie into the response
-	s.writeSessionCookie(ctx, c)
-
-	// save session in redis
-	s.redisRepository.CreateSession(sID, ses)
-
-	// return the session
-	return ses, nil
+	// handle writing of the session and then return the session or an error
+	return s.handleWriteSession(ctx, resp)
 }
 
 // Login is a mutation resolver that logs in and returns a session cookie to identify them with
@@ -70,9 +53,8 @@ func (s *GraphQLServer) Login(ctx context.Context, args LoginArgs) (*Session, er
 	defer cancel()
 
 	// handle validation
-	valErr := s.validation.validate.Struct(args)
-	if valErr != nil {
-		return nil, formatValidationErrors(ctx, valErr)
+	if err := s.validation.validate.Struct(args); err != nil {
+		return nil, formatValidationErrors(ctx, err)
 	}
 
 	// cast GraphQL arguments into gRPC LoginRequest
@@ -88,23 +70,8 @@ func (s *GraphQLServer) Login(ctx context.Context, args LoginArgs) (*Session, er
 		return nil, err
 	}
 
-	// create unique session ID
-	sID := ksuid.New().String()
-
-	// create session
-	ses := s.createSession(ctx, resp)
-
-	// create session cookie
-	c := s.createSessionCookie(ctx, sID)
-
-	// use http.ResponseWriter to write the cookie into the response
-	s.writeSessionCookie(ctx, c)
-
-	// save session in redis
-	s.redisRepository.CreateSession(sID, ses)
-
-	// return the session
-	return ses, nil
+	// handle writing of the session and then return the session or an error
+	return s.handleWriteSession(ctx, resp)
 }
 
 // Logout is a mutation resolver that expires a cookie, deletes their session, and returns a success message
@@ -122,8 +89,7 @@ func (s *GraphQLServer) Logout(ctx context.Context) (*Message, error) {
 	s.writeSessionCookie(ctx, c)
 
 	// delete the session from redis and log if there is an error
-	err := s.redisRepository.DeleteSession(sID)
-	if err != nil {
+	if err := s.redisRepository.DeleteSession(sID); err != nil {
 		fmt.Println(err)
 	}
 
@@ -131,4 +97,80 @@ func (s *GraphQLServer) Logout(ctx context.Context) (*Message, error) {
 	return &Message{
 		Message: "You've been logged out.",
 	}, nil
+}
+
+// TriggerVerifyEmail initiates the email verification process
+func (s *GraphQLServer) TriggerVerifyEmail(ctx context.Context) (*Message, error) {
+	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+
+	// send request to the gRPC server
+	resp, err := s.authClient.TriggerVerifyEmail(ctx, s.getSessionFromContext(ctx).Email)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	// return message to the user
+	return &Message{Message: resp.Message}, nil
+}
+
+// TriggerVerifyPhone initiates the email verification process
+func (s *GraphQLServer) TriggerVerifyPhone(ctx context.Context) (*Message, error) {
+	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+
+	// send request to the gRPC server
+	resp, err := s.authClient.TriggerVerifyPhone(ctx, s.getSessionFromContext(ctx).Phone)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	// return message to the user
+	return &Message{Message: resp.Message}, nil
+}
+
+// VerifyEmail completes the email verification process
+func (s *GraphQLServer) VerifyEmail(ctx context.Context, code string) (*Message, error) {
+	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+
+	// cast GraphQL arguments into gRPC VerifyRequest
+	r := &pb.VerifyRequest{
+		UserId: s.getSessionFromContext(ctx).ID,
+		Code:   code,
+	}
+
+	// send request to the gRPC server
+	resp, err := s.authClient.VerifyEmail(ctx, r)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	// return message to the user
+	return &Message{Message: resp.Message}, nil
+}
+
+// VerifyPhone completes the email verification process
+func (s *GraphQLServer) VerifyPhone(ctx context.Context, code string) (*Message, error) {
+	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+
+	// cast GraphQL arguments into gRPC VerifyRequest
+	r := &pb.VerifyRequest{
+		UserId: s.getSessionFromContext(ctx).ID,
+		Code:   code,
+	}
+
+	// send request to the gRPC server
+	resp, err := s.authClient.VerifyPhone(ctx, r)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	// return message to the user
+	return &Message{Message: resp.Message}, nil
 }

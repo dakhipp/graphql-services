@@ -1,17 +1,31 @@
 syntax = "proto3";
 package pb;
 
+/*
+  Start of named messages
+*/
+// Publicly visible user data, returned when fetching single or many users
 message User {
   string id = 1;
   string firstName = 2;
   string lastName = 3;
 }
-
+// "Private" session data, returned after authenticating
 message Auth {
   string id = 1;
-  repeated string roles = 2;
+  string firstName = 2;
+  string lastName = 3;
+  string email = 4;
+  string phone = 5;
+  repeated string roles = 6;
+  bool emailVerified = 7;
+  bool phoneVerified = 8;
 }
 
+/*
+  Start of Requests
+*/
+// Request body required to register a user, used in Register
 message RegisterRequest {
   string firstName = 1;
   string lastName = 2;
@@ -20,28 +34,53 @@ message RegisterRequest {
   string password = 5;
   string passwordConf = 6;
 }
-
-message RegisterResponse {
-  Auth user = 1;
-}
-
+// Request body required to login a user, used in Register
 message LoginRequest {
   string email = 1;
   string password = 2;
 }
-
-message LoginResponse {
-  Auth user = 1;
+// Request body required to trigger an email verification, used in TriggerVerifyEmail
+message TriggerVerifyEmailRequest {
+  string email = 1;
+  string firstName = 2;
 }
-
+// Request body required to trigger an phone verification, used in TriggerVerifyPhone
+message TriggerVerifyPhoneRequest {
+  string phone = 1;
+}
+// Request body required to verify a code, used in VerifyEmail and VerifyPhone
+message VerifyRequest {
+  string userId = 1;
+  string code = 2;
+}
+// An empty request body, used in GetUsers
 message EmptyRequest {}
 
+/*
+  Start of Respones
+*/
+// Returned via Login and Register
+message AuthResponse {
+  Auth user = 1;
+}
+// Returned via TriggerVerifyEmail, TriggerVerifyPhone, VerifyEmail, and VerifyPhone
+message MessageResponse {
+  string message = 1;
+}
+// Returned via GetUsers
 message GetUsersResponse {
   repeated User users = 1;
 }
 
+/*
+  AuthService RPC functions
+*/
 service AuthService {
-  rpc Register (RegisterRequest) returns (RegisterResponse) {}
-  rpc Login (LoginRequest) returns (LoginResponse) {}
+  rpc Register (RegisterRequest) returns (AuthResponse) {}
+  rpc Login (LoginRequest) returns (AuthResponse) {}
+  rpc TriggerVerifyEmail(TriggerVerifyEmailRequest) returns (MessageResponse) {};
+  rpc TriggerVerifyPhone(TriggerVerifyPhoneRequest) returns (MessageResponse) {};
+  rpc VerifyEmail(VerifyRequest) returns (MessageResponse) {};
+  rpc VerifyPhone(VerifyRequest) returns (MessageResponse) {};
   rpc GetUsers (EmptyRequest) returns (GetUsersResponse) {}
 }

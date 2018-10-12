@@ -23,6 +23,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
+// Publicly visible user data, returned when fetching single or many users
 type User struct {
 	Id                   string   `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	FirstName            string   `protobuf:"bytes,2,opt,name=firstName,proto3" json:"firstName,omitempty"`
@@ -36,7 +37,7 @@ func (m *User) Reset()         { *m = User{} }
 func (m *User) String() string { return proto.CompactTextString(m) }
 func (*User) ProtoMessage()    {}
 func (*User) Descriptor() ([]byte, []int) {
-	return fileDescriptor_auth_b7a7c5ecc2d2b590, []int{0}
+	return fileDescriptor_auth_23d1efd1856f0087, []int{0}
 }
 func (m *User) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_User.Unmarshal(m, b)
@@ -77,9 +78,16 @@ func (m *User) GetLastName() string {
 	return ""
 }
 
+// "Private" session data, returned after authenticating
 type Auth struct {
 	Id                   string   `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Roles                []string `protobuf:"bytes,2,rep,name=roles,proto3" json:"roles,omitempty"`
+	FirstName            string   `protobuf:"bytes,2,opt,name=firstName,proto3" json:"firstName,omitempty"`
+	LastName             string   `protobuf:"bytes,3,opt,name=lastName,proto3" json:"lastName,omitempty"`
+	Email                string   `protobuf:"bytes,4,opt,name=email,proto3" json:"email,omitempty"`
+	Phone                string   `protobuf:"bytes,5,opt,name=phone,proto3" json:"phone,omitempty"`
+	Roles                []string `protobuf:"bytes,6,rep,name=roles,proto3" json:"roles,omitempty"`
+	EmailVerified        bool     `protobuf:"varint,7,opt,name=emailVerified,proto3" json:"emailVerified,omitempty"`
+	PhoneVerified        bool     `protobuf:"varint,8,opt,name=phoneVerified,proto3" json:"phoneVerified,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -89,7 +97,7 @@ func (m *Auth) Reset()         { *m = Auth{} }
 func (m *Auth) String() string { return proto.CompactTextString(m) }
 func (*Auth) ProtoMessage()    {}
 func (*Auth) Descriptor() ([]byte, []int) {
-	return fileDescriptor_auth_b7a7c5ecc2d2b590, []int{1}
+	return fileDescriptor_auth_23d1efd1856f0087, []int{1}
 }
 func (m *Auth) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Auth.Unmarshal(m, b)
@@ -116,6 +124,34 @@ func (m *Auth) GetId() string {
 	return ""
 }
 
+func (m *Auth) GetFirstName() string {
+	if m != nil {
+		return m.FirstName
+	}
+	return ""
+}
+
+func (m *Auth) GetLastName() string {
+	if m != nil {
+		return m.LastName
+	}
+	return ""
+}
+
+func (m *Auth) GetEmail() string {
+	if m != nil {
+		return m.Email
+	}
+	return ""
+}
+
+func (m *Auth) GetPhone() string {
+	if m != nil {
+		return m.Phone
+	}
+	return ""
+}
+
 func (m *Auth) GetRoles() []string {
 	if m != nil {
 		return m.Roles
@@ -123,6 +159,21 @@ func (m *Auth) GetRoles() []string {
 	return nil
 }
 
+func (m *Auth) GetEmailVerified() bool {
+	if m != nil {
+		return m.EmailVerified
+	}
+	return false
+}
+
+func (m *Auth) GetPhoneVerified() bool {
+	if m != nil {
+		return m.PhoneVerified
+	}
+	return false
+}
+
+// Request body required to register a user, used in Register
 type RegisterRequest struct {
 	FirstName            string   `protobuf:"bytes,1,opt,name=firstName,proto3" json:"firstName,omitempty"`
 	LastName             string   `protobuf:"bytes,2,opt,name=lastName,proto3" json:"lastName,omitempty"`
@@ -139,7 +190,7 @@ func (m *RegisterRequest) Reset()         { *m = RegisterRequest{} }
 func (m *RegisterRequest) String() string { return proto.CompactTextString(m) }
 func (*RegisterRequest) ProtoMessage()    {}
 func (*RegisterRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_auth_b7a7c5ecc2d2b590, []int{2}
+	return fileDescriptor_auth_23d1efd1856f0087, []int{2}
 }
 func (m *RegisterRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_RegisterRequest.Unmarshal(m, b)
@@ -201,44 +252,7 @@ func (m *RegisterRequest) GetPasswordConf() string {
 	return ""
 }
 
-type RegisterResponse struct {
-	User                 *Auth    `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *RegisterResponse) Reset()         { *m = RegisterResponse{} }
-func (m *RegisterResponse) String() string { return proto.CompactTextString(m) }
-func (*RegisterResponse) ProtoMessage()    {}
-func (*RegisterResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_auth_b7a7c5ecc2d2b590, []int{3}
-}
-func (m *RegisterResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_RegisterResponse.Unmarshal(m, b)
-}
-func (m *RegisterResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_RegisterResponse.Marshal(b, m, deterministic)
-}
-func (dst *RegisterResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_RegisterResponse.Merge(dst, src)
-}
-func (m *RegisterResponse) XXX_Size() int {
-	return xxx_messageInfo_RegisterResponse.Size(m)
-}
-func (m *RegisterResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_RegisterResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_RegisterResponse proto.InternalMessageInfo
-
-func (m *RegisterResponse) GetUser() *Auth {
-	if m != nil {
-		return m.User
-	}
-	return nil
-}
-
+// Request body required to login a user, used in Register
 type LoginRequest struct {
 	Email                string   `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
 	Password             string   `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
@@ -251,7 +265,7 @@ func (m *LoginRequest) Reset()         { *m = LoginRequest{} }
 func (m *LoginRequest) String() string { return proto.CompactTextString(m) }
 func (*LoginRequest) ProtoMessage()    {}
 func (*LoginRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_auth_b7a7c5ecc2d2b590, []int{4}
+	return fileDescriptor_auth_23d1efd1856f0087, []int{3}
 }
 func (m *LoginRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_LoginRequest.Unmarshal(m, b)
@@ -285,44 +299,140 @@ func (m *LoginRequest) GetPassword() string {
 	return ""
 }
 
-type LoginResponse struct {
-	User                 *Auth    `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+// Request body required to trigger an email verification, used in TriggerVerifyEmail
+type TriggerVerifyEmailRequest struct {
+	Email                string   `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
+	FirstName            string   `protobuf:"bytes,2,opt,name=firstName,proto3" json:"firstName,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *LoginResponse) Reset()         { *m = LoginResponse{} }
-func (m *LoginResponse) String() string { return proto.CompactTextString(m) }
-func (*LoginResponse) ProtoMessage()    {}
-func (*LoginResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_auth_b7a7c5ecc2d2b590, []int{5}
+func (m *TriggerVerifyEmailRequest) Reset()         { *m = TriggerVerifyEmailRequest{} }
+func (m *TriggerVerifyEmailRequest) String() string { return proto.CompactTextString(m) }
+func (*TriggerVerifyEmailRequest) ProtoMessage()    {}
+func (*TriggerVerifyEmailRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_auth_23d1efd1856f0087, []int{4}
 }
-func (m *LoginResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_LoginResponse.Unmarshal(m, b)
+func (m *TriggerVerifyEmailRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_TriggerVerifyEmailRequest.Unmarshal(m, b)
 }
-func (m *LoginResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_LoginResponse.Marshal(b, m, deterministic)
+func (m *TriggerVerifyEmailRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_TriggerVerifyEmailRequest.Marshal(b, m, deterministic)
 }
-func (dst *LoginResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_LoginResponse.Merge(dst, src)
+func (dst *TriggerVerifyEmailRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_TriggerVerifyEmailRequest.Merge(dst, src)
 }
-func (m *LoginResponse) XXX_Size() int {
-	return xxx_messageInfo_LoginResponse.Size(m)
+func (m *TriggerVerifyEmailRequest) XXX_Size() int {
+	return xxx_messageInfo_TriggerVerifyEmailRequest.Size(m)
 }
-func (m *LoginResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_LoginResponse.DiscardUnknown(m)
+func (m *TriggerVerifyEmailRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_TriggerVerifyEmailRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_LoginResponse proto.InternalMessageInfo
+var xxx_messageInfo_TriggerVerifyEmailRequest proto.InternalMessageInfo
 
-func (m *LoginResponse) GetUser() *Auth {
+func (m *TriggerVerifyEmailRequest) GetEmail() string {
 	if m != nil {
-		return m.User
+		return m.Email
 	}
-	return nil
+	return ""
 }
 
+func (m *TriggerVerifyEmailRequest) GetFirstName() string {
+	if m != nil {
+		return m.FirstName
+	}
+	return ""
+}
+
+// Request body required to trigger an phone verification, used in TriggerVerifyPhone
+type TriggerVerifyPhoneRequest struct {
+	Phone                string   `protobuf:"bytes,1,opt,name=phone,proto3" json:"phone,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *TriggerVerifyPhoneRequest) Reset()         { *m = TriggerVerifyPhoneRequest{} }
+func (m *TriggerVerifyPhoneRequest) String() string { return proto.CompactTextString(m) }
+func (*TriggerVerifyPhoneRequest) ProtoMessage()    {}
+func (*TriggerVerifyPhoneRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_auth_23d1efd1856f0087, []int{5}
+}
+func (m *TriggerVerifyPhoneRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_TriggerVerifyPhoneRequest.Unmarshal(m, b)
+}
+func (m *TriggerVerifyPhoneRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_TriggerVerifyPhoneRequest.Marshal(b, m, deterministic)
+}
+func (dst *TriggerVerifyPhoneRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_TriggerVerifyPhoneRequest.Merge(dst, src)
+}
+func (m *TriggerVerifyPhoneRequest) XXX_Size() int {
+	return xxx_messageInfo_TriggerVerifyPhoneRequest.Size(m)
+}
+func (m *TriggerVerifyPhoneRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_TriggerVerifyPhoneRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_TriggerVerifyPhoneRequest proto.InternalMessageInfo
+
+func (m *TriggerVerifyPhoneRequest) GetPhone() string {
+	if m != nil {
+		return m.Phone
+	}
+	return ""
+}
+
+// Request body required to verify a code, used in VerifyEmail and VerifyPhone
+type VerifyRequest struct {
+	UserId               string   `protobuf:"bytes,1,opt,name=userId,proto3" json:"userId,omitempty"`
+	Code                 string   `protobuf:"bytes,2,opt,name=code,proto3" json:"code,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *VerifyRequest) Reset()         { *m = VerifyRequest{} }
+func (m *VerifyRequest) String() string { return proto.CompactTextString(m) }
+func (*VerifyRequest) ProtoMessage()    {}
+func (*VerifyRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_auth_23d1efd1856f0087, []int{6}
+}
+func (m *VerifyRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_VerifyRequest.Unmarshal(m, b)
+}
+func (m *VerifyRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_VerifyRequest.Marshal(b, m, deterministic)
+}
+func (dst *VerifyRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_VerifyRequest.Merge(dst, src)
+}
+func (m *VerifyRequest) XXX_Size() int {
+	return xxx_messageInfo_VerifyRequest.Size(m)
+}
+func (m *VerifyRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_VerifyRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_VerifyRequest proto.InternalMessageInfo
+
+func (m *VerifyRequest) GetUserId() string {
+	if m != nil {
+		return m.UserId
+	}
+	return ""
+}
+
+func (m *VerifyRequest) GetCode() string {
+	if m != nil {
+		return m.Code
+	}
+	return ""
+}
+
+// An empty request body, used in GetUsers
 type EmptyRequest struct {
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -333,7 +443,7 @@ func (m *EmptyRequest) Reset()         { *m = EmptyRequest{} }
 func (m *EmptyRequest) String() string { return proto.CompactTextString(m) }
 func (*EmptyRequest) ProtoMessage()    {}
 func (*EmptyRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_auth_b7a7c5ecc2d2b590, []int{6}
+	return fileDescriptor_auth_23d1efd1856f0087, []int{7}
 }
 func (m *EmptyRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_EmptyRequest.Unmarshal(m, b)
@@ -353,6 +463,85 @@ func (m *EmptyRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_EmptyRequest proto.InternalMessageInfo
 
+// Returned via Login and Register
+type AuthResponse struct {
+	User                 *Auth    `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *AuthResponse) Reset()         { *m = AuthResponse{} }
+func (m *AuthResponse) String() string { return proto.CompactTextString(m) }
+func (*AuthResponse) ProtoMessage()    {}
+func (*AuthResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_auth_23d1efd1856f0087, []int{8}
+}
+func (m *AuthResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_AuthResponse.Unmarshal(m, b)
+}
+func (m *AuthResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_AuthResponse.Marshal(b, m, deterministic)
+}
+func (dst *AuthResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AuthResponse.Merge(dst, src)
+}
+func (m *AuthResponse) XXX_Size() int {
+	return xxx_messageInfo_AuthResponse.Size(m)
+}
+func (m *AuthResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_AuthResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_AuthResponse proto.InternalMessageInfo
+
+func (m *AuthResponse) GetUser() *Auth {
+	if m != nil {
+		return m.User
+	}
+	return nil
+}
+
+// Returned via TriggerVerifyEmail, TriggerVerifyPhone, VerifyEmail, and VerifyPhone
+type MessageResponse struct {
+	Message              string   `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *MessageResponse) Reset()         { *m = MessageResponse{} }
+func (m *MessageResponse) String() string { return proto.CompactTextString(m) }
+func (*MessageResponse) ProtoMessage()    {}
+func (*MessageResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_auth_23d1efd1856f0087, []int{9}
+}
+func (m *MessageResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_MessageResponse.Unmarshal(m, b)
+}
+func (m *MessageResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_MessageResponse.Marshal(b, m, deterministic)
+}
+func (dst *MessageResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MessageResponse.Merge(dst, src)
+}
+func (m *MessageResponse) XXX_Size() int {
+	return xxx_messageInfo_MessageResponse.Size(m)
+}
+func (m *MessageResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MessageResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MessageResponse proto.InternalMessageInfo
+
+func (m *MessageResponse) GetMessage() string {
+	if m != nil {
+		return m.Message
+	}
+	return ""
+}
+
+// Returned via GetUsers
 type GetUsersResponse struct {
 	Users                []*User  `protobuf:"bytes,1,rep,name=users,proto3" json:"users,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -364,7 +553,7 @@ func (m *GetUsersResponse) Reset()         { *m = GetUsersResponse{} }
 func (m *GetUsersResponse) String() string { return proto.CompactTextString(m) }
 func (*GetUsersResponse) ProtoMessage()    {}
 func (*GetUsersResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_auth_b7a7c5ecc2d2b590, []int{7}
+	return fileDescriptor_auth_23d1efd1856f0087, []int{10}
 }
 func (m *GetUsersResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_GetUsersResponse.Unmarshal(m, b)
@@ -395,10 +584,13 @@ func init() {
 	proto.RegisterType((*User)(nil), "pb.User")
 	proto.RegisterType((*Auth)(nil), "pb.Auth")
 	proto.RegisterType((*RegisterRequest)(nil), "pb.RegisterRequest")
-	proto.RegisterType((*RegisterResponse)(nil), "pb.RegisterResponse")
 	proto.RegisterType((*LoginRequest)(nil), "pb.LoginRequest")
-	proto.RegisterType((*LoginResponse)(nil), "pb.LoginResponse")
+	proto.RegisterType((*TriggerVerifyEmailRequest)(nil), "pb.TriggerVerifyEmailRequest")
+	proto.RegisterType((*TriggerVerifyPhoneRequest)(nil), "pb.TriggerVerifyPhoneRequest")
+	proto.RegisterType((*VerifyRequest)(nil), "pb.VerifyRequest")
 	proto.RegisterType((*EmptyRequest)(nil), "pb.EmptyRequest")
+	proto.RegisterType((*AuthResponse)(nil), "pb.AuthResponse")
+	proto.RegisterType((*MessageResponse)(nil), "pb.MessageResponse")
 	proto.RegisterType((*GetUsersResponse)(nil), "pb.GetUsersResponse")
 }
 
@@ -414,8 +606,12 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type AuthServiceClient interface {
-	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
-	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
+	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*AuthResponse, error)
+	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*AuthResponse, error)
+	TriggerVerifyEmail(ctx context.Context, in *TriggerVerifyEmailRequest, opts ...grpc.CallOption) (*MessageResponse, error)
+	TriggerVerifyPhone(ctx context.Context, in *TriggerVerifyPhoneRequest, opts ...grpc.CallOption) (*MessageResponse, error)
+	VerifyEmail(ctx context.Context, in *VerifyRequest, opts ...grpc.CallOption) (*MessageResponse, error)
+	VerifyPhone(ctx context.Context, in *VerifyRequest, opts ...grpc.CallOption) (*MessageResponse, error)
 	GetUsers(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*GetUsersResponse, error)
 }
 
@@ -427,8 +623,8 @@ func NewAuthServiceClient(cc *grpc.ClientConn) AuthServiceClient {
 	return &authServiceClient{cc}
 }
 
-func (c *authServiceClient) Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error) {
-	out := new(RegisterResponse)
+func (c *authServiceClient) Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*AuthResponse, error) {
+	out := new(AuthResponse)
 	err := c.cc.Invoke(ctx, "/pb.AuthService/Register", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -436,9 +632,45 @@ func (c *authServiceClient) Register(ctx context.Context, in *RegisterRequest, o
 	return out, nil
 }
 
-func (c *authServiceClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
-	out := new(LoginResponse)
+func (c *authServiceClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*AuthResponse, error) {
+	out := new(AuthResponse)
 	err := c.cc.Invoke(ctx, "/pb.AuthService/Login", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) TriggerVerifyEmail(ctx context.Context, in *TriggerVerifyEmailRequest, opts ...grpc.CallOption) (*MessageResponse, error) {
+	out := new(MessageResponse)
+	err := c.cc.Invoke(ctx, "/pb.AuthService/TriggerVerifyEmail", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) TriggerVerifyPhone(ctx context.Context, in *TriggerVerifyPhoneRequest, opts ...grpc.CallOption) (*MessageResponse, error) {
+	out := new(MessageResponse)
+	err := c.cc.Invoke(ctx, "/pb.AuthService/TriggerVerifyPhone", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) VerifyEmail(ctx context.Context, in *VerifyRequest, opts ...grpc.CallOption) (*MessageResponse, error) {
+	out := new(MessageResponse)
+	err := c.cc.Invoke(ctx, "/pb.AuthService/VerifyEmail", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) VerifyPhone(ctx context.Context, in *VerifyRequest, opts ...grpc.CallOption) (*MessageResponse, error) {
+	out := new(MessageResponse)
+	err := c.cc.Invoke(ctx, "/pb.AuthService/VerifyPhone", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -456,8 +688,12 @@ func (c *authServiceClient) GetUsers(ctx context.Context, in *EmptyRequest, opts
 
 // AuthServiceServer is the server API for AuthService service.
 type AuthServiceServer interface {
-	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
-	Login(context.Context, *LoginRequest) (*LoginResponse, error)
+	Register(context.Context, *RegisterRequest) (*AuthResponse, error)
+	Login(context.Context, *LoginRequest) (*AuthResponse, error)
+	TriggerVerifyEmail(context.Context, *TriggerVerifyEmailRequest) (*MessageResponse, error)
+	TriggerVerifyPhone(context.Context, *TriggerVerifyPhoneRequest) (*MessageResponse, error)
+	VerifyEmail(context.Context, *VerifyRequest) (*MessageResponse, error)
+	VerifyPhone(context.Context, *VerifyRequest) (*MessageResponse, error)
 	GetUsers(context.Context, *EmptyRequest) (*GetUsersResponse, error)
 }
 
@@ -501,6 +737,78 @@ func _AuthService_Login_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_TriggerVerifyEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TriggerVerifyEmailRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).TriggerVerifyEmail(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.AuthService/TriggerVerifyEmail",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).TriggerVerifyEmail(ctx, req.(*TriggerVerifyEmailRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_TriggerVerifyPhone_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TriggerVerifyPhoneRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).TriggerVerifyPhone(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.AuthService/TriggerVerifyPhone",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).TriggerVerifyPhone(ctx, req.(*TriggerVerifyPhoneRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_VerifyEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).VerifyEmail(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.AuthService/VerifyEmail",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).VerifyEmail(ctx, req.(*VerifyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_VerifyPhone_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).VerifyPhone(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.AuthService/VerifyPhone",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).VerifyPhone(ctx, req.(*VerifyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AuthService_GetUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(EmptyRequest)
 	if err := dec(in); err != nil {
@@ -532,6 +840,22 @@ var _AuthService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _AuthService_Login_Handler,
 		},
 		{
+			MethodName: "TriggerVerifyEmail",
+			Handler:    _AuthService_TriggerVerifyEmail_Handler,
+		},
+		{
+			MethodName: "TriggerVerifyPhone",
+			Handler:    _AuthService_TriggerVerifyPhone_Handler,
+		},
+		{
+			MethodName: "VerifyEmail",
+			Handler:    _AuthService_VerifyEmail_Handler,
+		},
+		{
+			MethodName: "VerifyPhone",
+			Handler:    _AuthService_VerifyPhone_Handler,
+		},
+		{
 			MethodName: "GetUsers",
 			Handler:    _AuthService_GetUsers_Handler,
 		},
@@ -540,31 +864,41 @@ var _AuthService_serviceDesc = grpc.ServiceDesc{
 	Metadata: "auth.proto",
 }
 
-func init() { proto.RegisterFile("auth.proto", fileDescriptor_auth_b7a7c5ecc2d2b590) }
+func init() { proto.RegisterFile("auth.proto", fileDescriptor_auth_23d1efd1856f0087) }
 
-var fileDescriptor_auth_b7a7c5ecc2d2b590 = []byte{
-	// 366 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x52, 0xc1, 0x4a, 0xeb, 0x40,
-	0x14, 0x6d, 0xd2, 0xa4, 0xa4, 0xb7, 0x7d, 0x7d, 0x7d, 0xf3, 0xba, 0x08, 0xa5, 0x48, 0x99, 0x55,
-	0x17, 0x1a, 0xa4, 0x0a, 0x6e, 0x15, 0x11, 0x37, 0x22, 0x12, 0xf1, 0x03, 0x52, 0x7b, 0xdb, 0x06,
-	0xda, 0xcc, 0x38, 0x33, 0x51, 0xfc, 0x27, 0xf7, 0xfe, 0x9e, 0xcc, 0x4c, 0x92, 0x26, 0x15, 0xc4,
-	0x5d, 0xce, 0xb9, 0x27, 0xe7, 0x9c, 0x3b, 0x33, 0x00, 0x49, 0xae, 0x36, 0x11, 0x17, 0x4c, 0x31,
-	0xe2, 0xf2, 0x05, 0x7d, 0x00, 0xef, 0x49, 0xa2, 0x20, 0x03, 0x70, 0xd3, 0x65, 0xe8, 0x4c, 0x9d,
-	0x59, 0x37, 0x76, 0xd3, 0x25, 0x99, 0x40, 0x77, 0x95, 0x0a, 0xa9, 0xee, 0x93, 0x1d, 0x86, 0xae,
-	0xa1, 0xf7, 0x04, 0x19, 0x43, 0xb0, 0x4d, 0x8a, 0x61, 0xdb, 0x0c, 0x2b, 0x4c, 0x8f, 0xc1, 0xbb,
-	0xca, 0xd5, 0xe6, 0x9b, 0xe3, 0x08, 0x7c, 0xc1, 0xb6, 0x28, 0x43, 0x77, 0xda, 0x9e, 0x75, 0x63,
-	0x0b, 0xe8, 0xa7, 0x03, 0x7f, 0x63, 0x5c, 0xa7, 0x52, 0xa1, 0x88, 0xf1, 0x25, 0x47, 0xa9, 0x9a,
-	0xd9, 0xce, 0x4f, 0xd9, 0x6e, 0x33, 0x5b, 0x67, 0xe0, 0x2e, 0x49, 0xb7, 0x45, 0x29, 0x0b, 0x34,
-	0xcb, 0x37, 0x2c, 0xc3, 0xd0, 0xb3, 0xac, 0x01, 0xda, 0x87, 0x27, 0x52, 0xbe, 0x31, 0xb1, 0x0c,
-	0x7d, 0xeb, 0x53, 0x62, 0x42, 0xa1, 0x5f, 0x7e, 0x5f, 0xb3, 0x6c, 0x15, 0x76, 0xcc, 0xbc, 0xc1,
-	0xd1, 0x53, 0x18, 0xee, 0x8b, 0x4b, 0xce, 0x32, 0x89, 0x64, 0x02, 0x5e, 0x2e, 0x51, 0x98, 0xd2,
-	0xbd, 0x79, 0x10, 0xf1, 0x45, 0xa4, 0xcf, 0x22, 0x36, 0x2c, 0xbd, 0x84, 0xfe, 0x1d, 0x5b, 0xa7,
-	0x59, 0xb9, 0x67, 0xd5, 0xd6, 0xa9, 0xb7, 0xad, 0xf7, 0x72, 0x9b, 0xbd, 0xe8, 0x09, 0xfc, 0x29,
-	0x1c, 0x7e, 0x15, 0x38, 0x80, 0xfe, 0xcd, 0x8e, 0xab, 0xf7, 0x22, 0x90, 0xce, 0x61, 0x78, 0x8b,
-	0x4a, 0xdf, 0xb7, 0xac, 0x1c, 0x8e, 0xc0, 0xd7, 0x5a, 0x19, 0x3a, 0xd3, 0x76, 0x69, 0xa1, 0x15,
-	0xb1, 0xa5, 0xe7, 0x1f, 0x0e, 0xf4, 0xb4, 0xe5, 0x23, 0x8a, 0xd7, 0xf4, 0x19, 0xc9, 0x05, 0x04,
-	0xe5, 0xda, 0xe4, 0xbf, 0x16, 0x1f, 0xdc, 0xde, 0x78, 0xd4, 0x24, 0x6d, 0x0c, 0x6d, 0x91, 0x08,
-	0x7c, 0xd3, 0x9d, 0x0c, 0xb5, 0xa0, 0x7e, 0x10, 0xe3, 0x7f, 0x35, 0xa6, 0xd2, 0x9f, 0x43, 0x50,
-	0x96, 0xb5, 0xbf, 0xd4, 0x57, 0xb1, 0x29, 0x87, 0xcb, 0xd0, 0xd6, 0xa2, 0x63, 0x9e, 0xf6, 0xd9,
-	0x57, 0x00, 0x00, 0x00, 0xff, 0xff, 0xdf, 0xdd, 0x95, 0x27, 0xe8, 0x02, 0x00, 0x00,
+var fileDescriptor_auth_23d1efd1856f0087 = []byte{
+	// 518 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x54, 0x4b, 0x6f, 0xd3, 0x40,
+	0x10, 0xae, 0x1f, 0x49, 0xdd, 0x49, 0xfa, 0x60, 0xa9, 0x90, 0xb1, 0x0a, 0x8a, 0x56, 0x1c, 0x2a,
+	0x01, 0x91, 0x48, 0x91, 0x38, 0x70, 0x01, 0xa1, 0x0a, 0x81, 0x78, 0x54, 0xe6, 0x71, 0x77, 0xe2,
+	0x89, 0xb3, 0x52, 0x12, 0x9b, 0x5d, 0x07, 0xc4, 0xcf, 0xe2, 0xc4, 0xbf, 0xe1, 0xb7, 0xa0, 0x1d,
+	0x7b, 0xcd, 0x3a, 0x24, 0x81, 0x43, 0x6f, 0x9e, 0x6f, 0xbe, 0xf9, 0x66, 0x67, 0xbe, 0x49, 0x00,
+	0x92, 0x55, 0x39, 0x1b, 0x16, 0x32, 0x2f, 0x73, 0xe6, 0x16, 0x63, 0x7e, 0x05, 0xfe, 0x27, 0x85,
+	0x92, 0x1d, 0x81, 0x2b, 0xd2, 0xd0, 0x19, 0x38, 0xe7, 0x07, 0xb1, 0x2b, 0x52, 0x76, 0x06, 0x07,
+	0x53, 0x21, 0x55, 0xf9, 0x2e, 0x59, 0x60, 0xe8, 0x12, 0xfc, 0x07, 0x60, 0x11, 0x04, 0xf3, 0xa4,
+	0x4e, 0x7a, 0x94, 0x6c, 0x62, 0xfe, 0xcb, 0x01, 0xff, 0xf9, 0xaa, 0x9c, 0x5d, 0x9f, 0x24, 0x3b,
+	0x85, 0x0e, 0x2e, 0x12, 0x31, 0x0f, 0x7d, 0x4a, 0x54, 0x81, 0x46, 0x8b, 0x59, 0xbe, 0xc4, 0xb0,
+	0x53, 0xa1, 0x14, 0x68, 0x54, 0xe6, 0x73, 0x54, 0x61, 0x77, 0xe0, 0x69, 0x94, 0x02, 0x76, 0x0f,
+	0x0e, 0xa9, 0xe8, 0x33, 0x4a, 0x31, 0x15, 0x98, 0x86, 0xfb, 0x03, 0xe7, 0x3c, 0x88, 0xdb, 0xa0,
+	0x66, 0x91, 0x48, 0xc3, 0x0a, 0x2a, 0x56, 0x0b, 0xe4, 0x3f, 0x1d, 0x38, 0x8e, 0x31, 0x13, 0xaa,
+	0x44, 0x19, 0xe3, 0x97, 0x15, 0xaa, 0xb2, 0x3d, 0x9b, 0xb3, 0x6b, 0x36, 0x77, 0xdb, 0x6c, 0xde,
+	0xc6, 0xd9, 0x7c, 0x7b, 0xb6, 0x08, 0x82, 0x22, 0x51, 0xea, 0x5b, 0x2e, 0xd3, 0x7a, 0xe8, 0x26,
+	0x66, 0x1c, 0xfa, 0xe6, 0xfb, 0x45, 0xbe, 0x9c, 0x86, 0x5d, 0xca, 0xb7, 0x30, 0xfe, 0x0c, 0xfa,
+	0x6f, 0xf2, 0x4c, 0x2c, 0xcd, 0xab, 0x9b, 0xde, 0x8e, 0xdd, 0xdb, 0xee, 0xe2, 0xb6, 0xbb, 0xf0,
+	0xf7, 0x70, 0xfb, 0xa3, 0x14, 0x59, 0x86, 0x92, 0xd6, 0xf1, 0xfd, 0x52, 0x57, 0xec, 0x96, 0xdb,
+	0x69, 0x3b, 0x7f, 0xb4, 0x26, 0x78, 0xa5, 0x07, 0xb5, 0x04, 0xab, 0x2d, 0x38, 0xd6, 0x16, 0xf8,
+	0x53, 0x38, 0xac, 0xb8, 0x86, 0x76, 0x0b, 0xba, 0x2b, 0x85, 0xf2, 0x95, 0x39, 0xb6, 0x3a, 0x62,
+	0x0c, 0xfc, 0x49, 0x9e, 0x9a, 0xa6, 0xf4, 0xcd, 0x8f, 0xa0, 0x7f, 0xb9, 0x28, 0x4a, 0x53, 0xcb,
+	0x1f, 0x40, 0x5f, 0x1f, 0x6b, 0x8c, 0xaa, 0xc8, 0x97, 0x0a, 0xd9, 0x19, 0xf8, 0xba, 0x9a, 0x94,
+	0x7a, 0xa3, 0x60, 0x58, 0x8c, 0x87, 0x94, 0x27, 0x94, 0xdf, 0x87, 0xe3, 0xb7, 0xa8, 0x54, 0x92,
+	0x61, 0x53, 0x10, 0xc2, 0xfe, 0xa2, 0x82, 0xea, 0xee, 0x26, 0xe4, 0x23, 0x38, 0x79, 0x89, 0xa5,
+	0xfe, 0x75, 0xa9, 0x86, 0x7d, 0x17, 0x3a, 0x5a, 0x48, 0x85, 0xce, 0xc0, 0x33, 0xfa, 0x9a, 0x11,
+	0x57, 0xf0, 0xe8, 0x87, 0x07, 0x3d, 0xdd, 0xef, 0x03, 0xca, 0xaf, 0x62, 0x82, 0xec, 0x02, 0x02,
+	0x73, 0x6a, 0xec, 0xa6, 0x26, 0xaf, 0x1d, 0x5e, 0x74, 0xd2, 0xbc, 0xb0, 0x6e, 0xc1, 0xf7, 0xd8,
+	0x43, 0xe8, 0x90, 0xcd, 0x8c, 0x92, 0xb6, 0xe3, 0x1b, 0xe9, 0xaf, 0x81, 0xfd, 0xed, 0x29, 0xbb,
+	0xa3, 0x99, 0x5b, 0xbd, 0x8e, 0xe8, 0x31, 0x6b, 0xbb, 0xd8, 0xa0, 0x45, 0x76, 0x6e, 0xd0, 0xb2,
+	0x6d, 0xde, 0xa6, 0xf5, 0x04, 0x7a, 0xf6, 0x83, 0x6e, 0x68, 0x56, 0xcb, 0xf8, 0x7f, 0x16, 0x56,
+	0xdd, 0xff, 0xbf, 0xf0, 0x31, 0x04, 0xc6, 0xb1, 0x6a, 0x77, 0xf6, 0xa9, 0x44, 0xa7, 0x1a, 0x59,
+	0x77, 0x94, 0xef, 0x8d, 0xbb, 0xf4, 0x6f, 0x7a, 0xf1, 0x3b, 0x00, 0x00, 0xff, 0xff, 0xca, 0x1f,
+	0x5e, 0x1a, 0x5b, 0x05, 0x00, 0x00,
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"math/rand"
 	"time"
 
 	"github.com/dakhipp/graphql-services/auth/pb"
@@ -17,6 +18,10 @@ import (
 type Service interface {
 	Register(ctx context.Context, args *pb.RegisterRequest) (*User, error)
 	Login(ctx context.Context, args *pb.LoginRequest) (*User, error)
+	TriggerVerifyEmail(ctx context.Context, args *pb.TriggerVerifyEmailRequest) error
+	TriggerVerifyPhone(ctx context.Context, args *pb.TriggerVerifyPhoneRequest) error
+	VerifyEmail(ctx context.Context, args *pb.VerifyRequest) error
+	VerifyPhone(ctx context.Context, args *pb.VerifyRequest) error
 	GetUsers(ctx context.Context) ([]User, error)
 }
 
@@ -67,7 +72,7 @@ func New() Service {
 }
 
 // Register hashes a users password, creates them in the database, and sends out the registration email
-func (service *authService) Register(ctx context.Context, args *pb.RegisterRequest) (*User, error) {
+func (s *authService) Register(ctx context.Context, args *pb.RegisterRequest) (*User, error) {
 	hp, err := hashPassword(args.Password)
 	if err != nil {
 		return nil, err
@@ -85,17 +90,15 @@ func (service *authService) Register(ctx context.Context, args *pb.RegisterReque
 	}
 
 	// create user in database
-	if err := service.repository.CreateUser(ctx, *user); err != nil {
+	if err := s.repository.CreateUser(ctx, *user); err != nil {
 		return nil, err
 	}
 
-	// produce a message to kafka so our email service will send out the registration email
-	if err := service.kafkaProducer.RegisterEmail(ctx, *user); err != nil {
-		return nil, err
+	a := &pb.TriggerVerifyEmailRequest{
+		Email:     args.Email,
+		FirstName: args.FirstName,
 	}
-
-	// produce a message to kafka so our email service will send out the registration email
-	if err := service.kafkaProducer.ConfirmPhone(ctx, *user); err != nil {
+	if err := s.TriggerVerifyEmail(ctx, a); err != nil {
 		return nil, err
 	}
 
@@ -103,8 +106,8 @@ func (service *authService) Register(ctx context.Context, args *pb.RegisterReque
 }
 
 // Login fetches a user from the database by email and compares the password they provided with the fetched user's
-func (service *authService) Login(ctx context.Context, args *pb.LoginRequest) (*User, error) {
-	u, err := service.repository.GetUserByEmail(ctx, args.Email)
+func (s *authService) Login(ctx context.Context, args *pb.LoginRequest) (*User, error) {
+	u, err := s.repository.GetUserByEmail(ctx, args.Email)
 	if err != nil {
 		return nil, err
 	}
@@ -114,9 +117,55 @@ func (service *authService) Login(ctx context.Context, args *pb.LoginRequest) (*
 	return u, nil
 }
 
+// TriggerVerifyEmail creates and emailVerification typed code in the database and then produces a message to Kafka in order to send out an email with the code in it
+func (s *authService) TriggerVerifyEmail(ctx context.Context, args *pb.TriggerVerifyEmailRequest) error {
+	code := generateCode("emailVerification")
+	if err := s.repository.CreateVerificationCode(ctx, code); err != nil {
+		return err
+	}
+	if err := s.kafkaProducer.RegisterEmail(ctx, args, code.Code); err != nil {
+		return err
+	}
+	return nil
+}
+
+// TriggerVerifyPhone creates and phoneVerification typed code in the database and then produces a message to Kafka in order to send out an text with the code in it
+func (s *authService) TriggerVerifyPhone(ctx context.Context, args *pb.TriggerVerifyPhoneRequest) error {
+	code := generateCode("phoneVerification")
+	if err := s.repository.CreateVerificationCode(ctx, code); err != nil {
+		return err
+	}
+	if err := s.kafkaProducer.ConfirmPhone(ctx, args, code.Code); err != nil {
+		return err
+	}
+	return nil
+}
+
+// VerifyEmail checks an email verification code and then updates the users emailVerified property if the code is valid
+func (s *authService) VerifyEmail(ctx context.Context, args *pb.VerifyRequest) error {
+	if err := s.repository.CheckEmailVerificationCode(ctx, args.Code); err != nil {
+		return err
+	}
+	if err := s.repository.UpdateEmailVerified(ctx, args.UserId, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+// VerifyPhone checks an phone verification code and then updates the users phoneVerified property if the code is valid
+func (s *authService) VerifyPhone(ctx context.Context, args *pb.VerifyRequest) error {
+	if err := s.repository.CheckPhoneVerificationCode(ctx, args.Code); err != nil {
+		return err
+	}
+	if err := s.repository.UpdatePhoneVerified(ctx, args.UserId, true); err != nil {
+		return err
+	}
+	return nil
+}
+
 // GetUsers calls a repository function to get users from the database
-func (service *authService) GetUsers(ctx context.Context) ([]User, error) {
-	return service.repository.ReadUsers(ctx)
+func (s *authService) GetUsers(ctx context.Context) ([]User, error) {
+	return s.repository.ReadUsers(ctx)
 }
 
 // hashPassword takes a plain text password and hashes it
@@ -129,4 +178,24 @@ func hashPassword(password string) (string, error) {
 func checkPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
+}
+
+// randSixDigit returns a random 6 digit string
+func randSixDigit() string {
+	rand.Seed(time.Now().UnixNano())
+	opts := []rune("0123456789")
+	b := make([]rune, 6)
+	for i := range b {
+		b[i] = opts[rand.Intn(len(opts))]
+	}
+	return string(b)
+}
+
+// generate code takes string t which identifies the type of code to create and returns the code
+func generateCode(t string) Code {
+	return Code{
+		Code:    randSixDigit(),
+		Type:    t,
+		Created: time.Now(),
+	}
 }

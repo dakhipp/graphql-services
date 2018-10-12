@@ -18,7 +18,13 @@ type User {
 
 type Session {
   id: String!,
-  roles: [Role!]!
+	firstName: String!,
+	lastName: String!
+  email: String!,
+  phone: String!,
+  roles: [Role!]!,
+  emailVerified: Boolean!,
+  phoneVerified: Boolean!,
 }
 
 input RegisterArgs {
@@ -38,6 +44,10 @@ input LoginArgs {
 type Mutation {
 	register(args: RegisterArgs!): Session
   login(args: LoginArgs!): Session
+  triggerVerifyEmail(): Message @hasRole(role: USER)
+  verifyEmail(code: String!): Message
+  triggerVerifyPhone(): Message @hasRole(role: USER)
+  verifyPhone(code: String!): Message
   logout(): Message
 }
 

@@ -37,6 +37,10 @@ type DirectiveRoot struct {
 type MutationResolver interface {
 	Register(ctx context.Context, args RegisterArgs) (*Session, error)
 	Login(ctx context.Context, args LoginArgs) (*Session, error)
+	TriggerVerifyEmail(ctx context.Context) (*Message, error)
+	VerifyEmail(ctx context.Context, code string) (*Message, error)
+	TriggerVerifyPhone(ctx context.Context) (*Message, error)
+	VerifyPhone(ctx context.Context, code string) (*Message, error)
 	Logout(ctx context.Context) (*Message, error)
 }
 type QueryResolver interface {
@@ -154,6 +158,14 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec._Mutation_register(ctx, field)
 		case "login":
 			out.Values[i] = ec._Mutation_login(ctx, field)
+		case "triggerVerifyEmail":
+			out.Values[i] = ec._Mutation_triggerVerifyEmail(ctx, field)
+		case "verifyEmail":
+			out.Values[i] = ec._Mutation_verifyEmail(ctx, field)
+		case "triggerVerifyPhone":
+			out.Values[i] = ec._Mutation_triggerVerifyPhone(ctx, field)
+		case "verifyPhone":
+			out.Values[i] = ec._Mutation_verifyPhone(ctx, field)
 		case "logout":
 			out.Values[i] = ec._Mutation_logout(ctx, field)
 		default:
@@ -226,6 +238,110 @@ func (ec *executionContext) _Mutation_login(ctx context.Context, field graphql.C
 		return graphql.Null
 	}
 	return ec._Session(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_triggerVerifyEmail(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	rctx := graphql.GetResolverContext(ctx)
+	rctx.Object = "Mutation"
+	rctx.Args = nil
+	rctx.Field = field
+	rctx.PushField(field.Alias)
+	defer rctx.Pop()
+	resTmp := ec.FieldMiddleware(ctx, func(ctx context.Context) (interface{}, error) {
+		return ec.resolvers.Mutation().TriggerVerifyEmail(ctx)
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*Message)
+	if res == nil {
+		return graphql.Null
+	}
+	return ec._Message(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_verifyEmail(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["code"]; ok {
+		var err error
+		arg0, err = graphql.UnmarshalString(tmp)
+		if err != nil {
+			ec.Error(ctx, err)
+			return graphql.Null
+		}
+	}
+	args["code"] = arg0
+	rctx := graphql.GetResolverContext(ctx)
+	rctx.Object = "Mutation"
+	rctx.Args = args
+	rctx.Field = field
+	rctx.PushField(field.Alias)
+	defer rctx.Pop()
+	resTmp := ec.FieldMiddleware(ctx, func(ctx context.Context) (interface{}, error) {
+		return ec.resolvers.Mutation().VerifyEmail(ctx, args["code"].(string))
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*Message)
+	if res == nil {
+		return graphql.Null
+	}
+	return ec._Message(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_triggerVerifyPhone(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	rctx := graphql.GetResolverContext(ctx)
+	rctx.Object = "Mutation"
+	rctx.Args = nil
+	rctx.Field = field
+	rctx.PushField(field.Alias)
+	defer rctx.Pop()
+	resTmp := ec.FieldMiddleware(ctx, func(ctx context.Context) (interface{}, error) {
+		return ec.resolvers.Mutation().TriggerVerifyPhone(ctx)
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*Message)
+	if res == nil {
+		return graphql.Null
+	}
+	return ec._Message(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_verifyPhone(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["code"]; ok {
+		var err error
+		arg0, err = graphql.UnmarshalString(tmp)
+		if err != nil {
+			ec.Error(ctx, err)
+			return graphql.Null
+		}
+	}
+	args["code"] = arg0
+	rctx := graphql.GetResolverContext(ctx)
+	rctx.Object = "Mutation"
+	rctx.Args = args
+	rctx.Field = field
+	rctx.PushField(field.Alias)
+	defer rctx.Pop()
+	resTmp := ec.FieldMiddleware(ctx, func(ctx context.Context) (interface{}, error) {
+		return ec.resolvers.Mutation().VerifyPhone(ctx, args["code"].(string))
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*Message)
+	if res == nil {
+		return graphql.Null
+	}
+	return ec._Message(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_logout(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
@@ -381,8 +497,20 @@ func (ec *executionContext) _Session(ctx context.Context, sel ast.SelectionSet, 
 			out.Values[i] = graphql.MarshalString("Session")
 		case "id":
 			out.Values[i] = ec._Session_id(ctx, field, obj)
+		case "firstName":
+			out.Values[i] = ec._Session_firstName(ctx, field, obj)
+		case "lastName":
+			out.Values[i] = ec._Session_lastName(ctx, field, obj)
+		case "email":
+			out.Values[i] = ec._Session_email(ctx, field, obj)
+		case "phone":
+			out.Values[i] = ec._Session_phone(ctx, field, obj)
 		case "roles":
 			out.Values[i] = ec._Session_roles(ctx, field, obj)
+		case "emailVerified":
+			out.Values[i] = ec._Session_emailVerified(ctx, field, obj)
+		case "phoneVerified":
+			out.Values[i] = ec._Session_phoneVerified(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -400,6 +528,74 @@ func (ec *executionContext) _Session_id(ctx context.Context, field graphql.Colle
 	defer rctx.Pop()
 	resTmp := ec.FieldMiddleware(ctx, func(ctx context.Context) (interface{}, error) {
 		return obj.ID, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	return graphql.MarshalString(res)
+}
+
+func (ec *executionContext) _Session_firstName(ctx context.Context, field graphql.CollectedField, obj *Session) graphql.Marshaler {
+	rctx := graphql.GetResolverContext(ctx)
+	rctx.Object = "Session"
+	rctx.Args = nil
+	rctx.Field = field
+	rctx.PushField(field.Alias)
+	defer rctx.Pop()
+	resTmp := ec.FieldMiddleware(ctx, func(ctx context.Context) (interface{}, error) {
+		return obj.FirstName, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	return graphql.MarshalString(res)
+}
+
+func (ec *executionContext) _Session_lastName(ctx context.Context, field graphql.CollectedField, obj *Session) graphql.Marshaler {
+	rctx := graphql.GetResolverContext(ctx)
+	rctx.Object = "Session"
+	rctx.Args = nil
+	rctx.Field = field
+	rctx.PushField(field.Alias)
+	defer rctx.Pop()
+	resTmp := ec.FieldMiddleware(ctx, func(ctx context.Context) (interface{}, error) {
+		return obj.LastName, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	return graphql.MarshalString(res)
+}
+
+func (ec *executionContext) _Session_email(ctx context.Context, field graphql.CollectedField, obj *Session) graphql.Marshaler {
+	rctx := graphql.GetResolverContext(ctx)
+	rctx.Object = "Session"
+	rctx.Args = nil
+	rctx.Field = field
+	rctx.PushField(field.Alias)
+	defer rctx.Pop()
+	resTmp := ec.FieldMiddleware(ctx, func(ctx context.Context) (interface{}, error) {
+		return obj.Email, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	return graphql.MarshalString(res)
+}
+
+func (ec *executionContext) _Session_phone(ctx context.Context, field graphql.CollectedField, obj *Session) graphql.Marshaler {
+	rctx := graphql.GetResolverContext(ctx)
+	rctx.Object = "Session"
+	rctx.Args = nil
+	rctx.Field = field
+	rctx.PushField(field.Alias)
+	defer rctx.Pop()
+	resTmp := ec.FieldMiddleware(ctx, func(ctx context.Context) (interface{}, error) {
+		return obj.Phone, nil
 	})
 	if resTmp == nil {
 		return graphql.Null
@@ -432,6 +628,40 @@ func (ec *executionContext) _Session_roles(ctx context.Context, field graphql.Co
 		}())
 	}
 	return arr1
+}
+
+func (ec *executionContext) _Session_emailVerified(ctx context.Context, field graphql.CollectedField, obj *Session) graphql.Marshaler {
+	rctx := graphql.GetResolverContext(ctx)
+	rctx.Object = "Session"
+	rctx.Args = nil
+	rctx.Field = field
+	rctx.PushField(field.Alias)
+	defer rctx.Pop()
+	resTmp := ec.FieldMiddleware(ctx, func(ctx context.Context) (interface{}, error) {
+		return obj.EmailVerified, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	return graphql.MarshalBoolean(res)
+}
+
+func (ec *executionContext) _Session_phoneVerified(ctx context.Context, field graphql.CollectedField, obj *Session) graphql.Marshaler {
+	rctx := graphql.GetResolverContext(ctx)
+	rctx.Object = "Session"
+	rctx.Args = nil
+	rctx.Field = field
+	rctx.PushField(field.Alias)
+	defer rctx.Pop()
+	resTmp := ec.FieldMiddleware(ctx, func(ctx context.Context) (interface{}, error) {
+		return obj.PhoneVerified, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	return graphql.MarshalBoolean(res)
 }
 
 var userImplementors = []string{"User"}
@@ -1518,7 +1748,13 @@ type User {
 
 type Session {
   id: String!,
-  roles: [Role!]!
+	firstName: String!,
+	lastName: String!
+  email: String!,
+  phone: String!,
+  roles: [Role!]!,
+  emailVerified: Boolean!,
+  phoneVerified: Boolean!,
 }
 
 input RegisterArgs {
@@ -1538,6 +1774,10 @@ input LoginArgs {
 type Mutation {
 	register(args: RegisterArgs!): Session
   login(args: LoginArgs!): Session
+  triggerVerifyEmail(): Message @hasRole(role: USER)
+  verifyEmail(code: String!): Message
+  triggerVerifyPhone(): Message @hasRole(role: USER)
+  verifyPhone(code: String!): Message
   logout(): Message
 }
 

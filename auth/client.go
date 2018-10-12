@@ -7,13 +7,13 @@ import (
 	"google.golang.org/grpc"
 )
 
-// Client : grpc client used to make authentication service calls
+// Client is a struct containing a gRPC connection and a auth service
 type Client struct {
 	conn    *grpc.ClientConn
 	service pb.AuthServiceClient
 }
 
-// NewClient : creates a new grpc client
+// NewClient creates a new gRPC client
 func NewClient(url string) (*Client, error) {
 	conn, err := grpc.Dial(url, grpc.WithInsecure())
 	if err != nil {
@@ -23,44 +23,68 @@ func NewClient(url string) (*Client, error) {
 	return &Client{conn, client}, nil
 }
 
-// Close : closes a grpc client connection
-func (client *Client) Close() {
-	client.conn.Close()
+// Close closes a gRPC client connection
+func (c *Client) Close() {
+	c.conn.Close()
 }
 
-// Register : Register function available on the grpc client, registers a user in the database
-func (client *Client) Register(ctx context.Context, r *pb.RegisterRequest) (*User, error) {
-	resp, err := client.service.Register(
-		ctx,
-		r,
-	)
+// Register is a function available on the gRPC client that registers a user in the database
+func (c *Client) Register(ctx context.Context, r *pb.RegisterRequest) (*pb.AuthResponse, error) {
+	resp, err := c.service.Register(ctx, r)
 	if err != nil {
 		return nil, err
 	}
-	return &User{
-		ID:    resp.User.Id,
-		Roles: resp.User.Roles,
-	}, nil
+	return resp, nil
 }
 
-// Login is a function available on the GRPC client, it logs in a user
-func (client *Client) Login(ctx context.Context, r *pb.LoginRequest) (*User, error) {
-	resp, err := client.service.Login(
-		ctx,
-		r,
-	)
+// Login is a function available on the gRPC client that logs in a user
+func (c *Client) Login(ctx context.Context, r *pb.LoginRequest) (*pb.AuthResponse, error) {
+	resp, err := c.service.Login(ctx, r)
 	if err != nil {
 		return nil, err
 	}
-	return &User{
-		ID:    resp.User.Id,
-		Roles: resp.User.Roles,
-	}, nil
+	return resp, nil
 }
 
-// GetUsers : GetUsers function avilable on the grpc client, fetches all users from the database
-func (client *Client) GetUsers(ctx context.Context) ([]User, error) {
-	resp, err := client.service.GetUsers(ctx, &pb.EmptyRequest{})
+// TriggerVerifyEmail is a function available on the gRPC client that initiates the email verification process
+func (c *Client) TriggerVerifyEmail(ctx context.Context, email string) (*pb.MessageResponse, error) {
+	resp, err := c.service.TriggerVerifyEmail(ctx, &pb.TriggerVerifyEmailRequest{Email: email})
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// TriggerVerifyPhone is a function available on the gRPC client that initiates the phone verification process
+func (c *Client) TriggerVerifyPhone(ctx context.Context, phone string) (*pb.MessageResponse, error) {
+	resp, err := c.service.TriggerVerifyPhone(ctx, &pb.TriggerVerifyPhoneRequest{Phone: phone})
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// VerifyEmail is a function available on the gRPC client that completes the email verification process
+func (c *Client) VerifyEmail(ctx context.Context, args *pb.VerifyRequest) (*pb.MessageResponse, error) {
+	resp, err := c.service.VerifyEmail(ctx, args)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// VerifyPhone is a function available on the gRPC client that completes the phone verification process
+func (c *Client) VerifyPhone(ctx context.Context, args *pb.VerifyRequest) (*pb.MessageResponse, error) {
+	resp, err := c.service.VerifyPhone(ctx, args)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// GetUsers is a function available on the gRPC client that fetches all users from the database
+func (c *Client) GetUsers(ctx context.Context) ([]User, error) {
+	resp, err := c.service.GetUsers(ctx, &pb.EmptyRequest{})
 	if err != nil {
 		return nil, err
 	}

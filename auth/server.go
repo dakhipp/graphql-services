@@ -14,7 +14,7 @@ type grpcServer struct {
 	service Service
 }
 
-// ListenGRPC : Takes a service and a formatted port string (":8000") and starts up a GRPC server
+// ListenGRPC takes a gRPC service and a formatted port string (":8000") and starts up a gRPC server
 func ListenGRPC(service Service, port string) error {
 	listen, err := net.Listen("tcp", port)
 	if err != nil {
@@ -26,33 +26,85 @@ func ListenGRPC(service Service, port string) error {
 	return server.Serve(listen)
 }
 
-// Register : GRPC function which registers a user
-func (server *grpcServer) Register(ctx context.Context, args *pb.RegisterRequest) (*pb.RegisterResponse, error) {
-	resp, err := server.service.Register(ctx, args)
+// Register is a gRPC function which registers a user
+func (s *grpcServer) Register(ctx context.Context, args *pb.RegisterRequest) (*pb.AuthResponse, error) {
+	resp, err := s.service.Register(ctx, args)
 	if err != nil {
 		return nil, err
 	}
-	return &pb.RegisterResponse{User: &pb.Auth{
-		Id:    resp.ID,
-		Roles: resp.Roles,
+	return &pb.AuthResponse{User: &pb.Auth{
+		Id:            resp.ID,
+		FirstName:     resp.FirstName,
+		LastName:      resp.LastName,
+		Email:         resp.Email,
+		Phone:         resp.Phone,
+		Roles:         resp.Roles,
+		EmailVerified: resp.EmailVerified,
+		PhoneVerified: resp.PhoneVerified,
 	}}, nil
 }
 
-// Login is a GRPC function that logs in a user
-func (server *grpcServer) Login(ctx context.Context, args *pb.LoginRequest) (*pb.LoginResponse, error) {
-	resp, err := server.service.Login(ctx, args)
+// Login is a gRPC function that logs in a user
+func (s *grpcServer) Login(ctx context.Context, args *pb.LoginRequest) (*pb.AuthResponse, error) {
+	resp, err := s.service.Login(ctx, args)
 	if err != nil {
 		return nil, err
 	}
-	return &pb.LoginResponse{User: &pb.Auth{
-		Id:    resp.ID,
-		Roles: resp.Roles,
+	return &pb.AuthResponse{User: &pb.Auth{
+		Id:            resp.ID,
+		FirstName:     resp.FirstName,
+		LastName:      resp.LastName,
+		Email:         resp.Email,
+		Phone:         resp.Phone,
+		Roles:         resp.Roles,
+		EmailVerified: resp.EmailVerified,
+		PhoneVerified: resp.PhoneVerified,
 	}}, nil
 }
 
-// Register : GRPC function which fetches users
-func (server *grpcServer) GetUsers(ctx context.Context, args *pb.EmptyRequest) (*pb.GetUsersResponse, error) {
-	resp, err := server.service.GetUsers(ctx)
+// TriggerVerifyEmail is a gRPC function that initiates the email verification process
+func (s *grpcServer) TriggerVerifyEmail(ctx context.Context, args *pb.TriggerVerifyEmailRequest) (*pb.MessageResponse, error) {
+	if err := s.service.TriggerVerifyEmail(ctx, args); err != nil {
+		return nil, err
+	}
+	return &pb.MessageResponse{
+		Message: "A verification link has been sent to your email.",
+	}, nil
+}
+
+// TriggerVerifyEmail is a gRPC function that initiates the email verification process
+func (s *grpcServer) TriggerVerifyPhone(ctx context.Context, args *pb.TriggerVerifyPhoneRequest) (*pb.MessageResponse, error) {
+	if err := s.service.TriggerVerifyPhone(ctx, args); err != nil {
+		return nil, err
+	}
+	return &pb.MessageResponse{
+		Message: "A verification code has been texted to your phone number.",
+	}, nil
+}
+
+// VerifyEmail is a gRPC function that completes the email verification process
+func (s *grpcServer) VerifyEmail(ctx context.Context, args *pb.VerifyRequest) (*pb.MessageResponse, error) {
+	if err := s.service.VerifyEmail(ctx, args); err != nil {
+		return nil, err
+	}
+	return &pb.MessageResponse{
+		Message: "Your email has been successfully verified.",
+	}, nil
+}
+
+// VerifyEmail is a gRPC function that completes the phone verification process
+func (s *grpcServer) VerifyPhone(ctx context.Context, args *pb.VerifyRequest) (*pb.MessageResponse, error) {
+	if err := s.service.VerifyPhone(ctx, args); err != nil {
+		return nil, err
+	}
+	return &pb.MessageResponse{
+		Message: "Your phone has been successfully verified.",
+	}, nil
+}
+
+// GetUsers is a gRPC function that fetches all users from the database
+func (s *grpcServer) GetUsers(ctx context.Context, args *pb.EmptyRequest) (*pb.GetUsersResponse, error) {
+	resp, err := s.service.GetUsers(ctx)
 	if err != nil {
 		return nil, err
 	}
