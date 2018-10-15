@@ -67,6 +67,8 @@ services:
       - "6379:6379"
     environment:
       - REDIS_PASSWORD=toor
+    volumes:
+      - /tmp/docker/redis:/bitnami/redis/data
     restart: "unless-stopped"
 
   zookeeper:
@@ -81,6 +83,8 @@ services:
       - "3888:3888"
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
+    volumes:
+      - /tmp/docker/zookeeper:/bitnami/zookeeper
     restart: "always"
 
   kafka:
@@ -94,6 +98,8 @@ services:
     environment:
       - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181,zookeeper:2888,zookeeper:3888
       - ALLOW_PLAINTEXT_LISTENER=yes
+    volumes:
+      - /tmp/docker/kafka:/bitnami/kafka
     restart: "always"
 
   mongodb:
@@ -106,4 +112,6 @@ services:
       - MONGODB_USERNAME=user
       - MONGODB_PASSWORD=pass
       - MONGODB_DATABASE=graphql-services
+    volumes:
+      - /tmp/docker/mongodb:/bitnami
     restart: "unless-stopped"
