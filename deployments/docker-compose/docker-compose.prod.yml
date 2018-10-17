@@ -109,5 +109,5 @@ services:
       - MONGODB_PASSWORD=pass
       - MONGODB_DATABASE=graphql-services
     volumes:
-      - /tmp/docker/mongodb:/bitnami
+      - /tmp/docker/mongodb:/bitnami/mongodb
     restart: "unless-stopped"
