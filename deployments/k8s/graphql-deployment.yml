@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: graphql-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: graphql
+  template:
+    metadata:
+      labels:
+        component: graphql
+    spec:
+      containers:
+        - name: server
+          image: 690303654955.dkr.ecr.us-west-2.amazonaws.com/dakhipp/graphql:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: PORT
+              value: "8000"
+            - name: PLAYGROUND
+              value: "true"
+            - name: AUTH_SERVICE_URL
+              value: "auth-cluster-ip-service:8001"
+            - name: REDIS_URL
+              value: "redis://root:toor@redis-cluster-ip-service:6379/0"
+            # Need to set this more dynamically VVV
+            - name: DOMAIN
+              value: "192.168.99.100"
+      imagePullSecrets:
+        - name: "us-west-2-ecr-registry"

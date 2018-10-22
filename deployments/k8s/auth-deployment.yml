@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: auth
+  template:
+    metadata:
+      labels:
+        component: auth
+    spec:
+      containers:
+        - name: auth
+          image: 690303654955.dkr.ecr.us-west-2.amazonaws.com/dakhipp/auth:latest
+          ports:
+            - containerPort: 8001
+          env:
+            - name: PORT
+              value: "8001"
+            - name: MONGO_URL
+              value: "mongodb://user:pass@mongo-cluster-ip-service/graphql-services"
+            - name: KAFKA_ADDR
+              value: "kafka-cluster-ip-service:9092"
+      imagePullSecrets:
+        - name: "us-west-2-ecr-registry"

@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: mongo
+  template:
+    metadata:
+      labels:
+        component: mongo
+    spec:
+      volumes:
+        - name: mongo-storage
+          persistentVolumeClaim:
+            claimName: mongo-persistent-volume-claim
+      containers:
+        - name: mongo
+          image: bitnami/mongodb:3.6
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: mongo-storage
+              mountPath: /bitnami
+              subPath: mongo
+          env:
+            - name: MONGODB_USERNAME
+              value: "user"
+            - name: MONGODB_PASSWORD
+              value: "pass"
+            - name: MONGODB_DATABASE
+              value: "graphql-services"

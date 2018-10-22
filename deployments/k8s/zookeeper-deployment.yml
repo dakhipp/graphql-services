@@ -1,0 +1,37 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: zookeeper-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: zookeeper
+  template:
+    metadata:
+      labels:
+        component: zookeeper
+    spec:
+      volumes:
+        - name: zookeeper-storage
+          persistentVolumeClaim:
+            claimName: zookeeper-persistent-volume-claim
+      # initContainers:
+      #   - name: volume-permissions
+      #     image: busybox
+      #     command: ["sh", "-c", "chmod -R g+rwX /bitnami"]
+      #     volumeMounts:
+      #       - mountPath: /bitnami
+      #         name: zookeeper-storage
+      containers:
+        - name: zookeeper
+          image: bitnami/zookeeper:latest
+          ports:
+            - containerPort: 2181
+          volumeMounts:
+            - mountPath: /bitnami/zookeeper
+              name: zookeeper-storage
+              subPath: zookeeper
+          env:
+            - name: ALLOW_ANONYMOUS_LOGIN
+              value: "yes"

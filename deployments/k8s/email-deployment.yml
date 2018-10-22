@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: email-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: email
+  template:
+    metadata:
+      labels:
+        component: email
+    spec:
+      containers:
+        - name: email
+          image: 690303654955.dkr.ecr.us-west-2.amazonaws.com/dakhipp/email:latest
+          env:
+            - name: KAFKA_BROKERS
+              value: kafka-cluster-ip-service:9092
+            - name: ENV
+              value: dev
+      imagePullSecrets:
+        - name: "us-west-2-ecr-registry"

@@ -50,7 +50,7 @@ func New() Service {
 	retry.ForeverSleep(2*time.Second, func(_ int) (err error) {
 		repository, err = NewMongoDBRepository(cfg.MongoURL)
 		if err != nil {
-			log.Println(err)
+			log.Printf("Mongo Connection Error: %v\n", err)
 		}
 		return
 	})
@@ -60,7 +60,7 @@ func New() Service {
 	retry.ForeverSleep(2*time.Second, func(_ int) (err error) {
 		kafkaProducer, err = NewKafkaProducer(cfg.KafkaAddr)
 		if err != nil {
-			log.Println(err)
+      log.Printf("Kafka Connection Error: %v\n", err
 		}
 		return
 	})
